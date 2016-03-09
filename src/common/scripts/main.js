@@ -1,0 +1,2 @@
+window.main = new (function(){
+})();

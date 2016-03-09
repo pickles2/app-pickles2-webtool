@@ -1,0 +1,1 @@
+window.contApp = function(){}
