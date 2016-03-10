@@ -11,6 +11,7 @@ console.log('port number is '+_port);
 
 
 // middleware - frontend documents
+app.use( '/api/login', require('./users/login.js')() );
 app.use( express.static( __dirname+'/../dist/' ) );
 
 // {$_port}番ポートでLISTEN状態にする
