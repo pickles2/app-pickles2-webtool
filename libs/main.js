@@ -10,7 +10,8 @@ var _port = 8080;
 console.log('port number is '+_port);
 
 
-// middleware - frontend documents
+app.use(require('body-parser')());
+
 app.use( '/api/login', require('./users/login.js')() );
 app.use( express.static( __dirname+'/../dist/' ) );
 
