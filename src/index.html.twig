@@ -5,17 +5,27 @@
 		<title>pickles2webtool</title>
 		<link rel="stylesheet" href="/common/styles/common.css" type="text/css" />
 		<link rel="stylesheet" href="index_files/styles/contents.css" type="text/css" />
+		<script id="template-login" type="text/template">
+			<div>
+				<p>Welcome!</p>
+			</div>
+		</script>
+		<script id="template-login-form" type="text/template">
+			<form action="javascript:;" method="get" class="login-form">
+				<div>USER ID:
+					<input type="text" name="user_id" />
+					PASSWORD:
+					<input type="password" name="password" />
+					<button type="submit">go</button>
+				</div>
+			</form>
+		</script>
 	</head>
 	<body>
 		<h1>pickles2webtool</h1>
-		<form action="javascript:;" method="get" class="login-form">
-			<div>USER ID:
-				<input type="text" name="user_id" />
-				PASSWORD:
-				<input type="password" name="password" />
-				<button type="submit">go</button>
-			</div>
-		</form>
+		<div class="contents">
+		</div>
+
 		<script type="text/javascript" src="/common/scripts/main.js"></script>
 		<script type="text/javascript" src="./index_files/scripts/contents.js"></script>
 	</body>
