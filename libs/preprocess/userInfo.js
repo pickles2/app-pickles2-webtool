@@ -31,7 +31,7 @@ module.exports = function(){
 
 	function login(id, pw, callback){
 		callback = callback || function(){};
-		var pathCsv = require('path').resolve(__dirname, '../../data/users/userlist.csv');
+		var pathCsv = require('path').resolve(__dirname, '../../config/userlist.csv');
 		// console.log(pathCsv);
 		var findInCsv = new (require('find-in-csv'))(pathCsv);
 		// console.log(id);
