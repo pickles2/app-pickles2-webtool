@@ -26,6 +26,7 @@ app.use(require('./preprocess/userInfo.js')());
 
 app.use( '/apis/getLoginUserInfo', require('./apis/getLoginUserInfo.js')() );
 app.use( '/apis/login', require('./apis/login.js')() );
+app.use( '/apis/logout', require('./apis/logout.js')() );
 app.use( express.static( __dirname+'/../dist/' ) );
 
 // {$_port}番ポートでLISTEN状態にする

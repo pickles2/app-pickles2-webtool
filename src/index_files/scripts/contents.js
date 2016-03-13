@@ -5,23 +5,37 @@ $(window).load(function(){
 		'url': '/apis/getLoginUserInfo',
 		'success': function(data, dataType){
 			console.log(data, dataType);
+			if( !data ){
+				var html = $('#template-login-form').html();
+				$('.contents').html(html);
+				notLogin();
+			}else{
+				var html = $('#template-login').html();
+				$('.contents').html(html);
+				login();
+			}
 		},
 		'error': function(data, dataType){
 			// console.log(data, dataType);
 		},
 		'complete': function(xhr, textStatus){
-			if(xhr.status == 200){
-				var html = $('#template-login').html();
-				$('.contents').html(html);
-			}else if(xhr.status == 403){
-				var html = $('#template-login-form').html();
-				$('.contents').html(html);
-				notLogin();
-			}else{
-				alert('unknown code: '+xhr.status);
-			}
 		}
 	});
+	function login(){
+		$('.logout-button').click(function(){
+			var $this = $(this);
+
+			$.ajax({
+				'type': 'POST',
+				'url': '/apis/logout',
+				'success': function(data, dataType){
+					window.location.reload();
+				},
+				'complete': function(xhr, textStatus){
+				}
+			});
+		});
+	}
 	function notLogin(){
 		$('.login-form').submit(function(){
 			var $this = $(this);
@@ -40,7 +54,8 @@ $(window).load(function(){
 				},
 				'complete': function(xhr, textStatus){
 					if(xhr.status == 200){
-						alert('OK');
+						// alert('OK');
+						window.location.reload();
 					}else if(xhr.status == 403){
 						alert('FAILED');
 					}else{
