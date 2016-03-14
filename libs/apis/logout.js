@@ -11,7 +11,7 @@ module.exports = function(){
 		req.userInfo = undefined;
 		req.session.destroy(function(err) {
 			res.status(200);
-			res.send('OK').end();
+			res.send('Logout OK').end();
 		})
 		return;
 	};

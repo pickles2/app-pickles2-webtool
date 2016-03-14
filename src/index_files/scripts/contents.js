@@ -1,10 +1,12 @@
-window.contApp = function(){}
+window.contApp = new (function(){
+})();
 $(window).load(function(){
+
 	$.ajax({
 		'type': 'GET',
 		'url': '/apis/getLoginUserInfo',
 		'success': function(data, dataType){
-			console.log(data, dataType);
+			// console.log(data, dataType);
 			if( !data ){
 				var html = $('#template-login-form').html();
 				$('.contents').html(html);
@@ -21,6 +23,10 @@ $(window).load(function(){
 		'complete': function(xhr, textStatus){
 		}
 	});
+
+	/**
+	 * ログイン状態のとき
+	 */
 	function login(){
 		$('.logout-button').click(function(){
 			var $this = $(this);
@@ -36,34 +42,39 @@ $(window).load(function(){
 			});
 		});
 	}
-	function notLogin(){
-		$('.login-form').submit(function(){
-			var $this = $(this);
-			var id = $this.find('input[type=text]').val();
-			var pw = $this.find('input[type=password]').val();
 
-			$.ajax({
-				'type': 'POST',
-				'url': '/apis/login',
-				'data': {
-					'id': id,
-					'pw': pw
-				},
-				'success': function(data, dataType){
-					console.log(data, dataType);
-				},
-				'complete': function(xhr, textStatus){
-					if(xhr.status == 200){
-						// alert('OK');
-						window.location.reload();
-					}else if(xhr.status == 403){
-						alert('FAILED');
-					}else{
-						alert('unknown code: '+xhr.status);
+	/**
+	 * 非ログイン状態のとき
+	 */
+	function notLogin(){
+		$('.login-form')
+			.submit(function(){
+				var $this = $(this);
+				var data = {
+					'id': $this.find('input[type=text]').val(),
+					'pw': $this.find('input[type=password]').val()
+				};
+
+				$.ajax({
+					'type': 'POST',
+					'url': '/apis/login',
+					'data': data,
+					'success': function(data, dataType){
+						// console.log(data, dataType);
+					},
+					'complete': function(xhr, textStatus){
+						if(xhr.status == 200){
+							// alert('OK');
+							window.location.reload();
+						}else if(xhr.status == 403){
+							alert('FAILED');
+						}else{
+							alert('unknown code: '+xhr.status);
+						}
 					}
-				}
-			});
-		});
+				});
+			})
+		;
 	}
 
 });

@@ -16,14 +16,15 @@ console.log('port number is '+conf.port);
 console.log('Pickles2 preview server port number is '+conf.px2server.port);
 
 
-app.use(require('body-parser')());
-app.use(session({
+app.use( require('body-parser')() );
+var mdlWareSession = session({
 	secret: "pickles2webtool",
 	cookie: {
 		httpOnly: false
 	}
-}));
-app.use(require('./preprocess/userInfo.js')());
+});
+app.use( mdlWareSession );
+app.use( require('./preprocess/userInfo.js')() );
 
 app.use( '/apis/getLoginUserInfo', require('./apis/getLoginUserInfo.js')() );
 app.use( '/apis/login', require('./apis/login.js')() );
@@ -43,6 +44,9 @@ server.listen( conf.port, function(){
 // Pickles2 preview server
 var expressPickles2 = require('express-pickles2');
 var appPx2 = express();
-appPx2.use('/*', require('./preprocess/loginCheck.js')() );// TODO: ログインチェック
-appPx2.use('/*', expressPickles2(conf.px2server.path, {}) );
+appPx2.use( require('body-parser')() );
+appPx2.use( mdlWareSession );
+appPx2.use( require('./preprocess/userInfo.js')() );
+appPx2.use( '/*', require('./preprocess/loginCheck.js')() );
+appPx2.use( '/*', expressPickles2(conf.px2server.path, {}) );
 appPx2.listen(conf.px2server.port);
