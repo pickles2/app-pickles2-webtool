@@ -1,7 +1,7 @@
 /**
  * getLoginUserInfo.js
  */
-module.exports = function(){
+module.exports = function(conf){
 
 	return function(req, res, next){
 		// console.log(req);

@@ -24,13 +24,14 @@ var mdlWareSession = session({
 	}
 });
 app.use( mdlWareSession );
-app.use( require('./preprocess/userInfo.js')() );
+app.use( require('./preprocess/userInfo.js')(conf) );
 
-app.use( '/apis/getLoginUserInfo', require('./apis/getLoginUserInfo.js')() );
-app.use( '/apis/login', require('./apis/login.js')() );
-app.use( '/apis/logout', require('./apis/logout.js')() );
+app.use( '/apis/getLoginUserInfo', require('./apis/getLoginUserInfo.js')(conf) );
+app.use( '/apis/login', require('./apis/login.js')(conf) );
+app.use( '/apis/logout', require('./apis/logout.js')(conf) );
+app.use( '/apis/getSitemap', require('./apis/getSitemap.js')(conf) );
 
-app.use( '/pagelist/*', require('./preprocess/loginCheck.js')() );
+app.use( '/fncs/*', require('./preprocess/loginCheck.js')(conf) );
 
 app.use( express.static( __dirname+'/../dist/' ) );
 
@@ -46,7 +47,7 @@ var expressPickles2 = require('express-pickles2');
 var appPx2 = express();
 appPx2.use( require('body-parser')() );
 appPx2.use( mdlWareSession );
-appPx2.use( require('./preprocess/userInfo.js')() );
-appPx2.use( '/*', require('./preprocess/loginCheck.js')() );
+appPx2.use( require('./preprocess/userInfo.js')(conf) );
+appPx2.use( '/*', require('./preprocess/loginCheck.js')(conf) );
 appPx2.use( '/*', expressPickles2(conf.px2server.path, {}) );
 appPx2.listen(conf.px2server.port);
