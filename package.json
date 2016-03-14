@@ -1,8 +1,10 @@
 {
   "main": "libs/main.js",
   "scripts": {
-    "start": "gulp watch;",
-    "up": "node ./libs/main.js",
+    "start": "node ./libs/main.js;",
+    "up": "node ./libs/main.js;",
+    "preview": "gulp preview;",
+    "dev": "gulp dev;",
     "test": "gulp; mocha --ui tdd ./tests/"
   },
   "author": "Tomoya Koyanagi",
