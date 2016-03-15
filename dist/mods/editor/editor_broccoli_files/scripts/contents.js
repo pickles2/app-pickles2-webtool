@@ -1,6 +1,8 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);throw new Error("Cannot find module '"+o+"'")}var f=n[o]={exports:{}};t[o][0].call(f.exports,function(e){var n=t[o][1][e];return s(n?n:e)},f,f.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 $(window).load(function(){
 
+	var params = window.main.parseUriParam(window.location.href);
+	// console.log(params);
 
 	$.get(
 		'/apis/getProjectConf',
@@ -16,7 +18,7 @@ $(window).load(function(){
 			var $elmInstancePathView = $('.cont_instancePathView');
 
 			$('.cont_canvas .cont_canvas--main').attr({
-				"data-broccoli-preview": 'http://127.0.0.1:8081/sample_pages/page3/'
+				"data-broccoli-preview": 'http://127.0.0.1:8081'+params.page_path
 			});
 
 
@@ -45,11 +47,12 @@ $(window).load(function(){
 							"url": "/apis/broccoliApi",
 							"type": 'post',
 							'data': {
+								'page_path': params.page_path,
 								'api': JSON.stringify(api) ,
 								'options': JSON.stringify(options)
 							},
 							"success": function(data){
-								console.log(data);
+								// console.log(data);
 								callback(data);
 							}
 						})
@@ -74,7 +77,7 @@ $(window).load(function(){
 						broccoli.redraw();
 					});
 
-					callback();
+					// callback();
 				}
 			);
 		}

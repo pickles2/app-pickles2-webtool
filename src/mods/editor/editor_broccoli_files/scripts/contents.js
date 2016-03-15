@@ -1,5 +1,7 @@
 $(window).load(function(){
 
+	var params = window.main.parseUriParam(window.location.href);
+	// console.log(params);
 
 	$.get(
 		'/apis/getProjectConf',
@@ -15,7 +17,7 @@ $(window).load(function(){
 			var $elmInstancePathView = $('.cont_instancePathView');
 
 			$('.cont_canvas .cont_canvas--main').attr({
-				"data-broccoli-preview": 'http://127.0.0.1:8081/sample_pages/page3/'
+				"data-broccoli-preview": 'http://127.0.0.1:8081'+params.page_path
 			});
 
 
@@ -44,11 +46,12 @@ $(window).load(function(){
 							"url": "/apis/broccoliApi",
 							"type": 'post',
 							'data': {
+								'page_path': params.page_path,
 								'api': JSON.stringify(api) ,
 								'options': JSON.stringify(options)
 							},
 							"success": function(data){
-								console.log(data);
+								// console.log(data);
 								callback(data);
 							}
 						})
@@ -73,7 +76,7 @@ $(window).load(function(){
 						broccoli.redraw();
 					});
 
-					callback();
+					// callback();
 				}
 			);
 		}

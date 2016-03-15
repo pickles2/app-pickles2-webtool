@@ -1,17 +1,19 @@
 {
   "main": "libs/main.js",
   "scripts": {
+    "preinstall": "git submodule update -i -r -f",
     "start": "node ./libs/main.js;",
     "up": "node ./libs/main.js;",
     "preview": "gulp preview;",
     "dev": "gulp dev;",
+    "submodules-update": "rm -rfv node_modules/broccoli-html-editor; npm install; gulp;",
     "test": "gulp; mocha --ui tdd ./tests/"
   },
   "author": "Tomoya Koyanagi",
   "license": "MIT",
   "dependencies": {
     "body-parser": "^1.15.0",
-    "broccoli-html-editor": "0.1.0-beta.4",
+    "broccoli-html-editor": "file:submodules/broccoli-html-editor",
     "config": "^1.19.0",
     "csv": "^0.4.6",
     "express": "^4.13.3",

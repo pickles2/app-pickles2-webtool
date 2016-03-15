@@ -30,8 +30,9 @@ app.use( '/apis/getLoginUserInfo', require('./apis/getLoginUserInfo.js')(conf) )
 app.use( '/apis/login', require('./apis/login.js')(conf) );
 app.use( '/apis/logout', require('./apis/logout.js')(conf) );
 
-// app.use( '/fncs/*', require('./preprocess/loginCheck.js')(conf) );
-// app.use( '/api/*', require('./preprocess/loginCheck.js')(conf) );
+app.use( '/fncs/*', require('./preprocess/loginCheck.js')(conf) );
+app.use( '/mods/*', require('./preprocess/loginCheck.js')(conf) );
+app.use( '/api/*', require('./preprocess/loginCheck.js')(conf) );
 
 app.use( '/apis/getProjectConf', require('./apis/getProjectConf.js')(conf) );
 app.use( '/apis/getSitemap', require('./apis/getSitemap.js')(conf) );
@@ -52,7 +53,9 @@ var appPx2 = express();
 appPx2.use( require('body-parser')() );
 appPx2.use( mdlWareSession );
 appPx2.use( require('./preprocess/userInfo.js')(conf) );
-// appPx2.use( '/*', require('./preprocess/loginCheck.js')(conf) );
+
+appPx2.use( '/*', require('./preprocess/loginCheck.js')(conf) );
+
 appPx2.use( '/*', expressPickles2(
 	conf.px2server.path,
 	{

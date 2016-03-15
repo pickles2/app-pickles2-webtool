@@ -3,6 +3,14 @@
  */
 module.exports = function(conf){
 
+	var px2proj,
+		px2conf,
+		pageInfo,
+		page_path,
+		documentRoot,
+		realpathDataDir,
+		pathResourceDir;
+
 	return function(req, res, next){
 
 		// console.log(req);
@@ -13,23 +21,43 @@ module.exports = function(conf){
 		// console.log(req.body);
 		// console.log(req.query);
 
-		var px2proj = require('px2agent').createProject(conf.px2server.path);
-		px2proj.get_config(function(px2conf){
+		page_path = req.body.page_path;
+		px2proj = require('px2agent').createProject(conf.px2server.path);
+
+		px2proj.get_config(function(_px2conf){
+			px2conf = _px2conf;
 			// console.log(px2conf);
-			px2proj.get_page_info('/', function(pageInfo){
+			px2proj.get_page_info('/', function(_pageInfo){
+				pageInfo = _pageInfo;
 				// console.log(pageInfo);
 
-				px2proj.get_path_docroot(function(documentRoot){
-					// res.status(200);
-					// res.set('Content-Type', 'text/json')
-					// res.send(JSON.stringify(px2conf)).end();
-					// return;
+				px2proj.get_path_docroot(function(_documentRoot){
+					documentRoot = _documentRoot;
 
-					broccoliStandby(px2conf, pageInfo, documentRoot, JSON.parse(req.body.api), JSON.parse(req.body.options), function(bin){
-						res.status(200);
-						res.set('Content-Type', 'text/json')
-						res.send(JSON.stringify(bin)).end();
+					px2proj.realpath_files(page_path, '', function(_realpathDataDir){
+						realpathDataDir = require('path').resolve(_realpathDataDir, 'guieditor.ignore')+'/';
+
+						px2proj.path_files(page_path, '', function(_pathResourceDir){
+							pathResourceDir = require('path').resolve(_pathResourceDir, 'resources')+'/';
+							pathResourceDir = pathResourceDir.replace(new RegExp('\\\\','g'), '/').replace(new RegExp('^[a-zA-Z]\\:\\/'), '/');
+								// Windows でボリュームラベル "C:" などが含まれるようなパスを渡すと、
+								// broccoli-html-editor内 resourceMgr で
+								// 「Uncaught RangeError: Maximum call stack size exceeded」が起きて落ちる。
+								// ここで渡すのはウェブ側からみえる外部のパスでありサーバー内部パスではないので、
+								// ボリュームラベルが付加された値を渡すのは間違い。
+
+
+							broccoliStandby(JSON.parse(req.body.api), JSON.parse(req.body.options), function(bin){
+								res.status(200);
+								res.set('Content-Type', 'text/json')
+								res.send(JSON.stringify(bin)).end();
+							});
+
+						});
+
 					});
+
+
 				});
 
 			});
@@ -38,21 +66,21 @@ module.exports = function(conf){
 		return;
 	};
 
-	function broccoliStandby(px2conf, pageInfo, documentRoot, api, options, callback){
+	function broccoliStandby(api, options, callback){
 		var Broccoli = require('broccoli-html-editor');
 		var broccoli = new Broccoli();
 		for( var idx in px2conf.plugins.px2dt.paths_module_template ){
 			px2conf.plugins.px2dt.paths_module_template[idx] = require('path').resolve( conf.px2server.path, '..', px2conf.plugins.px2dt.paths_module_template[idx] )+'/';
 		}
-		console.log(px2conf.plugins.px2dt.paths_module_template);
+		// console.log(px2conf.plugins.px2dt.paths_module_template);
 
 		broccoli.init(
 			{
 				'paths_module_template': px2conf.plugins.px2dt.paths_module_template ,
 				'documentRoot': documentRoot,// realpath
-				'pathHtml': '/sample_pages/page3/index.html',
-				'pathResourceDir': '/sample_pages/page3/index_files/resources/',
-				'realpathDataDir':  documentRoot + '/sample_pages/page3/index_files/guieditor.ignore/',
+				'pathHtml': page_path,
+				'pathResourceDir': pathResourceDir,
+				'realpathDataDir':  realpathDataDir,
 				'contents_bowl_name_by': px2conf.plugins.px2dt.contents_bowl_name_by,
 				'customFields': {
 					// 'custom1': function(broccoli){
@@ -88,9 +116,9 @@ module.exports = function(conf){
 			function(){
 				console.log('standby!');
 
-				console.log('GPI called');
-				console.log(api);
-				console.log(options);
+				// console.log('GPI called');
+				// console.log(api);
+				// console.log(options);
 				broccoli.gpi(
 					api,
 					options,
