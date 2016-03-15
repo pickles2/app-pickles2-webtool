@@ -16,9 +16,23 @@ var _tasks = [
 	'.html.twig',
 	'.css',
 	'.css.scss',
-	'.js'
+	'.js',
+	'broccoli-client'
 ];
 
+
+// broccoli-client (frontend) を処理
+gulp.task("broccoli-client", function() {
+	gulp.src(["node_modules/broccoli-html-editor/client/dist/**/*"])
+		.pipe(gulp.dest( './dist/common/broccoli-html-editor/client/dist/' ))
+	;
+	// gulp.src(["node_modules/broccoli-field-table/dist/**/*"])
+	// 	.pipe(gulp.dest( './dist/common/broccoli-field-table/dist/' ))
+	// ;
+	// gulp.src(["node_modules/broccoli-field-psd/dist/*"])
+	// 	.pipe(gulp.dest( './app/common/broccoli-field-psd/dist/' ))
+	// ;
+});
 
 // src 中の *.css.scss を処理
 gulp.task('.css.scss', function(){
