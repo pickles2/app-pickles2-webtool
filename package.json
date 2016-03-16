@@ -6,7 +6,7 @@
     "up": "node ./libs/main.js;",
     "preview": "gulp preview;",
     "dev": "gulp dev;",
-    "submodules-update": "rm -rfv node_modules/broccoli-html-editor; npm install; gulp;",
+    "submodules-update": "rm -rfv node_modules/broccoli-html-editor; rm -rfv node_modules/pickles2-contents-editor; npm install; gulp;",
     "test": "gulp; mocha --ui tdd ./tests/"
   },
   "author": "Tomoya Koyanagi",
@@ -14,6 +14,7 @@
   "dependencies": {
     "body-parser": "^1.15.0",
     "broccoli-html-editor": "file:submodules/broccoli-html-editor",
+    "pickles2-contents-editor": "file:submodules/pickles2-contents-editor",
     "config": "^1.19.0",
     "csv": "^0.4.6",
     "express": "^4.13.3",
