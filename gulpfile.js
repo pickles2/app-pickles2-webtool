@@ -1,5 +1,15 @@
 var conf = require('config');
+var urlParse = require('url-parse');
+conf.originParsed = new urlParse(conf.origin);
+if(!conf.originParsed.port){
+	conf.originParsed.port = 80;
+}
+conf.px2server.originParsed = new urlParse(conf.px2server.origin);
+if(!conf.px2server.originParsed.port){
+	conf.px2server.originParsed.port = 80;
+}
 console.log(conf);
+
 var path = require('path');
 var gulp = require('gulp');
 var sass = require('gulp-sass');//CSSコンパイラ

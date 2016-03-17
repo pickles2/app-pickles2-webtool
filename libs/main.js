@@ -9,11 +9,17 @@ var express = require('express'),
 	app = express();
 var session = require('express-session');
 var server = require('http').Server(app);
-if(!conf.port){
-	conf.port = 8080;
+var urlParse = require('url-parse');
+conf.originParsed = new urlParse(conf.origin);
+if(!conf.originParsed.port){
+	conf.originParsed.port = 80;
 }
-console.log('port number is '+conf.port);
-console.log('Pickles2 preview server port number is '+conf.px2server.port);
+conf.px2server.originParsed = new urlParse(conf.px2server.origin);
+if(!conf.px2server.originParsed.port){
+	conf.px2server.originParsed.port = 80;
+}
+console.log('port number is '+conf.originParsed.port);
+console.log('Pickles2 preview server port number is '+conf.px2server.originParsed.port);
 
 
 app.use( require('body-parser')() );
@@ -40,8 +46,8 @@ app.use( '/apis/pickles2ContentsEditorGpi', require('./apis/pickles2ContentsEdit
 
 app.use( express.static( __dirname+'/../dist/' ) );
 
-// {conf.port}番ポートでLISTEN状態にする
-server.listen( conf.port, function(){
+// {conf.originParsed.port}番ポートでLISTEN状態にする
+server.listen( conf.originParsed.port, function(){
 	console.log('server-standby');
 } );
 
@@ -95,4 +101,4 @@ appPx2.use( '/*', expressPickles2(
 		}
 	}
 ) );
-appPx2.listen(conf.px2server.port);
+appPx2.listen(conf.px2server.originParsed.port);

@@ -1,7 +1,7 @@
 {
-	"port": 8080,
+	"origin": "http://127.0.0.1:8080",
 	"px2server":{
 		"path":"pickles2/.px_execute.php",
-		"port": 8081
+		"origin": "http://127.0.0.1:8081"
 	}
 }

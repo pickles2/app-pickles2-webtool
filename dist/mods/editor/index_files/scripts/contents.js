@@ -22,6 +22,9 @@ $(window).load(function(){
 			{
 				'page_path': params.page_path ,
 				'elmCanvas': $canvas.get(0),
+				'preview':{
+					'origin': "http://127.0.0.1:8081"
+				},
 				'gpiBridge': function(input, callback){
 					// GPI(General Purpose Interface) Bridge
 					// broccoliは、バックグラウンドで様々なデータ通信を行います。
@@ -29,7 +32,7 @@ $(window).load(function(){
 					$.ajax({
 						"url": "/apis/pickles2ContentsEditorGpi",
 						"type": 'post',
-						'data': {'data':input},
+						'data': {'data':JSON.stringiry(input)},
 						"success": function(data){
 							// console.log(data);
 							callback(data);

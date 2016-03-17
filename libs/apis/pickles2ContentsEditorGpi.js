@@ -13,7 +13,7 @@ module.exports = function(conf){
 				'entryScript': require('path').resolve(conf.px2server.path)
 			},
 			function(){
-				px2ce.gpi(req.body.data, function(value){
+				px2ce.gpi(JSON.parse(req.body.data), function(value){
 					res
 						.status(200)
 						.set('Content-Type', 'text/json')
