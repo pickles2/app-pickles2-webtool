@@ -33,15 +33,9 @@ var _tasks = [
 
 // broccoli-client (frontend) を処理
 gulp.task("broccoli-client", function() {
-	gulp.src(["node_modules/broccoli-html-editor/client/dist/**/*"])
-		.pipe(gulp.dest( './dist/common/broccoli-html-editor/client/dist/' ))
-	;
 	gulp.src(["node_modules/pickles2-contents-editor/dist/**/*"])
 		.pipe(gulp.dest( './dist/common/pickles2-contents-editor/dist/' ))
 	;
-	// gulp.src(["node_modules/broccoli-field-psd/dist/*"])
-	// 	.pipe(gulp.dest( './app/common/broccoli-field-psd/dist/' ))
-	// ;
 });
 
 // src 中の *.css.scss を処理

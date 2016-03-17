@@ -76,7 +76,7 @@ appPx2.use( '/*', expressPickles2(
 		'processor': function(bin, ext, callback){
 			if( ext == 'html' ){
 				bin += (function(){
-					var scriptSrc = fs.readFileSync(__dirname+'/../dist/common/broccoli-html-editor/client/dist/broccoli-preview-contents.js').toString('utf-8');
+					var scriptSrc = fs.readFileSync(__dirname+'/../dist/common/pickles2-contents-editor/dist/libs/broccoli-html-editor/client/dist/broccoli-preview-contents.js').toString('utf-8');
 					var fin = '';
 						fin += '<script data-broccoli-receive-message="yes">'+"\n";
 						// fin += 'console.log(window.location);'+"\n";

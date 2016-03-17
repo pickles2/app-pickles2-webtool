@@ -31,7 +31,7 @@ $(window).load(function(){
 					$.ajax({
 						"url": "/apis/pickles2ContentsEditorGpi",
 						"type": 'post',
-						'data': {'data':JSON.stringiry(input)},
+						'data': {'data':JSON.stringify(input)},
 						"success": function(data){
 							// console.log(data);
 							callback(data);
