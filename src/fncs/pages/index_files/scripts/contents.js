@@ -17,7 +17,7 @@ $(window).load(function(){
 						})
 						.click(function(){
 							var $this = $(this);
-							window.open( '/mods/editor/editor_broccoli.html?page_path='+encodeURIComponent( $this.attr('data-page-path') ) );
+							window.open( '/mods/editor/index.html?page_path='+encodeURIComponent( $this.attr('data-page-path') ) );
 						})
 				);
 				$ul.append($li);
