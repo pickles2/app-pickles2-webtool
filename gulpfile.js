@@ -27,14 +27,17 @@ var _tasks = [
 	'.css',
 	'.css.scss',
 	'.js',
-	'broccoli-client'
+	'replace-package-dist'
 ];
 
 
-// broccoli-client (frontend) を処理
-gulp.task("broccoli-client", function() {
+// broccoli-client (frontend) , bootstrap などを処理
+gulp.task("replace-package-dist", function() {
 	gulp.src(["node_modules/pickles2-contents-editor/dist/**/*"])
 		.pipe(gulp.dest( './dist/common/pickles2-contents-editor/dist/' ))
+	;
+	gulp.src(["node_modules/bootstrap/dist/**/*"])
+		.pipe(gulp.dest( './dist/common/bootstrap/dist/' ))
 	;
 });
 

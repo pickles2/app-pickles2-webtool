@@ -4,7 +4,7 @@ $(window).load(function(){
 		{},
 		function(sitemap){
 			// console.log(sitemap);
-			var $ul = $('<table>');
+			var $ul = $('<table class="table">');
 			$('.contents').html('').append($ul);
 			$ul
 				.append( $('<thead>')

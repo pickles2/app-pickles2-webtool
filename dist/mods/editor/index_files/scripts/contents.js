@@ -11,7 +11,9 @@ $(window).load(function(){
 	*/
 	var windowResized = function(callback){
 		callback = callback || function(){};
-		$canvas.height( $(window).height() - 200 );
+		$canvas
+			.height( $(window).height() - 0 )
+		;
 		callback();
 		return;
 	}

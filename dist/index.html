@@ -3,36 +3,52 @@
 	<head>
 		<meta charset="utf-8">
 		<title>pickles2webtool</title>
-		<link rel="stylesheet" href="/common/styles/common.css" type="text/css" />
+<!-- Required meta tags always come first -->
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+<meta http-equiv="x-ua-compatible" content="ie=edge" />
+
+<!-- Bootstrap 4 CSS -->
+<link rel="stylesheet" href="/common/bootstrap/dist/css/bootstrap.min.css" />
+
+<link rel="stylesheet" href="/common/styles/common.css" type="text/css" />
 		<link rel="stylesheet" href="index_files/styles/contents.css" type="text/css" />
 		<script id="template-login" type="text/template">
 			<div>
 				<p>Welcome!</p>
-				<ul>
-					<li><a href="http://127.0.0.1:8081/" target="_blank" class="preview">プレビュー</a></li>
-					<li><a href="/fncs/pages/">コンテンツ</a></li>
-				</ul>
-				<p><button class="logout-button">LOGOUT</button></p>
+				<div class="list-group">
+					<a href="http://127.0.0.1:8081/" target="_blank" class="list-group-item preview">プレビュー</a>
+					<a href="/fncs/pages/" class="list-group-item">コンテンツ</a>
+				</div>
+				<p><button class="btn btn-secondary logout-button">LOGOUT</button></p>
 			</div>
 		</script>
 		<script id="template-login-form" type="text/template">
 			<form action="javascript:;" method="get" class="login-form">
-				<div>USER ID:
-					<input type="text" name="user_id" />
-					PASSWORD:
-					<input type="password" name="password" />
-					<button type="submit">go</button>
+				<div class="input-group">
+					<span class="input-group-addon">ID</span>
+					<input type="text" name="user_id" class="form-control" />
+					<span class="input-group-addon">PW</span>
+					<input type="password" name="password" class="form-control" />
+					<span class="input-group-btn">
+						<button class="btn btn-primary" type="submit">go</button>
+					</span>
 				</div>
 			</form>
 		</script>
 	</head>
 	<body>
-		<h1>pickles2webtool</h1>
-		<div class="contents">
+		<div class="container">
+			<h1>pickles2webtool</h1>
+			<div class="contents">
+			</div>
+			<!-- <p>{{message}}</p> -->
 		</div>
-		<!-- <p>{{message}}</p> -->
 
-		<script type="text/javascript" src="/common/scripts/main.js"></script>
-		<script type="text/javascript" src="./index_files/scripts/contents.js"></script>
+
+<script type="text/javascript" src="/common/scripts/main.js"></script>
+
+<!-- jQuery first, then Bootstrap 4 JS. -->
+<script src="/common/bootstrap/dist/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="./index_files/scripts/contents.js"></script>
 	</body>
 </html>
