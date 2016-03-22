@@ -1,12 +1,14 @@
 var conf = require('config');
 var urlParse = require('url-parse');
 conf.originParsed = new urlParse(conf.origin);
+conf.originParsed.protocol = conf.originParsed.protocol.replace(':','');
 if(!conf.originParsed.port){
-	conf.originParsed.port = 80;
+	conf.originParsed.port = (conf.originParsed.protocol=='https' ? 443 : 80);
 }
 conf.px2server.originParsed = new urlParse(conf.px2server.origin);
+conf.px2server.originParsed.protocol = conf.px2server.originParsed.protocol.replace(':','');
 if(!conf.px2server.originParsed.port){
-	conf.px2server.originParsed.port = 80;
+	conf.px2server.originParsed.port = (conf.originParsed.protocol=='https' ? 443 : 80);
 }
 console.log(conf);
 
@@ -103,7 +105,7 @@ gulp.task("watch", function() {
 // 標準ブラウザを立ち上げてプレビューする
 gulp.task("preview", function() {
 	require('child_process').spawn('node', ['./libs/main.js']);
-	require('child_process').exec('open http://127.0.0.1:'+conf.port+'/');
+	require('child_process').exec('open '+conf.origin+'/');
 });
 
 

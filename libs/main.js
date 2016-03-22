@@ -4,20 +4,23 @@
 var fs = require('fs');
 var path = require('path');
 var conf = require('config');
-// console.log(conf);
+var urlParse = require('url-parse');
+conf.originParsed = new urlParse(conf.origin);
+conf.originParsed.protocol = conf.originParsed.protocol.replace(':','');
+if(!conf.originParsed.port){
+	conf.originParsed.port = (conf.originParsed.protocol=='https' ? 443 : 80);
+}
+conf.px2server.originParsed = new urlParse(conf.px2server.origin);
+conf.px2server.originParsed.protocol = conf.px2server.originParsed.protocol.replace(':','');
+if(!conf.px2server.originParsed.port){
+	conf.px2server.originParsed.port = (conf.originParsed.protocol=='https' ? 443 : 80);
+}
+console.log(conf);
+
 var express = require('express'),
 	app = express();
 var session = require('express-session');
-var server = require('http').Server(app);
-var urlParse = require('url-parse');
-conf.originParsed = new urlParse(conf.origin);
-if(!conf.originParsed.port){
-	conf.originParsed.port = 80;
-}
-conf.px2server.originParsed = new urlParse(conf.px2server.origin);
-if(!conf.px2server.originParsed.port){
-	conf.px2server.originParsed.port = 80;
-}
+var server = require(conf.originParsed.protocol).Server(app);
 console.log('port number is '+conf.originParsed.port);
 console.log('Pickles2 preview server port number is '+conf.px2server.originParsed.port);
 
@@ -56,6 +59,7 @@ server.listen( conf.originParsed.port, function(){
 // Pickles2 preview server
 var expressPickles2 = require('express-pickles2');
 var appPx2 = express();
+var serverPx2 = require(conf.px2server.originParsed.protocol).Server(appPx2);
 appPx2.use( require('body-parser')() );
 appPx2.use( mdlWareSession );
 appPx2.use( require('./preprocess/userInfo.js')(conf) );
@@ -101,4 +105,4 @@ appPx2.use( '/*', expressPickles2(
 		}
 	}
 ) );
-appPx2.listen(conf.px2server.originParsed.port);
+serverPx2.listen(conf.px2server.originParsed.port);
