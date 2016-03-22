@@ -1,11 +1,11 @@
 {
-	"origin": "http://127.0.0.1:8080",
+	"origin": "https://127.0.0.1:8080",
 	"px2server":{
 		"path":"pickles2/.px_execute.php",
-		"origin": "http://127.0.0.1:8081"
+		"origin": "https://127.0.0.1:8081"
 	},
 	"sslOption":{
-		"key": "pickles2",
-		"cert": "pickles2"
+		"key": "./config/ssl/server.key",
+		"cert": "./config/ssl/server.crt"
 	}
 }

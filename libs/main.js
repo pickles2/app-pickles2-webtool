@@ -17,10 +17,20 @@ if(!conf.px2server.originParsed.port){
 }
 console.log(conf);
 
+var sslOption = {
+	key: fs.readFileSync(conf.sslOption.key),
+	cert: fs.readFileSync(conf.sslOption.cert)
+};
+
 var express = require('express'),
 	app = express();
 var session = require('express-session');
-var server = require(conf.originParsed.protocol).Server(app);
+var server;
+if( conf.originParsed.protocol == 'https' ){
+	server = require('https').Server(sslOption, app);
+}else{
+	server = require('http').Server(app);
+}
 console.log('port number is '+conf.originParsed.port);
 console.log('Pickles2 preview server port number is '+conf.px2server.originParsed.port);
 
@@ -59,7 +69,12 @@ server.listen( conf.originParsed.port, function(){
 // Pickles2 preview server
 var expressPickles2 = require('express-pickles2');
 var appPx2 = express();
-var serverPx2 = require(conf.px2server.originParsed.protocol).Server(appPx2);
+var serverPx2;
+if( conf.px2server.originParsed.protocol == 'https' ){
+	serverPx2 = require('https').Server(sslOption, appPx2);
+}else{
+	serverPx2 = require('http').Server(appPx2);
+}
 appPx2.use( require('body-parser')() );
 appPx2.use( mdlWareSession );
 appPx2.use( require('./preprocess/userInfo.js')(conf) );
