@@ -9,7 +9,7 @@ module.exports = function(conf){
 		// console.log(req.body);
 		// console.log(req.originalUrl);
 
-		console.log(conf);
+		// console.log(conf);
 		var config = {};
 		config.origin = conf.origin;
 		config.originParsed = conf.originParsed;

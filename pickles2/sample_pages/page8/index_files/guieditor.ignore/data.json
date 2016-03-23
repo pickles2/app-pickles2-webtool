@@ -1,0 +1,41 @@
+{
+ "bowl": {
+  "main": {
+   "modId": "_sys/root",
+   "fields": {
+    "main": [
+     {
+      "modId": "FESS:units/cols2",
+      "fields": {
+       "column1": [
+        {
+         "modId": "PlainHTMLElements:PlainHTML/Markdown",
+         "fields": {
+          "main": "## 8つめのサンプルページ\n\nGUI編集のサンプルです。"
+         },
+         "anchor": "",
+         "dec": ""
+        }
+       ],
+       "column2": [
+        {
+         "modId": "PlainHTMLElements:PlainHTML/image",
+         "fields": {
+          "href": "",
+          "image_src": {
+           "resKey": "f7cd1fb90cedd7c05dbc26dc7d6a905e",
+           "path": "./index_files/resources/oyaji.png"
+          },
+          "alt_text": ""
+         },
+         "anchor": "",
+         "dec": ""
+        }
+       ]
+      }
+     }
+    ]
+   }
+  }
+ }
+}

@@ -1,0 +1,19 @@
+{
+ "bowl": {
+  "main": {
+   "modId": "_sys/root",
+   "fields": {
+    "main": [
+     {
+      "modId": "PlainHTMLElements:PlainHTML/Markdown",
+      "fields": {
+       "main": "<!-- autoindex -->\n\n## 7つめのページです。\n\n編集テスト用のサンプルページです。"
+      },
+      "anchor": "",
+      "dec": ""
+     }
+    ]
+   }
+  }
+ }
+}
