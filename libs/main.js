@@ -56,6 +56,7 @@ app.use( '/api/*', require('./preprocess/loginCheck.js')(conf) );
 app.use( '/apis/getProjectConf', require('./apis/getProjectConf.js')(conf) );
 app.use( '/apis/getSitemap', require('./apis/getSitemap.js')(conf) );
 app.use( '/apis/pickles2ContentsEditorGpi', require('./apis/pickles2ContentsEditorGpi.js')(conf) );
+app.use( '/apis/getServerConf', require('./apis/getServerConf.js')(conf) );
 
 app.use( express.static( __dirname+'/../dist/' ) );
 
@@ -103,7 +104,7 @@ appPx2.use( '/*', expressPickles2(
 						fin += 'return function f(event) {'+"\n";
 						// fin += 'console.log(event.origin);'+"\n";
 						// fin += 'console.log(event.data);'+"\n";
-						fin += 'if(window.location.hostname!=\'127.0.0.1\'){alert(\'Unauthorized access.\');return;}'+"\n";
+						fin += 'if(window.location.hostname!=\''+conf.px2server.originParsed.hostname+'\'){alert(\'Unauthorized access.\');return;}'+"\n";
 						fin += 'if(!event.data.scriptUrl){return;}'+"\n";
 						// fin += 'var s=document.createElement(\'script\');'+"\n";
 						// fin += 'document.querySelector(\'body\').appendChild(s);s.src=event.data.scriptUrl;'+"\n";
