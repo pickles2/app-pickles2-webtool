@@ -33,7 +33,15 @@ module.exports = function(conf){
 		callback = callback || function(){};
 		var pathCsv = require('path').resolve(__dirname, '../../config/userlist.csv');
 		// console.log(pathCsv);
-		var findInCsv = new (require('find-in-csv'))(pathCsv);
+		var findInCsv = new (require('find-in-csv'))(
+			pathCsv ,
+			{
+				"require": ['id', 'pw'],
+				"encrypted": {
+					"pw": "sha1"
+				}
+			}
+		);
 		// console.log(id);
 		// console.log(pw);
 		// console.log(findInCsv);
@@ -42,7 +50,7 @@ module.exports = function(conf){
 			{'id':id, 'pw':pw},
 			function(userInfo){
 				// console.log(findInCsv);
-				// console.log(userInfo);
+				console.log(userInfo);
 				callback(userInfo);
 				return;
 			}

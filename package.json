@@ -20,7 +20,7 @@
     "express": "^4.13.3",
     "express-pickles2": "^2.0.0-alpha.4",
     "express-session": "^1.13.0",
-    "find-in-csv": "0.0.1-alpha.3",
+    "find-in-csv": "^0.1.0",
     "jquery": "^2.2.1",
     "md5": "^2.1.0",
     "node-php-bin": "^0.2.3",
