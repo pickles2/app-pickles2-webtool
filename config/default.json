@@ -1,4 +1,7 @@
 {
+	"app":{
+		"name": "Pickles 2 Web Tool"
+	},
 	"origin": "https://127.0.0.1:8080",
 	"px2server":{
 		"path":"pickles2/.px_execute.php",

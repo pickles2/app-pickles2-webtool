@@ -50,7 +50,7 @@ module.exports = function(conf){
 			{'id':id, 'pw':pw},
 			function(userInfo){
 				// console.log(findInCsv);
-				console.log(userInfo);
+				// console.log(userInfo);
 				callback(userInfo);
 				return;
 			}
