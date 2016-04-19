@@ -49,6 +49,18 @@ $(window).load(function(){
 								}
 							});
 							return;
+						},
+						'complete': function(){
+							alert('完了しました。');
+							window.close();
+						},
+						'onClickContentsLink': function( uri, data ){
+							alert('編集: ' + uri);
+						},
+						'onMessage': function( message ){
+							// ユーザーへ知らせるメッセージを表示する
+							console.info('message: '+message);
+							alert(message);
 						}
 					},
 					function(){

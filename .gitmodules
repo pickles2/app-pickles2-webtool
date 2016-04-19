@@ -1,3 +1,6 @@
 [submodule "submodules/node-pickles2-contents-editor"]
 	path = submodules/node-pickles2-contents-editor
 url=https://github.com/tomk79/node-pickles2-contents-editor.git
+[submodule "submodules/ace-builds"]
+	path = submodules/ace-builds
+	url = https://github.com/ajaxorg/ace-builds.git

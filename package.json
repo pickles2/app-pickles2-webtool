@@ -6,13 +6,14 @@
     "up": "node ./libs/main.js;",
     "preview": "gulp preview;",
     "dev": "gulp dev;",
-    "submodules-update": "rm -rfv node_modules/pickles2-contents-editor; npm install; gulp;",
+    "submodules-update": "rm -rfv node_modules/ace-builds; rm -rfv node_modules/pickles2-contents-editor; npm install; gulp;",
     "ssl-key-gen": "openssl genrsa -aes128 -out config/ssl/server.key 2048; openssl req -new -key config/ssl/server.key -sha256 -out config/ssl/server.csr; openssl x509 -in config/ssl/server.csr -days 365 -req -signkey config/ssl/server.key -sha256 -out config/ssl/server.crt;",
     "test": "gulp; mocha --ui tdd ./tests/"
   },
   "author": "Tomoya Koyanagi",
   "license": "MIT",
   "dependencies": {
+    "ace-builds": "file:submodules/ace-builds",
     "body-parser": "^1.15.0",
     "bootstrap": "^4.0.0-alpha.2",
     "config": "^1.19.0",

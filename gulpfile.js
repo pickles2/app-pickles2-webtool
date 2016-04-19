@@ -41,6 +41,9 @@ gulp.task("replace-package-dist", function() {
 	gulp.src(["node_modules/bootstrap/dist/**/*"])
 		.pipe(gulp.dest( './dist/common/bootstrap/dist/' ))
 	;
+	gulp.src(["node_modules/ace-builds/src-noconflict/**/*"])
+		.pipe(gulp.dest( './dist/common/ace-builds/src-noconflict/' ))
+	;
 });
 
 // src 中の *.css.scss を処理
