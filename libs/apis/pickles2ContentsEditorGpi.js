@@ -10,7 +10,17 @@ module.exports = function(conf){
 		var px2ce = new Px2CE();
 		px2ce.init(
 			{
-				'entryScript': require('path').resolve(conf.px2server.path)
+				'page_path': req.body.page_path,
+				'appMode': 'web', // 'web' or 'desktop'. default to 'web'
+				'entryScript': require('path').resolve(conf.px2server.path),
+				'customFields': {
+					// 'href': require('./../common/broccoli/broccoli-field-href/server.js'),
+					// 'psd': require('broccoli-field-psd'),
+					// 'table': require('broccoli-field-table')
+				} ,
+				'log': function(msg){
+					console.log(msg);
+				}
 			},
 			function(){
 				px2ce.gpi(JSON.parse(req.body.data), function(value){

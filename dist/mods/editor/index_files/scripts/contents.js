@@ -42,7 +42,7 @@ $(window).load(function(){
 							$.ajax({
 								"url": "/apis/pickles2ContentsEditorGpi",
 								"type": 'post',
-								'data': {'data':JSON.stringify(input)},
+								'data': {'page_path':params.page_path, 'data':JSON.stringify(input)},
 								"success": function(data){
 									// console.log(data);
 									callback(data);
@@ -60,7 +60,7 @@ $(window).load(function(){
 						'onMessage': function( message ){
 							// ユーザーへ知らせるメッセージを表示する
 							console.info('message: '+message);
-							alert(message);
+							// alert(message);
 						}
 					},
 					function(){
