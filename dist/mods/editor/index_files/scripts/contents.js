@@ -41,7 +41,7 @@ $(window).load(function(){
 							// GPIは、これらのデータ通信を行うための汎用的なAPIです。
 							$.ajax({
 								"url": "/apis/pickles2ContentsEditorGpi",
-								"type": 'post',
+								"type": 'POST',
 								'data': {'page_path':params.page_path, 'data':JSON.stringify(input)},
 								"success": function(data){
 									// console.log(data);

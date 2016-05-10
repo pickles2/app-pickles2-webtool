@@ -35,7 +35,7 @@ console.log('port number is '+conf.originParsed.port);
 console.log('Pickles2 preview server port number is '+conf.px2server.originParsed.port);
 
 
-app.use( require('body-parser')() );
+app.use( require('body-parser')({"limit": "1024mb"}) );
 var mdlWareSession = session({
 	secret: "pickles2webtool",
 	cookie: {
