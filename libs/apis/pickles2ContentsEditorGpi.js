@@ -7,11 +7,14 @@ module.exports = function(conf){
 
 	return function(req, res, next){
 		var lockResult = req.applock.lock( req.body.page_path );
-		if( !lockResult ){
+		if( !lockResult.result ){
 			res
 				.status(200)
 				.set('Content-Type', 'text/json')
-				.send( JSON.stringify({}) )
+				.send( JSON.stringify({
+					"message": "このコンテンツは編集中のためロックされています。",
+					"lockInfo": lockResult.lockInfo
+				}) )
 				.end();
 			return;
 		}

@@ -28,9 +28,24 @@ $(window).load(function(){
 			"page_path": params.page_path
 		},
 		"success": function(lockResult){
-			console.log(lockResult);
+			// console.log(lockResult);
 			if( !lockResult.result ){
-				alert('このコンテンツは編集中です。');
+				$canvas
+					.html('')
+					.append($('<div class="container" style="margin-top:3em;">')
+						.append('<h1>LOCKED</h1>')
+						.append('<p>このコンテンツは編集中のためロックされています。</p>')
+						.append($('<dl>')
+							.append($('<dt>').text('編集中のユーザー'))
+							.append($('<dd>').text(lockResult.lockInfo.user))
+							.append($('<dt>').text('最終アクセス時刻'))
+							.append($('<dd>').text(new Date(lockResult.lockInfo.time*1000)))
+							.append($('<dt>').text('ロックが自動解除される時刻'))
+							.append($('<dd>').text(new Date((lockResult.lockInfo.time + 60*5)*1000)))
+						)
+						.append('<p>ロックは、編集者が「完了」ボタンを押すか、最終アクセス時刻から 5分後 に自動解除されます。</p>')
+					)
+				;
 				return;
 			}
 
@@ -73,7 +88,7 @@ $(window).load(function(){
 											"page_path": params.page_path
 										},
 										"success": function(lockResult){
-											console.log(lockResult);
+											// console.log(lockResult);
 											if( !lockResult.result ){
 												alert('[ERROR] 編集状態の解除に失敗しました。');
 												return;

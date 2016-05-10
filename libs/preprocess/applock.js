@@ -8,19 +8,25 @@ module.exports = function(conf){
 
 		req.applock = new(function(){
 			this.lock = function(path){
-				console.log(memory);
+				// console.log(memory);
 				var now = Math.floor( (new Date()).getTime()/1000 );
 				// console.log(now);
 				if(memory[path] && req.userInfo.id != memory[path].user){
 					if( memory[path].time > now - 60*5 ){
-						return false;
+						return {
+							"result": false,
+							"lockInfo": memory[path]
+						};
 					}
 				}
 				memory[path] = {
 					'user': req.userInfo.id,
 					'time': now
 				};
-				return true;
+				return {
+					"result": true,
+					"lockInfo": memory[path]
+				};
 			}
 			this.unlock = function(path){
 				memory[path] = undefined;

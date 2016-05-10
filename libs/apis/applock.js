@@ -16,7 +16,8 @@ module.exports = function(conf){
 				.set('Content-Type', 'text/json')
 				.send( JSON.stringify({
 					"method": req.body.method,
-					"result": result
+					"result": result.result,
+					"lockInfo": result.lockInfo
 				}) )
 				.end();
 			return;
