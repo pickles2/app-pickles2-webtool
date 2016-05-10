@@ -6,6 +6,15 @@ module.exports = function(conf){
 	var Px2CE = require('pickles2-contents-editor');
 
 	return function(req, res, next){
+		var lockResult = req.applock.lock( req.body.page_path );
+		if( !lockResult ){
+			res
+				.status(200)
+				.set('Content-Type', 'text/json')
+				.send( JSON.stringify({}) )
+				.end();
+			return;
+		}
 
 		var px2ce = new Px2CE();
 		px2ce.init(

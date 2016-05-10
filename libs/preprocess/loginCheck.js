@@ -14,8 +14,11 @@ module.exports = function(conf){
 
 		if( !userInfo ){
 			res.status(403);
-			res.set('Content-Type', 'text/plain')
-			res.send('Forbidden').end();
+			res.set('Content-Type', 'text/html')
+			res
+				.send('Forbidden.<br />back to <a href="/">home</a>')
+				.end()
+			;
 			return;
 		}
 

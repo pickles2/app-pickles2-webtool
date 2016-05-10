@@ -44,6 +44,7 @@ var mdlWareSession = session({
 });
 app.use( mdlWareSession );
 app.use( require('./preprocess/userInfo.js')(conf) );
+app.use( require('./preprocess/applock.js')(conf) );
 
 app.use( '/apis/getLoginUserInfo', require('./apis/getLoginUserInfo.js')(conf) );
 app.use( '/apis/login', require('./apis/login.js')(conf) );
@@ -57,6 +58,7 @@ app.use( '/apis/getProjectConf', require('./apis/getProjectConf.js')(conf) );
 app.use( '/apis/getSitemap', require('./apis/getSitemap.js')(conf) );
 app.use( '/apis/pickles2ContentsEditorGpi', require('./apis/pickles2ContentsEditorGpi.js')(conf) );
 app.use( '/apis/getServerConf', require('./apis/getServerConf.js')(conf) );
+app.use( '/apis/applock', require('./apis/applock.js')(conf) );
 
 app.use( express.static( __dirname+'/../dist/' ) );
 
