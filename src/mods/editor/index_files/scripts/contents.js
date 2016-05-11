@@ -41,9 +41,9 @@ $(window).load(function(){
 							.append($('<dt>').text('最終アクセス時刻'))
 							.append($('<dd>').text(new Date(lockResult.lockInfo.time*1000)))
 							.append($('<dt>').text('ロックが自動解除される時刻'))
-							.append($('<dd>').text(new Date((lockResult.lockInfo.time + 60*5)*1000)))
+							.append($('<dd>').text(new Date((lockResult.lockInfo.time + 60*10)*1000)))
 						)
-						.append('<p>ロックは、編集者が「完了」ボタンを押すか、最終アクセス時刻から 5分後 に自動解除されます。</p>')
+						.append('<p>ロックは、編集者が「完了」ボタンを押すか、最終アクセス時刻から 10分後 に自動解除されます。</p>')
 					)
 				;
 				return;

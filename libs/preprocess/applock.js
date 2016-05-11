@@ -12,7 +12,7 @@ module.exports = function(conf){
 				var now = Math.floor( (new Date()).getTime()/1000 );
 				// console.log(now);
 				if(memory[path] && req.userInfo.id != memory[path].user){
-					if( memory[path].time > now - 60*5 ){
+					if( memory[path].time > now - 60*10 ){
 						return {
 							"result": false,
 							"lockInfo": memory[path]
