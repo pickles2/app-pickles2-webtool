@@ -19,7 +19,8 @@ console.log(conf);
 
 var sslOption = {
 	key: fs.readFileSync(conf.sslOption.key),
-	cert: fs.readFileSync(conf.sslOption.cert)
+	cert: fs.readFileSync(conf.sslOption.cert),
+	passphrase: conf.sslOption.passphrase
 };
 
 var express = require('express'),

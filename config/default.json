@@ -9,6 +9,7 @@
 	},
 	"sslOption":{
 		"key": "./config/ssl/server.key",
-		"cert": "./config/ssl/server.crt"
+		"cert": "./config/ssl/server.crt",
+		"passphrase": "pickles2"
 	}
 }
