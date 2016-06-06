@@ -57,6 +57,7 @@ app.use( '/api/*', require('./preprocess/loginCheck.js')(conf) );
 
 app.use( '/apis/getProjectConf', require('./apis/getProjectConf.js')(conf) );
 app.use( '/apis/getSitemap', require('./apis/getSitemap.js')(conf) );
+app.use( '/apis/getUserInfo', require('./apis/getUserInfo.js')(conf) );
 app.use( '/apis/pickles2ContentsEditorGpi', require('./apis/pickles2ContentsEditorGpi.js')(conf) );
 app.use( '/apis/getServerConf', require('./apis/getServerConf.js')(conf) );
 app.use( '/apis/applock', require('./apis/applock.js')(conf) );
