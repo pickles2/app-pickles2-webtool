@@ -2,6 +2,23 @@ window.jQuery = window.$ = require('jquery');
 window.main = new (function(){
 
 	/**
+	 * ログアウトする
+	 */
+	this.logout = function(){
+		var $this = $(this);
+
+		$.ajax({
+			'type': 'POST',
+			'url': '/apis/logout',
+			'success': function(data, dataType){
+				window.location.href = '/';
+			},
+			'complete': function(xhr, textStatus){
+			}
+		});
+	} // logout()
+
+	/**
 	 * GETパラメータをパースする
 	 */
 	this.parseUriParam = function(url){

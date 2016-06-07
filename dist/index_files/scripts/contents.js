@@ -13,6 +13,8 @@ $(window).load(function(){
 				$('.contents').html(html);
 				notLogin();
 			}else{
+				window.location.href = '/fncs/pages/'; // ログインしてたら pages を開く。
+
 				var html = $('#template-login').html();
 				$('.contents').html(html);
 				login();
@@ -30,17 +32,7 @@ $(window).load(function(){
 	 */
 	function login(){
 		$('.logout-button').click(function(){
-			var $this = $(this);
-
-			$.ajax({
-				'type': 'POST',
-				'url': '/apis/logout',
-				'success': function(data, dataType){
-					window.location.reload();
-				},
-				'complete': function(xhr, textStatus){
-				}
-			});
+			window.main.logout();
 		});
 	}
 
