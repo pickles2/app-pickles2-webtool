@@ -13,12 +13,14 @@ $(window).load(function(){
 						.append( $('<th>').text('title') )
 						.append( $('<th>').text('path') )
 						.append( $('<th>').text('assignee') )
+						.append( $('<th>').text('editor type') )
 					)
 				)
 			;
 			for( var path in sitemap ){
 				(function($ul, sitemap, path){
 					var $spanAssignee = $('<span>');
+					var $spanEditorType = $('<span>');
 					var $li = $('<tr>');
 					$li
 						.append( $('<th>')
@@ -47,7 +49,11 @@ $(window).load(function(){
 						.append( $('<td>')
 							.append( $spanAssignee )
 						)
+						.append( $('<td>')
+							.append( $spanEditorType )
+						)
 					;
+
 					$.get(
 						'/apis/getUserInfo',
 						{'id': sitemap[path].assignee},
@@ -57,6 +63,23 @@ $(window).load(function(){
 							;
 						}
 					);
+					$.get(
+						'/apis/checkEditorType',
+						{'page_path': sitemap[path].path},
+						function(result){
+							var editorType = {
+								'html' : 'HTML',
+								'md' : 'Markdown',
+								'html.gui' : 'GUI',
+								'.not_exists' : 'not exists',
+								'.page_not_exists' : 'page not exists'
+							};
+							$spanEditorType
+								.text((editorType[result] || '---'))
+							;
+						}
+					);
+
 					$ul.append($li);
 
 				})($ul, sitemap, path);
