@@ -1,8 +1,7 @@
-window.px2dtGitUi = function(main, pj){
+window.px2dtGitUi = function(main){
 	var _this = this;
 	this.main = main;
-	// this.pj = pj;
-	// this.git = pj.git();
+	this.git = main.git();
 	var divDb = {
 		'sitemaps':{
 			'label':'サイトマップ'
