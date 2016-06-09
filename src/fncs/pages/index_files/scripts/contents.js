@@ -2,7 +2,7 @@ window.cont = new (function(){
 	var _this = this;
 	var $cont = $('.contents');
 
-	var px2dtGitUi = new window.px2dtGitUi();
+	var px2dtGitUi = new window.px2dtGitUi(window.main);
 
 	/**
 	 * 画面を初期化

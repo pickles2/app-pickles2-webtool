@@ -1,7 +1,7 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);throw new Error("Cannot find module '"+o+"'")}var f=n[o]={exports:{}};t[o][0].call(f.exports,function(e){var n=t[o][1][e];return s(n?n:e)},f,f.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
-window.px2dtGitUi = function(px, pj){
+window.px2dtGitUi = function(main, pj){
 	var _this = this;
-	// this.px = px;
+	this.main = main;
 	// this.pj = pj;
 	// this.git = pj.git();
 	var divDb = {
@@ -51,7 +51,7 @@ window.px2dtGitUi = function(px, pj){
 		var $ul = $('<ul class="list-group">');
 		var $commitComment = $('<textarea>');
 
-		px.progress.start({'blindness': true, 'showProgressBar': true});
+		main.progress.start({'blindness': true, 'showProgressBar': true});
 
 
 		function getGitStatus(div, options, callback){
@@ -93,7 +93,7 @@ window.px2dtGitUi = function(px, pj){
 			// console.log(result, err, code);
 			if( result === false ){
 				alert('ERROR: '+err);
-				px.progress.close();
+				main.progress.close();
 				callback();
 				return;
 			}
@@ -107,7 +107,7 @@ window.px2dtGitUi = function(px, pj){
 			}
 			if( !list.length ){
 				alert('コミットできる変更がありません。');
-				px.progress.close();
+				main.progress.close();
 				callback();
 				return;
 			}
@@ -122,7 +122,7 @@ window.px2dtGitUi = function(px, pj){
 			$body.append( $ul );
 			$body.append( $commitComment );
 
-			px.dialog({
+			main.dialog({
 				'title': divDb[div].label+'をコミットする',
 				'body': $body,
 				'buttons':[
@@ -131,13 +131,13 @@ window.px2dtGitUi = function(px, pj){
 						.attr({'type':'submit'})
 						.addClass('btn btn-primary')
 						.click(function(){
-							px.progress.start({'blindness': true, 'showProgressBar': true});
+							main.progress.start({'blindness': true, 'showProgressBar': true});
 							var commitComment = $commitComment.val();
 							// console.log(commitComment);
 							gitCommit(div, options, commitComment, function(){
 								alert('コミットしました。');
-								px.progress.close();
-								px.closeDialog();
+								main.progress.close();
+								main.closeDialog();
 								callback();
 							});
 						}),
@@ -145,11 +145,11 @@ window.px2dtGitUi = function(px, pj){
 						.text('キャンセル')
 						.addClass('btn btn-default')
 						.click(function(){
-							px.closeDialog();
+							main.closeDialog();
 						})
 				]
 			});
-			px.progress.close();
+			main.progress.close();
 
 		});
 
@@ -166,7 +166,7 @@ window.px2dtGitUi = function(px, pj){
 		var $body = $('<div class="px2dt-git-commit">');
 		var $ul = $('<ul class="list-group">');
 
-		px.progress.start({'blindness': true, 'showProgressBar': true});
+		main.progress.start({'blindness': true, 'showProgressBar': true});
 
 		function getGitLog(div, options, callback){
 			switch( div ){
@@ -208,7 +208,7 @@ window.px2dtGitUi = function(px, pj){
 			// console.log(result, err, code);
 			if( result === false ){
 				alert('ERROR: '+err);
-				px.progress.close();
+				main.progress.close();
 				callback();
 				return;
 			}
@@ -259,7 +259,7 @@ window.px2dtGitUi = function(px, pj){
 												if( !confirm('この操作は現在の ' + divDb[div].label + ' の変更を破棄します。よろしいですか？') ){
 													return;
 												}
-												px.progress.start({
+												main.progress.start({
 													'blindness':true,
 													'showProgressBar': true
 												});
@@ -271,7 +271,7 @@ window.px2dtGitUi = function(px, pj){
 														alert(err);
 														console.error('ERROR: ' + err);
 													}
-													px.progress.close();
+													main.progress.close();
 												});
 												return;
 											})
@@ -288,7 +288,7 @@ window.px2dtGitUi = function(px, pj){
 			}
 			$body.append( $ul );
 
-			px.dialog({
+			main.dialog({
 				'title': divDb[div].label + 'のコミットログ',
 				'body': $body,
 				'buttons':[
@@ -297,12 +297,12 @@ window.px2dtGitUi = function(px, pj){
 						.attr({'type':'submit'})
 						.addClass('btn btn-default')
 						.click(function(){
-							px.closeDialog();
+							main.closeDialog();
 							callback();
 						})
 				]
 			});
-			px.progress.close();
+			main.progress.close();
 
 		});
 

@@ -1,5 +1,8 @@
 window.jQuery = window.$ = require('jquery');
+
 window.main = new (function(){
+
+	this.progress = new (require('../scripts/main.progress.js')).init(this, $);
 
 	/**
 	 * ログアウトする
