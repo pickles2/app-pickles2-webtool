@@ -30,8 +30,11 @@ window.cont = new (function(){
 			{},
 			function(sitemap){
 				// console.log(sitemap);
-				var $ul = $('<table class="table">');
-				$cont.html('').append($ul);
+				var $ul = $('<table class="table table-sm table-hover cont_pagelist">');
+				$cont.html('').append( $('<div>')
+					.addClass('table-responsive')
+					.append($ul)
+				);
 				$ul
 					.append( $('<thead>')
 						.append( $('<tr>')
