@@ -3,11 +3,7 @@
  */
 module.exports = function( main ){
 	var _this = this;
-
-	// var nodePhpBin = main.nodePhpBin;
-	// var utils79 = main.utils79;
-	// var path_px2git = require('path').resolve(__dirname+'/../common/php/git/px2-git.php');
-	// entryScript = require('path').resolve(pj.get('path'), pj.get('entry_script'));
+	var $ = require('jquery');
 
 	function apiGen(apiName){
 		return new (function(apiName){
@@ -24,43 +20,32 @@ module.exports = function( main ){
 
 				var param = {
 					'method': apiName,
-					'entryScript': entryScript,
+					// 'entryScript': entryScript,
 					'options': options
 				};
 
 				// PHPスクリプトを実行する
 				var rtn = '';
 				var err = '';
-				nodePhpBin.script(
-					[
-						path_px2git,
-						utils79.base64_encode(JSON.stringify(param))
-					],
-					{
-						"success": function(data){
-							rtn += data;
-							// console.log(data);
-						} ,
-						"error": function(data){
-							rtn += data;
-							err += data;
-							console.log(data);
-						} ,
-						"complete": function(data, error, code){
-							setTimeout(function(){
-								try {
-									rtn = JSON.parse(rtn);
-								} catch (e) {
-									console.error('Failed to parse JSON string.');
-									console.error(rtn);
-									rtn = false;
-								}
-								console.log(rtn, err, code);
-								callback(rtn, err, code);
-							},500);
-						}
+				$.ajax({
+					'url': '/apis/px2git/'+apiName,
+					'data': param,
+					'dataType': 'json',
+					"success": function(data, dataType){
+						rtn = data;
+						// console.log(data);
+					} ,
+					"error": function(XMLHttpRequest, textStatus, errorThrown){
+						console.error('AJAX ERROR.');
+						console.error(XMLHttpRequest, textStatus, errorThrown);
+					} ,
+					"complete": function(XMLHttpRequest, textStatus){
+						setTimeout(function(){
+							console.log(rtn, err, XMLHttpRequest, textStatus);
+							callback(rtn, err, XMLHttpRequest, textStatus);
+						},500);
 					}
-				);
+				});
 				return;
 			}
 		})(apiName).fnc;

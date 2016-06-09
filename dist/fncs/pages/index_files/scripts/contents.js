@@ -88,7 +88,7 @@ window.cont = new (function(){
 											'contents',
 											{'page_path': path},
 											function(){
-												alert('complete');
+												// alert('complete');
 											}
 										);
 									})
@@ -103,7 +103,7 @@ window.cont = new (function(){
 											'contents',
 											{'page_path': path},
 											function(){
-												alert('complete');
+												// alert('complete');
 											}
 										);
 									})

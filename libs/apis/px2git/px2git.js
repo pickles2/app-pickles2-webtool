@@ -1,13 +1,13 @@
 /**
  * px.project.git
  */
-module.exports = function( px, pj ) {
+module.exports = function(conf){
 	var _this = this;
 
-	var nodePhpBin = px.nodePhpBin;
-	var utils79 = px.utils79;
-	var path_px2git = require('path').resolve(__dirname+'/../common/php/git/px2-git.php');
-	entryScript = require('path').resolve(pj.get('path'), pj.get('entry_script'));
+	var nodePhpBin = require('node-php-bin').get();
+	var utils79 = require('utils79');
+	var path_px2git = require('path').resolve( __dirname+'/php/px2-git.php' );
+	var entryScript = require('path').resolve( conf.px2server.path );
 
 	function apiGen(apiName){
 		return new (function(apiName){
@@ -66,65 +66,38 @@ module.exports = function( px, pj ) {
 		})(apiName).fnc;
 	}
 
-	/**
-	 * サイトマップをコミットする
-	 * @return {[type]} [description]
-	 */
-	this.commitSitemap = new apiGen('commit_sitemaps');
 
-	/**
-	 * ページのコンテンツをコミットする
-	 * @return {[type]} [description]
-	 */
-	this.commitContents = new apiGen('commit_contents');
-
-	/**
-	 * git status
-	 * @return {[type]} [description]
-	 */
-	this.status = new apiGen('status');
-
-	/**
-	 * git status (contents)
-	 * @return {[type]} [description]
-	 */
-	this.statusContents = new apiGen('status_contents');
-
-	/**
-	 * サイトマップをロールバックする
-	 * @return {[type]} [description]
-	 */
-	this.rollbackSitemaps = new apiGen('rollback_sitemaps');
-
-	/**
-	 * ページのコンテンツをロールバックする
-	 * @return {[type]} [description]
-	 */
-	this.rollbackContents = new apiGen('rollback_contents');
-
-	/**
-	 * git log
-	 * @return {[type]} [description]
-	 */
-	this.log = new apiGen('log');
-
-	/**
-	 * サイトマップのコミットログを取得する
-	 * @return {[type]} [description]
-	 */
-	this.logSitemaps = new apiGen('log_sitemaps');
-
-	/**
-	 * コンテンツのコミットログを取得する
-	 * @return {[type]} [description]
-	 */
-	this.logContents = new apiGen('log_contents');
-
-	/**
-	 * git show
-	 * @return {[type]} [description]
-	 */
-	this.show = new apiGen('show');
-
-	return this;
+	return function(req, res, next){
+		// console.log(req.params.method);
+		// console.log(req.param('method'));
+		// console.log(req.param('options'));
+		switch( req.params.method ){
+			case 'commit_sitemaps':
+			case 'commit_contents':
+			case 'status':
+			case 'status_contents':
+			case 'rollback_sitemaps':
+			case 'rollback_contents':
+			case 'log':
+			case 'log_sitemaps':
+			case 'log_contents':
+			case 'show':
+				var m = new apiGen(req.params.method);
+				m(
+					req.param('options'),
+					function(rtn, err, code){
+						// console.log(JSON.stringify(rtn));
+						res.status(200);
+						res.set('Content-Type', 'text/json')
+						res.send(JSON.stringify(rtn)).end();
+					}
+				);
+				return;
+				break;
+			default:
+				break;
+		}
+		next();
+		return;
+	};
 };
