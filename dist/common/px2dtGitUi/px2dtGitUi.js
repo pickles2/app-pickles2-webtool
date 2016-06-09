@@ -142,7 +142,7 @@ window.px2dtGitUi = function(main){
 						}),
 					$('<button>')
 						.text('キャンセル')
-						.addClass('btn btn-default')
+						.addClass('btn btn-secondary')
 						.click(function(){
 							main.closeDialog();
 						})
@@ -294,7 +294,7 @@ window.px2dtGitUi = function(main){
 					$('<button>')
 						.text('閉じる')
 						.attr({'type':'submit'})
-						.addClass('btn btn-default')
+						.addClass('btn btn-primary')
 						.click(function(){
 							main.closeDialog();
 							callback();

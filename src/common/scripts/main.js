@@ -4,6 +4,7 @@ window.main = new (function(){
 
 	this.progress = new (require('../scripts/main.progress.js')).init(this, $);
 	this.message = require('../scripts/main.message.js');
+	require('../scripts/main.dialog.js')(this);
 	this.git = function(){
 		return new (require('../scripts/main.project.git.js'))(this);
 	}
