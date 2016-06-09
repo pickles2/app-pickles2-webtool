@@ -4,6 +4,7 @@
 		<meta charset="utf-8">
 		<title>コンテンツ | {{ conf.app.name }}</title>
 {% include '../../common/includes/head.inc' %}
+		<link rel="stylesheet" href="/common/px2dtGitUi/px2dtGitUi.css" type="text/css" />
 		<link rel="stylesheet" href="index_files/styles/contents.css" type="text/css" />
 	</head>
 	<body>
@@ -19,6 +20,8 @@
 		</div>
 
 {% include '../../common/includes/foot.inc' %}
+		<script type="text/javascript" src="/common/px2dtGitUi/px2dtGitUi.js"></script>
 		<script type="text/javascript" src="./index_files/scripts/contents.js"></script>
+		<script>cont.init();</script>
 	</body>
 </html>
