@@ -29,6 +29,7 @@ var _tasks = [
 	'.css',
 	'.css.scss',
 	'.js',
+	'copy',
 	'replace-package-dist'
 ];
 
@@ -43,6 +44,13 @@ gulp.task("replace-package-dist", function() {
 	;
 	gulp.src(["node_modules/ace-builds/src-noconflict/**/*"])
 		.pipe(gulp.dest( './dist/common/ace-builds/src-noconflict/' ))
+	;
+});
+
+// コピーするだけのファイルを処理
+gulp.task('copy', function(){
+	gulp.src("src/**/*.svg")
+		.pipe(gulp.dest( './dist/' ))
 	;
 });
 
