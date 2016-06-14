@@ -1,6 +1,9 @@
 <!-- Tether -->
 <script src="/common/tether/dist/js/tether.js"></script>
 
+<!-- px2style -->
+<script type="text/javascript" src="/common/px2style/scripts.js"></script>
+
 <!-- project common -->
 <script type="text/javascript" src="/common/scripts/main.js"></script>
 

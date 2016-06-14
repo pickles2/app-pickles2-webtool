@@ -134,8 +134,18 @@ window.cont = new (function(){
 									'.not_exists' : 'not exists',
 									'.page_not_exists' : 'page not exists'
 								};
+								var editorTypeId = {
+									'html' : 'html',
+									'md' : 'md',
+									'txt' : 'txt',
+									'jade' : 'jade',
+									'html.gui' : 'html-gui',
+									'.not_exists' : 'not-exists',
+									'.page_not_exists' : 'page-not-exists'
+								};
+								var src = '<span class="px2-editor-type__'+editorTypeId[result]+' px2-editor-type--fullwidth"></span>';
 								$spanEditorType
-									.text((editorType[result] || '---'))
+									.html((src || '---'))
 								;
 							}
 						);
