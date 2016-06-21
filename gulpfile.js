@@ -45,6 +45,13 @@ gulp.task("replace-package-dist", function() {
 	gulp.src(["node_modules/ace-builds/src-noconflict/**/*"])
 		.pipe(gulp.dest( './dist/common/ace-builds/src-noconflict/' ))
 	;
+
+	gulp.src(["node_modules/px2style/dist/scripts.js"])
+		.pipe(gulp.dest( './dist/common/px2style/dist/' ))
+	;
+	gulp.src(["node_modules/px2style/dist/images/**/*"])
+		.pipe(gulp.dest( './dist/common/px2style/dist/images/' ))
+	;
 });
 
 // コピーするだけのファイルを処理
