@@ -9847,11 +9847,11 @@ window.jQuery = window.$ = require('jquery');
 
 window.main = new (function(){
 
-	this.progress = new (require('../scripts/main.progress.js')).init(this, $);
-	this.message = require('../scripts/main.message.js');
-	require('../scripts/main.dialog.js')(this);
+	this.progress = new (require('../../common/scripts/main.progress.js')).init(this, $);
+	this.message = require('../../common/scripts/main.message.js');
+	require('../../common/scripts/main.dialog.js')(this);
 	this.git = function(){
-		return new (require('../scripts/main.project.git.js'))(this);
+		return new (require('../../common/scripts/main.project.git.js'))(this);
 	}
 
 	/**
@@ -9893,7 +9893,7 @@ window.main = new (function(){
 
 })();
 
-},{"../scripts/main.dialog.js":3,"../scripts/main.message.js":4,"../scripts/main.progress.js":5,"../scripts/main.project.git.js":6,"jquery":1}],3:[function(require,module,exports){
+},{"../../common/scripts/main.dialog.js":3,"../../common/scripts/main.message.js":4,"../../common/scripts/main.progress.js":5,"../../common/scripts/main.project.git.js":6,"jquery":1}],3:[function(require,module,exports){
 (function(module){
 	var $ = require('jquery');
 	var $dialog;

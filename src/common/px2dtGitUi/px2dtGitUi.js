@@ -127,7 +127,7 @@ window.px2dtGitUi = function(main){
 					$('<button>')
 						.text('コミット')
 						.attr({'type':'submit'})
-						.addClass('btn btn-primary')
+						.addClass('px2-btn px2-btn--primary')
 						.click(function(){
 							main.progress.start({'blindness': true, 'showProgressBar': true});
 							var commitComment = $commitComment.val();
@@ -141,7 +141,7 @@ window.px2dtGitUi = function(main){
 						}),
 					$('<button>')
 						.text('キャンセル')
-						.addClass('btn btn-secondary')
+						.addClass('px2-btn px2-btn-secondary')
 						.click(function(){
 							main.closeDialog();
 						})
@@ -233,7 +233,7 @@ window.px2dtGitUi = function(main){
 						$detail.toggle('fast', function(){
 							var hash = $(this).attr('data-px2dt-hash');
 							if( $detail.is(':visible') ){
-								$detail.html( '<div class="px2dt-loading"></div>' );
+								$detail.html( '<div class="px2-loading"></div>' );
 								_this.git.show([hash], function(res){
 									if( res.length > 2000 ){
 										// 内容が多すぎると固まるので、途中までで切る。
@@ -250,8 +250,8 @@ window.px2dtGitUi = function(main){
 											})
 										)
 										.append( $('<button>')
-											.addClass('btn')
-											.addClass('btn-primary')
+											.addClass('px2-btn')
+											.addClass('px2-btn--primary')
 											.text('このバージョンまでロールバックする')
 											.click(function(){
 												if( !confirm('この操作は現在の ' + divDb[div].label + ' の変更を破棄します。よろしいですか？') ){
@@ -293,7 +293,7 @@ window.px2dtGitUi = function(main){
 					$('<button>')
 						.text('閉じる')
 						.attr({'type':'submit'})
-						.addClass('btn btn-primary')
+						.addClass('px2-btn px2-btn--primary')
 						.click(function(){
 							main.closeDialog();
 							callback();
