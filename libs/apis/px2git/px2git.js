@@ -44,7 +44,7 @@ module.exports = function(conf){
 						"error": function(data){
 							rtn += data;
 							err += data;
-							console.log(data);
+							// console.log(data);
 						} ,
 						"complete": function(data, error, code){
 							setTimeout(function(){
@@ -55,7 +55,7 @@ module.exports = function(conf){
 									console.error(rtn);
 									rtn = false;
 								}
-								console.log(rtn, err, code);
+								// console.log(rtn, err, code);
 								callback(rtn, err, code);
 							},500);
 						}
@@ -68,9 +68,25 @@ module.exports = function(conf){
 
 
 	return function(req, res, next){
+		// console.log(req.params);
 		// console.log(req.params.method);
 		// console.log(req.param('method'));
 		// console.log(req.param('options'));
+		// console.log(req.userInfo);
+
+		var options = req.param('options');
+		var commentSuffix =
+			"\n"
+			+'-----------'+"\n"
+			+'committer: ' + req.userInfo.name + ' ('+req.userInfo.id+')' +"\n"
+		;
+		if(req.params.method == 'commit_sitemaps'){
+			options[0] += commentSuffix;
+		}else if(req.params.method == 'commit_contents'){
+			options[1] += commentSuffix;
+		}
+		// console.log(options);
+
 		switch( req.params.method ){
 			case 'commit_sitemaps':
 			case 'commit_contents':
@@ -84,7 +100,7 @@ module.exports = function(conf){
 			case 'show':
 				var m = new apiGen(req.params.method);
 				m(
-					req.param('options'),
+					options,
 					function(rtn, err, code){
 						// console.log(JSON.stringify(rtn));
 						res.status(200);
