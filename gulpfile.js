@@ -56,7 +56,7 @@ gulp.task("replace-package-dist", function() {
 
 // コピーするだけのファイルを処理
 gulp.task('copy', function(){
-	gulp.src("src/**/*.svg")
+	gulp.src(["src/**/*.svg","src/**/*.png","src/**/*.jpg","src/**/*.gif"])
 		.pipe(gulp.dest( './dist/' ))
 	;
 });
