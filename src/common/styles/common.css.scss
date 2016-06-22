@@ -53,6 +53,19 @@ a{
 	&__shoulder{
 		float: right;
 		text-align: right;
+		ul{
+			margin: 0;
+			padding: 0;
+			display: flex;
+			li{
+				list-style-type: none;
+				padding: 0px 10px;
+				border-left: 1px solid #999;
+				&:first-child{
+					border: none;
+				}
+			}
+		}
 	}
 }
 .theme-main{

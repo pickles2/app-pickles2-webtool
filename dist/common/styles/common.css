@@ -46,6 +46,19 @@ a {
   .theme-header__shoulder {
     float: right;
     text-align: right; }
+    .theme-header__shoulder ul {
+      margin: 0;
+      padding: 0;
+      display: -webkit-box;
+      display: -webkit-flex;
+      display: -ms-flexbox;
+      display: flex; }
+      .theme-header__shoulder ul li {
+        list-style-type: none;
+        padding: 0px 10px;
+        border-left: 1px solid #999; }
+        .theme-header__shoulder ul li:first-child {
+          border: none; }
 
 .theme-main {
   background-color: #fff;
