@@ -139,7 +139,9 @@ window.cont = new (function(){
 										window.open( window.config.urlPreview+path );
 										return false;
 									})
-									.text('見る')
+									.append( $('<span class="icn-preview">')
+										.text('見る')
+									)
 								)
 							)
 						;

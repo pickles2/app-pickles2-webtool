@@ -88,3 +88,14 @@ a{
 .dialog-buttons{
 	text-align:center;
 }
+/**
+ * アイコン
+ */
+.icn-preview:before{
+	content: url('../images/icn_preview.png');
+	margin: 0 5px;
+	vertical-align: top;
+	position: relative;
+	top: 5px;
+	left: 0;
+}
