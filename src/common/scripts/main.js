@@ -1,5 +1,15 @@
 window.jQuery = window.$ = require('jquery');
+
 window.main = new (function(){
+	var _this = this;
+
+	this.progress = new (require('../../common/scripts/main.progress.js')).init(this, $);
+	this.message = require('../../common/scripts/main.message.js');
+	require('../../common/scripts/main.dialog.js')(this);
+	this.project = new (require('../../common/scripts/main.project.js'))(this);
+	this.git = function(){
+		return new (require('../../common/scripts/main.project.git.js'))(this);
+	}
 
 	/**
 	 * ログアウトする
@@ -37,5 +47,12 @@ window.main = new (function(){
 		}
 		return paramsArray;
 	}
+
+	$(function(){
+		_this.project.getConfig(function(conf){
+			// console.log(conf);
+			$('header.theme-header .theme-header__ci__project-name').text(conf.name);
+		});
+	});
 
 })();

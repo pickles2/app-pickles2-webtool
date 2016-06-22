@@ -15047,7 +15047,7 @@ module.exports = function(px2ce){
 				+'</div>'
 				+'<div class="pickles2-contents-editor--toolbar-finish">'
 					+'<div class="btn-group" role="group">'
-						+'<button class="btn btn-primary btn-xs pickles2-contents-editor--toolbar-btn-finish"><span class="glyphicon glyphicon-floppy-save"></span> 完了</button>'
+						+'<button class="px2-btn px2-btn--primary px2-btn--sm pickles2-contents-editor--toolbar-btn-finish"><span class="glyphicon glyphicon-floppy-save"></span> 完了</button>'
 					+'</div>'
 				+'</div>'
 			+'</div>'
@@ -15058,7 +15058,7 @@ module.exports = function(px2ce){
 		$btns = $('.pickles2-contents-editor--toolbar-btns .btn-group');
 		for( var idx in options.btns ){
 			var btn = options.btns[idx];
-			$btns.append( $('<button class="btn btn-default btn-xs">')
+			$btns.append( $('<button class="px2-btn px2-btn--sm">')
 				.text( btn.label )
 				.click( btn.click )
 			);
@@ -15243,6 +15243,7 @@ module.exports = function(px2ce){
 			broccoli.remove(function(){
 				console.log('remove instance done.');
 			});
+			return true;
 		});
 		_Keypress.simple_combo("delete", function(e) {
 			switch(e.target.tagName.toLowerCase()){
@@ -15253,6 +15254,7 @@ module.exports = function(px2ce){
 			broccoli.remove(function(){
 				console.log('remove instance done.');
 			});
+			return true;
 		});
 		_Keypress.simple_combo("escape", function(e) {
 			switch(e.target.tagName.toLowerCase()){
@@ -15261,16 +15263,20 @@ module.exports = function(px2ce){
 			}
 			e.preventDefault();
 			broccoli.unselectInstance();
+			return true;
 		});
 		_Keypress.simple_combo(px2ce.getCmdKeyName()+" c", function(e) {
 			switch(e.target.tagName.toLowerCase()){
 				case 'input': case 'textarea':
 				return true; break;
 			}
-			e.preventDefault();
-			broccoli.copy(function(){
-				console.log('copy instance done.');
+			// e.preventDefault();
+			broccoli.copy(function(result){
+				if(result){
+					console.log('copy instance done.');
+				}
 			});
+			return true;
 		});
 		_Keypress.simple_combo(px2ce.getCmdKeyName()+" v", function(e) {
 			switch(e.target.tagName.toLowerCase()){
@@ -15281,6 +15287,7 @@ module.exports = function(px2ce){
 			broccoli.paste(function(){
 				console.log('paste instance done.');
 			});
+			return true;
 		});
 		_Keypress.simple_combo(px2ce.getCmdKeyName()+" z", function(e) {
 			switch(e.target.tagName.toLowerCase()){
@@ -15291,6 +15298,7 @@ module.exports = function(px2ce){
 			broccoli.historyBack(function(){
 				console.log('historyBack done.');
 			});
+			return true;
 		});
 		_Keypress.simple_combo(px2ce.getCmdKeyName()+" y", function(e) {
 			switch(e.target.tagName.toLowerCase()){
@@ -15301,6 +15309,7 @@ module.exports = function(px2ce){
 			broccoli.historyGo(function(){
 				console.log('historyGo done.');
 			});
+			return true;
 		});
 		// _Keypress.simple_combo(px2ce.getCmdKeyName()+" x", function(e) {
 		// 	px.message('cmd x');
@@ -15798,7 +15807,7 @@ module.exports = function(px2ce){
 								+ '<li><label><input type="radio" name="editor-type" value="md" /> Markdown (<%= basename %>.md)</label></li>'
 							+ '</ul>'
 							+ '<div class="row">'
-								+ '<div class="col-sm-8 col-sm-offset-2"><button class="btn btn-primary btn-block">コンテンツファイルを作成する</button></div>'
+								+ '<div class="col-sm-8 col-sm-offset-2"><button class="px2-btn px2-btn--primary px2-btn--block px2-btn--lg">コンテンツファイルを作成する</button></div>'
 							+ '</div>'
 						+ '</form>'
 					+ '</div>'
@@ -15868,6 +15877,10 @@ module.exports = function(px2ce){
 	// bootstrap をロード
 	document.write('<link rel="stylesheet" href="'+__dirname+'/libs/bootstrap/dist/css/bootstrap.css" />');
 	document.write('<script src="'+__dirname+'/libs/bootstrap/dist/js/bootstrap.js"></script>');
+
+	// px2style をロード
+	document.write('<link rel="stylesheet" href="'+__dirname+'/libs/px2style/dist/styles.css" />');
+	document.write('<script src="'+__dirname+'/libs/px2style/dist/scripts.js"></script>');
 
 	// broccoli-html-editor をロード
 	document.write('<link rel="stylesheet" href="'+__dirname+'/libs/broccoli-html-editor/client/dist/broccoli.css" />');

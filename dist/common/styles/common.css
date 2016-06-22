@@ -1,3 +1,90 @@
+@charset "UTF-8";
 html, body {
   font-size: medium;
   font-family: Meiryo, "Hiragino Kaku Gothic ProN", Verdana, sans-serif; }
+
+textarea {
+  width: 100%;
+  height: 12em; }
+
+a {
+  color: #148fcc; }
+
+.contents p, .contents ul, .contents ol, .contents dl {
+  margin: 1em 0; }
+
+.theme_ui_px_message {
+  position: absolute;
+  top: 10px;
+  left: 10%;
+  width: 80%;
+  z-index: 16000; }
+
+.theme-header,
+.theme-main,
+.theme-footer {
+  width: 97%;
+  max-width: 1200px;
+  margin: 0 auto;
+  color: #666;
+  text-shadow: 0px 1px 1px rgba(0, 0, 0, 0.05); }
+
+.theme-header {
+  padding: 15px 0 10px 0; }
+  .theme-header__ci {
+    float: left;
+    text-align: left; }
+    .theme-header__ci * {
+      margin: 0;
+      color: inherit; }
+    .theme-header__ci__service-name {
+      font-size: 13px; }
+    .theme-header__ci__project-name {
+      font-size: 36px; }
+    .theme-header__ci a:hover {
+      text-decoration: none; }
+  .theme-header__shoulder {
+    float: right;
+    text-align: right; }
+
+.theme-main {
+  background-color: #fff;
+  padding: 30px;
+  text-shadow: none; }
+  .theme-main h1 {
+    text-align: center;
+    margin: 1em; }
+
+.theme-footer {
+  font-size: 13px;
+  background-color: #eee;
+  padding: 1em;
+  width: auto;
+  max-width: none; }
+  .theme-footer__copyright {
+    text-align: center;
+    margin: 1em auto; }
+
+/**
+ * ダイアログボックス
+ */
+.dialog_box {
+  background-color: #fff;
+  padding: 15px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  box-shadow: 5px 10px 10px rgba(0, 0, 0, 0.2); }
+
+.dialog-buttons {
+  text-align: center; }
+
+/**
+ * アイコン
+ */
+.icn-preview:before {
+  content: url("../images/icn_preview.png");
+  margin: 0 5px;
+  vertical-align: top;
+  position: relative;
+  top: 5px;
+  left: 0; }

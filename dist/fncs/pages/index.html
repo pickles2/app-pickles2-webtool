@@ -3,34 +3,65 @@
 	<head>
 		<meta charset="utf-8">
 		<title>コンテンツ | Pickles 2 Web Tool</title>
+<!-- config -->
+<script type="text/javascript">
+window.config = new (function(){
+    var rtn = {};
+    rtn.urlPreview = 'https://127.0.0.1:8081';
+    return rtn;
+})();
+</script>
+
 <!-- Required meta tags always come first -->
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
 <meta http-equiv="x-ua-compatible" content="ie=edge" />
 
 <!-- Bootstrap 4 CSS -->
-<link rel="stylesheet" href="/common/bootstrap/dist/css/bootstrap.min.css" />
+<link rel="stylesheet" href="/common/bootstrap/dist/css/bootstrap.css" />
+
+<!-- px2style -->
+<link rel="stylesheet" href="/common/px2style/dist/styles.css" type="text/css" />
 
 <!-- project common -->
 <link rel="stylesheet" href="/common/styles/common.css" type="text/css" />
+		<link rel="stylesheet" href="/common/px2dtGitUi/px2dtGitUi.css" type="text/css" />
 		<link rel="stylesheet" href="index_files/styles/contents.css" type="text/css" />
 	</head>
 	<body>
-		<div class="container">
-			<p><a href="/">Pickles 2 Web Tool</a></p>
-			<p><button class="btn btn-secondary" onclick="window.main.logout();">LOGOUT</button></p>
-		</div>
-		<div class="container">
-			<h1>コンテンツ</h1>
-			<div class="contents">
-				<p>...</p>
+		<header class="clearfix theme-header">
+			<div class="theme-header__ci">
+				<a href="/">
+					<p class="theme-header__ci__service-name">Pickles 2 Web Tool</p>
+					<p class="theme-header__ci__project-name">-</p>
+				</a>
 			</div>
+			<div class="theme-header__shoulder">
+				<p><button class="px2-btn" onclick="window.main.logout();">ログアウト</button></p>
+			</div>
+		</header>
+		<div class="theme-main">
+		<h1>コンテンツ</h1>
+		<div class="contents">
+			<p>...</p>
 		</div>
+		</div><!-- /.theme-main -->
+		<footer class="theme-footer">
+			<p class="theme-footer__copyright">(C) Pickles 2 Project</p>
+		</footer>
+
+<!-- Tether -->
+<script src="/common/tether/dist/js/tether.js"></script>
+
+<!-- px2style -->
+<script src="/common/px2style/dist/scripts.js"></script>
 
 <!-- project common -->
-<script type="text/javascript" src="/common/scripts/main.js"></script>
+<script src="/common/scripts/main.js"></script>
 
 <!-- jQuery first, then Bootstrap 4 JS. -->
 <script src="/common/bootstrap/dist/js/bootstrap.min.js"></script>
+		<script type="text/javascript" src="/common/px2dtGitUi/px2dtGitUi.js"></script>
 		<script type="text/javascript" src="./index_files/scripts/contents.js"></script>
+		<script>cont.init();</script>
 	</body>
 </html>
