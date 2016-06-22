@@ -20,6 +20,14 @@ window.cont = new (function(){
 	}
 
 	/**
+	 * エディタを開く
+	 */
+	function openEditor(path){
+		window.open( '/mods/editor/index.html?page_path='+encodeURIComponent( path ) );
+		return;
+	}
+
+	/**
 	 * ページリストを更新する
 	 */
 	this.updatePageList = function(callback){
@@ -30,7 +38,7 @@ window.cont = new (function(){
 			{},
 			function(sitemap){
 				// console.log(sitemap);
-				var $ul = $('<table class="table table-sm table-hover cont_pagelist">');
+				var $ul = $('<table class="table table-striped table-sm table-hover cont_pagelist">');
 				$cont.html('').append( $('<div>')
 					.addClass('table-responsive')
 					.append($ul)
@@ -45,6 +53,7 @@ window.cont = new (function(){
 							.append( $('<th>').text('editor type') )
 							.append( $('<th>').text('-') )
 							.append( $('<th>').text('-') )
+							.append( $('<th>').text('preview') )
 						)
 					)
 				;
@@ -54,6 +63,16 @@ window.cont = new (function(){
 						var $spanEditorType = $('<span>');
 						var $li = $('<tr>');
 						$li
+							.attr({
+								'data-page-path': path
+							})
+							.css({
+								'cursor': 'default'
+							})
+							.on('dblclick', function(e){
+								openEditor( $(this).attr('data-page-path') );
+								return false;
+							})
 							.append( $('<th>')
 								.append( $('<span>')
 									.text(sitemap[path].id)
@@ -67,8 +86,8 @@ window.cont = new (function(){
 										'data-page-path': path
 									})
 									.click(function(){
-										var $this = $(this);
-										window.open( '/mods/editor/index.html?page_path='+encodeURIComponent( $this.attr('data-page-path') ) );
+										openEditor( $(this).attr('data-page-path') );
+										return false;
 									})
 								)
 							)
@@ -111,6 +130,16 @@ window.cont = new (function(){
 										);
 									})
 									.text('ログ')
+								)
+							)
+							.append( $('<td>')
+								.append( $('<a>')
+									.attr({'href':'javascript:;'})
+									.click(function(){
+										window.open( window.config.urlPreview+path );
+										return false;
+									})
+									.text('見る')
 								)
 							)
 						;
