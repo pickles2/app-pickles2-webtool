@@ -1,3 +1,4 @@
-		<div class="container">
-			<p style="text-align:center;">{{ conf.app.copyright }}</p>
-		</div>
+		</div><!-- /.theme-main -->
+		<footer class="theme-footer">
+			<p class="theme-footer__copyright">{{ conf.app.copyright }}</p>
+		</footer>

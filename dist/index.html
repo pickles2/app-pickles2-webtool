@@ -21,7 +21,6 @@ window.config = new (function(){
 
 <!-- px2style -->
 <link rel="stylesheet" href="/common/px2style/dist/styles.css" type="text/css" />
-<script src="/common/px2style/dist/scripts.js"></script>
 
 <!-- project common -->
 <link rel="stylesheet" href="/common/styles/common.css" type="text/css" />
@@ -38,22 +37,24 @@ window.config = new (function(){
 		</script>
 		<script id="template-login-form" type="text/template">
 			<form action="javascript:;" method="get" class="login-form">
-				<div class="input-group">
-					<span class="input-group-addon">ID</span>
-					<input type="text" name="user_id" class="form-control" />
-					<span class="input-group-addon">PW</span>
-					<input type="password" name="password" class="form-control" />
-					<span class="input-group-btn">
-						<button class="btn btn-primary" type="submit">go</button>
-					</span>
+				<div class="login-form__input-item">
+					<input type="text" name="user_id" class="form-control" placeholder="ユーザーID" />
 				</div>
+				<div class="login-form__input-item">
+					<input type="password" name="password" class="form-control" placeholder="パスワード" />
+				</div>
+				<hr />
+				<button class="px2-btn px2-btn--primary" type="submit">ログイン</button>
 			</form>
 		</script>
 	</head>
 	<body>
 		<div class="container">
 			<h1>Pickles 2 Web Tool</h1>
-			<div class="contents">
+			<div class="cont-main">
+				<div class="contents">
+				</div>
+				<p class="cont_copyright">(C) Pickles 2 Project</p>
 			</div>
 			<!-- <p>{{message}}</p> -->
 		</div>
@@ -63,10 +64,10 @@ window.config = new (function(){
 <script src="/common/tether/dist/js/tether.js"></script>
 
 <!-- px2style -->
-<script type="text/javascript" src="/common/px2style/scripts.js"></script>
+<script src="/common/px2style/dist/scripts.js"></script>
 
 <!-- project common -->
-<script type="text/javascript" src="/common/scripts/main.js"></script>
+<script src="/common/scripts/main.js"></script>
 
 <!-- jQuery first, then Bootstrap 4 JS. -->
 <script src="/common/bootstrap/dist/js/bootstrap.min.js"></script>

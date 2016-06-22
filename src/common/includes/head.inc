@@ -16,7 +16,6 @@ window.config = new (function(){
 
 <!-- px2style -->
 <link rel="stylesheet" href="/common/px2style/dist/styles.css" type="text/css" />
-<script src="/common/px2style/dist/scripts.js"></script>
 
 <!-- project common -->
 <link rel="stylesheet" href="/common/styles/common.css" type="text/css" />

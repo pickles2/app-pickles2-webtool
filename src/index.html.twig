@@ -17,22 +17,24 @@
 		</script>
 		<script id="template-login-form" type="text/template">
 			<form action="javascript:;" method="get" class="login-form">
-				<div class="input-group">
-					<span class="input-group-addon">ID</span>
-					<input type="text" name="user_id" class="form-control" />
-					<span class="input-group-addon">PW</span>
-					<input type="password" name="password" class="form-control" />
-					<span class="input-group-btn">
-						<button class="btn btn-primary" type="submit">go</button>
-					</span>
+				<div class="login-form__input-item">
+					<input type="text" name="user_id" class="form-control" placeholder="ユーザーID" />
 				</div>
+				<div class="login-form__input-item">
+					<input type="password" name="password" class="form-control" placeholder="パスワード" />
+				</div>
+				<hr />
+				<button class="px2-btn px2-btn--primary" type="submit">ログイン</button>
 			</form>
 		</script>
 	</head>
 	<body>
 		<div class="container">
 			<h1>{{ conf.app.name }}</h1>
-			<div class="contents">
+			<div class="cont-main">
+				<div class="contents">
+				</div>
+				<p class="cont_copyright">{{ conf.app.copyright }}</p>
 			</div>
 			<!-- <p>{% raw %}{{message}}{% endraw %}</p> -->
 		</div>
