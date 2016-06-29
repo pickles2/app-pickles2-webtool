@@ -1,9 +1,5 @@
 {
     "repositories": [
-        {
-            "type": "git",
-            "url": "https://github.com/tomk79/px2-git.git"
-        }
     ],
     "require": {
         "php": ">=5.4.0" ,
@@ -16,7 +12,7 @@
         "pickles2/px2-px2dthelper": "dev-master",
         "pickles2/px2-remove-attr": "2.*",
         "pickles2/px2-sitemapexcel": "2.*",
-        "tomk79/px2-git": "dev-master",
+        "pickles2/px2-git": "dev-master",
         "tomk79/phpgit": "0.3.*"
     },
     "require-dev": {

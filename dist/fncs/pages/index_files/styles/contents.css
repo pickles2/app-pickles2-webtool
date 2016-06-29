@@ -1,2 +1,5 @@
 .cont_pagelist td {
   white-space: nowrap; }
+
+table.table thead {
+  white-space: nowrap; }

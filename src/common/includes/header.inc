@@ -6,7 +6,10 @@
 				</a>
 			</div>
 			<div class="theme-header__shoulder">
-				<p><button class="px2-btn" onclick="window.main.logout();">ログアウト</button></p>
+				<ul>
+					<li><input type="text" class="form-control px2dt-pages-filter" placeholder="Filter" /></li>
+					<li><button class="px2-btn" onclick="window.main.logout();">ログアウト</button></li>
+				</ul>
 			</div>
 		</header>
 		<div class="theme-main">
