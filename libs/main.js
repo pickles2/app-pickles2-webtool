@@ -61,6 +61,7 @@ app.use( '/apis/getUserInfo', require('./apis/getUserInfo.js')(conf) );
 app.use( '/apis/pickles2ContentsEditorGpi', require('./apis/pickles2ContentsEditorGpi.js')(conf) );
 app.use( '/apis/px2git/:method', require('./apis/px2git/px2git.js')(conf) );
 app.use( '/apis/getServerConf', require('./apis/getServerConf.js')(conf) );
+app.use( '/apis/getPageInfo', require('./apis/getPageInfo.js')(conf) );
 app.use( '/apis/checkEditorType', require('./apis/checkEditorType.js')(conf) );
 app.use( '/apis/applock', require('./apis/applock.js')(conf) );
 

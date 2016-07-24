@@ -3,32 +3,6 @@
  */
 module.exports = function(conf){
 
-	// /**
-	//  * ページの編集方法を取得する
-	//  */
-	// this.checkEditorType = function(callback){
-	// 	callback = callback||function(){};
-	// 	this.getProjectInfo(function(pjInfo){
-	// 		// console.log(pjInfo);
-	// 		var rtn = '.not_exists';
-	// 		if( pjInfo.pageInfo === null ){
-	// 			callback('.page_not_exists');
-	// 			return;
-	// 		}
-	// 		if( utils79.is_file( pjInfo.documentRoot + pjInfo.pageInfo.content ) ){
-	// 			rtn = 'html';
-	// 			if( utils79.is_file( pjInfo.realpathDataDir + '/data.json' ) ){
-	// 				rtn = 'html.gui';
-	// 			}
-    //
-	// 		}else if( utils79.is_file( pjInfo.documentRoot + pjInfo.pageInfo.content + '.md' ) ){
-	// 			rtn = 'md';
-	// 		}
-	// 		callback(rtn);
-	// 	});
-	// 	return;
-	// }
-
 	var Px2CE = require('pickles2-contents-editor');
 
 	return function(req, res, next){
