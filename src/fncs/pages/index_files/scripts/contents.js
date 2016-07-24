@@ -105,7 +105,8 @@ window.cont = new (function(){
 						!isMatchKeywords(sitemap[path].title_breadcrumb) &&
 						!isMatchKeywords(sitemap[path].title_h1) &&
 						!isMatchKeywords(sitemap[path].title_label) &&
-						!isMatchKeywords(sitemap[path].title_full)
+						!isMatchKeywords(sitemap[path].title_full) &&
+						!isMatchKeywords(sitemap[path].assignee)
 					){
 						console.log('=> skiped.');
 						return;
