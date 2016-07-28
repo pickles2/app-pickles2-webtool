@@ -106,7 +106,8 @@ window.cont = new (function(){
 						!isMatchKeywords(sitemap[path].title_breadcrumb) &&
 						!isMatchKeywords(sitemap[path].title_h1) &&
 						!isMatchKeywords(sitemap[path].title_label) &&
-						!isMatchKeywords(sitemap[path].title_full)
+						!isMatchKeywords(sitemap[path].title_full) &&
+						!isMatchKeywords(sitemap[path].assignee)
 					){
 						console.log('=> skiped.');
 						return;
@@ -129,11 +130,13 @@ window.cont = new (function(){
 						return false;
 					})
 					.append( $('<th>')
+						// ページID
 						.append( $('<span>')
 							.text(sitemap[path].id)
 						)
 					)
 					.append( $('<td>')
+						// タイトル
 						.append( $('<a>')
 							.text(sitemap[path].title)
 							.attr({
@@ -147,17 +150,21 @@ window.cont = new (function(){
 						)
 					)
 					.append( $('<td>')
+						// パス
 						.append( $('<span>')
 							.text(sitemap[path].path)
 						)
 					)
 					.append( $('<td>')
-						.append( $spanAssignee )
+						// 担当者
+						.append( $spanAssignee.text(sitemap[path].assignee) )
 					)
 					.append( $('<td>')
-						.append( $spanEditorType )
+						// 編集モード
+						.append( $spanEditorType.text('...') )
 					)
 					.append( $('<td>')
+						// コミットボタン
 						.append( $('<a>')
 							.attr({'href':'javascript:;'})
 							.click(function(){
@@ -173,6 +180,7 @@ window.cont = new (function(){
 						)
 					)
 					.append( $('<td>')
+						// ログボタン
 						.append( $('<a>')
 							.attr({'href':'javascript:;'})
 							.click(function(){
@@ -188,6 +196,7 @@ window.cont = new (function(){
 						)
 					)
 					.append( $('<td>')
+						// プレビューボタン
 						.append( $('<a>')
 							.attr({'href':'javascript:;'})
 							.click(function(){
@@ -202,18 +211,14 @@ window.cont = new (function(){
 				;
 
 				$.get(
-					'/apis/getUserInfo',
-					{'id': sitemap[path].assignee},
-					function(userInfo){
-						$spanAssignee
-							.text((userInfo.name || '---'))
-						;
-					}
-				);
-				$.get(
-					'/apis/checkEditorType',
+					'/apis/getPageInfo',
 					{'page_path': sitemap[path].path},
-					function(result){
+					function(pageInfo){
+						// console.log(pageInfo);
+						$spanAssignee
+							.text((pageInfo.user_info.name + ' (' +  pageInfo.page_info.assignee + ')' || '---'))
+						;
+
 						var editorType = {
 							'html' : 'HTML',
 							'md' : 'Markdown',
@@ -230,7 +235,7 @@ window.cont = new (function(){
 							'.not_exists' : 'not-exists',
 							'.page_not_exists' : 'page-not-exists'
 						};
-						var src = '<span class="px2-editor-type__'+editorTypeId[result]+' px2-editor-type--fullwidth"></span>';
+						var src = '<span class="px2-editor-type__'+editorTypeId[pageInfo.editorType]+' px2-editor-type--fullwidth"></span>';
 						$spanEditorType
 							.html((src || '---'))
 						;
