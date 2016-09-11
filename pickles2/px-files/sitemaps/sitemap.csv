@@ -8,3 +8,5 @@
 "/sample_pages/page6/index.html",,,"サンプルページ6",,,,,,"1",,,"sample, サンプル","このページはPxFWのサンプルコードとして予め用意されたものです。サンプルが不要であれば、sample_pagesディレクトリとともに削除してください。","1","user2",,
 "/sample_pages/page7/index.html",,,"サンプルページ7",,,,,,"1",,,"sample, サンプル","このページはPxFWのサンプルコードとして予め用意されたものです。サンプルが不要であれば、sample_pagesディレクトリとともに削除してください。","1","user2",,
 "/sample_pages/page8/index.html",,,"サンプルページ8",,,,,,"1",,,"sample, サンプル","このページはPxFWのサンプルコードとして予め用意されたものです。サンプルが不要であれば、sample_pagesディレクトリとともに削除してください。","1","user2",,
+"alias:/sample_pages/page8/index.html",,,"alias: サンプルページ8",,,,,,"1",,,"sample, サンプル","このページはPxFWのサンプルコードとして予め用意されたものです。サンプルが不要であれば、sample_pagesディレクトリとともに削除してください。","1","user2",,
+"/sample_pages/page9/{*}",,,"サンプルページ9: dynamic path",,,,,,"1",,,"sample, サンプル","このページはPxFWのサンプルコードとして予め用意されたものです。サンプルが不要であれば、sample_pagesディレクトリとともに削除してください。","1","user2",,

@@ -1,7 +1,7 @@
 {
   "main": "libs/main.js",
   "scripts": {
-    "preinstall": "git submodule update -i -r -f",
+    "preinstall": "git submodule update --init --recursive --force",
     "start": "node ./libs/main.js;",
     "up": "node ./libs/main.js;",
     "preview": "gulp preview;",
