@@ -27,17 +27,20 @@ var express = require('express'),
 	app = express();
 var session = require('express-session');
 var logger = new (require('./logger.js'))(conf);
+var accessRestrictor = new (require('./accessRestrictor.js'))(conf);
 var server;
 if( conf.originParsed.protocol == 'https' ){
 	server = require('https').Server(sslOption, app);
 }else{
 	server = require('http').Server(app);
 }
-console.log('port number is '+conf.originParsed.port);
-console.log('Pickles2 preview server port number is '+conf.px2server.originParsed.port);
+console.log('Application Server: port '+conf.originParsed.port);
+console.log('Pickles 2 Preview Server: port '+conf.px2server.originParsed.port);
+console.log('');
 
 
 logger.setAccessLogger(app, 'access-px2wt');
+accessRestrictor.setAccessRestriction(app);
 app.use( require('body-parser')({"limit": "1024mb"}) );
 var mdlWareSession = session({
 	secret: "pickles2webtool",
@@ -71,8 +74,9 @@ app.use( express.static( __dirname+'/../dist/' ) );
 
 // {conf.originParsed.port}番ポートでLISTEN状態にする
 server.listen( conf.originParsed.port, function(){
-	console.log('server-standby');
+	console.log('Application Server: Standby');
 } );
+console.log('');
 
 
 
@@ -87,6 +91,7 @@ if( conf.px2server.originParsed.protocol == 'https' ){
 	serverPx2 = require('http').Server(appPx2);
 }
 logger.setAccessLogger(appPx2, 'access-preview');
+accessRestrictor.setAccessRestriction(appPx2);
 appPx2.use( require('body-parser')() );
 appPx2.use( mdlWareSession );
 appPx2.use( require('./preprocess/userInfo.js')(conf) );
@@ -132,4 +137,7 @@ appPx2.use( '/*', expressPickles2(
 		}
 	}
 ) );
-serverPx2.listen(conf.px2server.originParsed.port);
+serverPx2.listen( conf.px2server.originParsed.port, function(){
+	console.log('Preview Server: Standby');
+} );
+console.log('');
