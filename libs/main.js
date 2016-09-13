@@ -15,7 +15,7 @@ conf.px2server.originParsed.protocol = conf.px2server.originParsed.protocol.repl
 if(!conf.px2server.originParsed.port){
 	conf.px2server.originParsed.port = (conf.originParsed.protocol=='https' ? 443 : 80);
 }
-console.log(conf);
+// console.log(conf);
 
 var sslOption = {
 	key: fs.readFileSync(conf.sslOption.key),
@@ -26,6 +26,7 @@ var sslOption = {
 var express = require('express'),
 	app = express();
 var session = require('express-session');
+var logger = new (require('./logger.js'))(conf);
 var server;
 if( conf.originParsed.protocol == 'https' ){
 	server = require('https').Server(sslOption, app);
@@ -36,6 +37,7 @@ console.log('port number is '+conf.originParsed.port);
 console.log('Pickles2 preview server port number is '+conf.px2server.originParsed.port);
 
 
+logger.setAccessLogger(app, 'access-px2wt');
 app.use( require('body-parser')({"limit": "1024mb"}) );
 var mdlWareSession = session({
 	secret: "pickles2webtool",
@@ -74,6 +76,7 @@ server.listen( conf.originParsed.port, function(){
 
 
 
+// ----------------------------------------------------------------------------
 // Pickles2 preview server
 var expressPickles2 = require('express-pickles2');
 var appPx2 = express();
@@ -83,6 +86,7 @@ if( conf.px2server.originParsed.protocol == 'https' ){
 }else{
 	serverPx2 = require('http').Server(appPx2);
 }
+logger.setAccessLogger(appPx2, 'access-preview');
 appPx2.use( require('body-parser')() );
 appPx2.use( mdlWareSession );
 appPx2.use( require('./preprocess/userInfo.js')(conf) );

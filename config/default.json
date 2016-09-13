@@ -12,5 +12,8 @@
 		"key": "./config/ssl/server.key",
 		"cert": "./config/ssl/server.crt",
 		"passphrase": "pickles2"
+	},
+	"logs":{
+		"accesslog":"./logs/"
 	}
 }
