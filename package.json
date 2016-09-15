@@ -1,7 +1,7 @@
 {
   "main": "libs/main.js",
   "scripts": {
-    "preinstall": "git submodule update -i -r -f",
+    "preinstall": "git submodule update --init --recursive --force",
     "start": "node ./libs/main.js;",
     "up": "node ./libs/main.js;",
     "preview": "gulp preview;",
@@ -21,9 +21,11 @@
     "express": "^4.13.3",
     "express-pickles2": "^2.0.0-alpha.4",
     "express-session": "^1.13.0",
+    "file-stream-rotator": "0.0.7",
     "find-in-csv": "^0.1.0",
     "jquery": "^2.2.1",
     "md5": "^2.1.0",
+    "morgan": "^1.7.0",
     "node-php-bin": "^0.2.3",
     "phpjs": "^1.3.2",
     "pickles2-contents-editor": "file:submodules/node-pickles2-contents-editor",
@@ -33,7 +35,8 @@
     "socket.io": "^1.3.6",
     "sqlite3": "^3.1.1",
     "twig": "^0.8.8",
-    "url-parse": "^1.0.5"
+    "url-parse": "^1.0.5",
+    "utils79": "0.0.1"
   },
   "devDependencies": {
     "gulp": "^3.8.10",
