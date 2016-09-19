@@ -2,7 +2,7 @@
 <script type="text/javascript">
 window.config = new (function(){
     var rtn = {};
-    rtn.urlPreview = '{{ conf.px2server.origin }}';
+    rtn.urlPreview = '<%= conf.px2server.origin %>';
     return rtn;
 })();
 </script>

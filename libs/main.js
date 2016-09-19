@@ -80,7 +80,7 @@ app.use( '/apis/checkEditorType', require('./apis/checkEditorType.js')(conf) );
 app.use( '/apis/applock', require('./apis/applock.js')(conf) );
 
 // 動的なページ生成
-// app.use( /^\/(?:index\.html)?/, require('./../src/index.html.js')(px2) );
+app.use( /^\/(?:index\.html)?/, require('./../src/index.html.js')(px2) );
 
 app.use( express.static( __dirname+'/../dist/' ) );
 

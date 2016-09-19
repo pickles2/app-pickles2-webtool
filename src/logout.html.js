@@ -3,7 +3,7 @@
  */
 module.exports = function(px2){
 	var fs = require('fs');
-	var twig = require('twig');
+	var ejs = require('ejs');
 
 	return function(req, res, next){
 
@@ -13,12 +13,13 @@ module.exports = function(px2){
 			var html = '';
 
 			try {
-				var html = new twig.twig({
-					'data': templateSrc.toString()
-				}).render({
+				var data = {
 					"px2": px2,
+					"conf": px2.conf(),
 					"req": req
-				});
+				};
+				var template = ejs.compile(templateSrc.toString(), {"filename": __dirname + '/index.html'});
+				html = template(data);
 			} catch (e) {
 				console.log( 'TemplateEngine Rendering ERROR.' );
 				html = '<div class="error">TemplateEngine Rendering ERROR.</div>'

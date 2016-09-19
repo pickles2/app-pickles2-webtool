@@ -2,10 +2,10 @@
 <html>
 	<head>
 		<meta charset="utf-8">
-		<title>コンテンツ編集 | {{ conf.app.name }}</title>
+		<title>コンテンツ編集 | <%= conf.app.name %></title>
+<%- include('../../common/includes/head.inc') %>
 		<link rel="stylesheet" href="/common/styles/common.css" type="text/css" />
 		<link rel="stylesheet" href="index_files/styles/contents.css" type="text/css" />
-{% include '../../common/includes/head.inc' %}
 
 		<!-- Keypress -->
 		<script src="/common/dmauro-Keypress/keypress.js"></script>
@@ -18,6 +18,7 @@
 			<p>...</p>
 		</div>
 
+<%- include('../../common/includes/foot.inc') %>
 		<!-- Ace Editor -->
 		<script src="/common/ace-builds/src-noconflict/ace.js"></script>
 
