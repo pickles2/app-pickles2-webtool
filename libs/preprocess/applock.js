@@ -1,7 +1,7 @@
 /**
  * applock.js
  */
-module.exports = function(conf){
+module.exports = function(px2){
 	var memory = {};
 
 	return function(req, res, next){

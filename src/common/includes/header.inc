@@ -8,7 +8,7 @@
 			<div class="theme-header__shoulder">
 				<ul>
 					<li><input type="text" class="form-control px2dt-pages-filter" placeholder="Filter" /></li>
-					<li><button class="px2-btn" onclick="window.main.logout();">ログアウト</button></li>
+					<li><button class="px2-btn" onclick="window.location.href='/logout.html';">ログアウト</button></li>
 				</ul>
 			</div>
 		</header>

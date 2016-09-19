@@ -39,31 +39,21 @@ gulp.task("replace-package-dist", function() {
 	gulp.src(["node_modules/pickles2-contents-editor/dist/**/*"])
 		.pipe(gulp.dest( './dist/common/pickles2-contents-editor/dist/' ))
 	;
-	gulp.src(["node_modules/bootstrap/dist/**/*"])
-		.pipe(gulp.dest( './dist/common/bootstrap/dist/' ))
-	;
 	gulp.src(["node_modules/ace-builds/src-noconflict/**/*"])
 		.pipe(gulp.dest( './dist/common/ace-builds/src-noconflict/' ))
-	;
-
-	gulp.src(["node_modules/px2style/dist/scripts.js"])
-		.pipe(gulp.dest( './dist/common/px2style/dist/' ))
-	;
-	gulp.src(["node_modules/px2style/dist/images/**/*"])
-		.pipe(gulp.dest( './dist/common/px2style/dist/images/' ))
 	;
 });
 
 // コピーするだけのファイルを処理
 gulp.task('copy', function(){
-	gulp.src(["src/**/*.svg","src/**/*.png","src/**/*.jpg","src/**/*.gif"])
+	gulp.src(["src/**/*.svg","src/**/*.png","src/**/*.jpg","src/**/*.gif","!src/**/*.ignore*","!src/**/*.ignore*/*"])
 		.pipe(gulp.dest( './dist/' ))
 	;
 });
 
 // src 中の *.css.scss を処理
 gulp.task('.css.scss', function(){
-	gulp.src("src/**/*.css.scss")
+	gulp.src(["src/**/*.css.scss","!src/**/*.ignore*","!src/**/*.ignore*/*"])
 		.pipe(plumber())
 		.pipe(sass())
 		.pipe(autoprefixer())
@@ -74,7 +64,7 @@ gulp.task('.css.scss', function(){
 
 // src 中の *.css を処理
 gulp.task('.css', function(){
-	gulp.src("src/**/*.css")
+	gulp.src(["src/**/*.css","!src/**/*.ignore*","!src/**/*.ignore*/*"])
 		.pipe(plumber())
 		.pipe(gulp.dest( './dist/' ))
 	;
@@ -82,7 +72,7 @@ gulp.task('.css', function(){
 
 // *.js を処理
 gulp.task(".js", function() {
-	gulp.src(["src/**/*.js"])
+	gulp.src(["src/**/*.js","!src/**/*.html.js","!src/**/*.ignore*","!src/**/*.ignore*/*"])
 		.pipe(plumber())
 		.pipe(browserify({
 		}))
@@ -93,7 +83,7 @@ gulp.task(".js", function() {
 
 // *.html を処理
 gulp.task(".html", function() {
-	gulp.src(["src/**/*.html", "src/**/*.htm"])
+	gulp.src(["src/**/*.html", "src/**/*.htm","!src/**/*.html.js","!src/**/*.ignore*","!src/**/*.ignore*/*"])
 		.pipe(plumber())
 		.pipe(gulp.dest( './dist/' ))
 	;

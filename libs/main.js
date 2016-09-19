@@ -28,6 +28,7 @@ var express = require('express'),
 var session = require('express-session');
 var logger = new (require('./logger.js'))(conf);
 var accessRestrictor = new (require('./accessRestrictor.js'))(conf);
+var px2 = new (require('./pickles2.js'))(conf);
 var server;
 if( conf.originParsed.protocol == 'https' ){
 	server = require('https').Server(sslOption, app);
@@ -49,17 +50,25 @@ var mdlWareSession = session({
 	}
 });
 app.use( mdlWareSession );
-app.use( require('./preprocess/userInfo.js')(conf) );
-app.use( require('./preprocess/applock.js')(conf) );
 
-app.use( '/apis/getLoginUserInfo', require('./apis/getLoginUserInfo.js')(conf) );
-app.use( '/apis/login', require('./apis/login.js')(conf) );
-app.use( '/apis/logout', require('./apis/logout.js')(conf) );
+// リソース系
+app.use( '/resources/px2style/', express.static( __dirname+'/../node_modules/px2style/dist/' ) );
+app.use( '/resources/bootstrap/', express.static( __dirname+'/../node_modules/bootstrap/dist/' ) );
 
-app.use( '/fncs/*', require('./preprocess/loginCheck.js')(conf) );
-app.use( '/mods/*', require('./preprocess/loginCheck.js')(conf) );
-app.use( '/apis/*', require('./preprocess/loginCheck.js')(conf) );
+// ログイン処理系
+app.use( require('./preprocess/userInfo.js')(px2) );
+app.use( require('./preprocess/applock.js')(px2) );
 
+app.use( '/apis/login', require('./apis/login.js')(px2) );
+app.use( '/apis/logout', require('./apis/logout.js')(px2) );
+app.use( '/logout.html', require('./../src/logout.html.js')(px2) );
+app.use( '/apis/getLoginUserInfo', require('./apis/getLoginUserInfo.js')(px2) );
+
+app.use( '/fncs/*', require('./preprocess/loginCheck.js')(px2) );
+app.use( '/mods/*', require('./preprocess/loginCheck.js')(px2) );
+app.use( '/apis/*', require('./preprocess/loginCheck.js')(px2) );
+
+// API系
 app.use( '/apis/getProjectConf', require('./apis/getProjectConf.js')(conf) );
 app.use( '/apis/getSitemap', require('./apis/getSitemap.js')(conf) );
 app.use( '/apis/getUserInfo', require('./apis/getUserInfo.js')(conf) );
@@ -69,6 +78,9 @@ app.use( '/apis/getServerConf', require('./apis/getServerConf.js')(conf) );
 app.use( '/apis/getPageInfo', require('./apis/getPageInfo.js')(conf) );
 app.use( '/apis/checkEditorType', require('./apis/checkEditorType.js')(conf) );
 app.use( '/apis/applock', require('./apis/applock.js')(conf) );
+
+// 動的なページ生成
+// app.use( /^\/(?:index\.html)?/, require('./../src/index.html.js')(px2) );
 
 app.use( express.static( __dirname+'/../dist/' ) );
 
@@ -94,9 +106,9 @@ logger.setAccessLogger(appPx2, 'access-preview');
 accessRestrictor.setAccessRestriction(appPx2);
 appPx2.use( require('body-parser')() );
 appPx2.use( mdlWareSession );
-appPx2.use( require('./preprocess/userInfo.js')(conf) );
+appPx2.use( require('./preprocess/userInfo.js')(px2) );
 
-appPx2.use( '/*', require('./preprocess/loginCheck.js')(conf) );
+appPx2.use( '/*', require('./preprocess/loginCheck.js')(px2) );
 
 appPx2.use( '/*', expressPickles2(
 	conf.px2server.path,

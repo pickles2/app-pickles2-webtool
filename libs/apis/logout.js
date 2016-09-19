@@ -1,7 +1,7 @@
 /**
  * logout.js
  */
-module.exports = function(conf){
+module.exports = function(px2){
 
 	return function(req, res, next){
 		// console.log(req);

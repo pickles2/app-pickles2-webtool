@@ -12,10 +12,10 @@ window.config = new (function(){
 <meta http-equiv="x-ua-compatible" content="ie=edge" />
 
 <!-- Bootstrap 4 CSS -->
-<link rel="stylesheet" href="/common/bootstrap/dist/css/bootstrap.css" />
+<link rel="stylesheet" href="/resources/bootstrap/css/bootstrap.css" />
 
 <!-- px2style -->
-<link rel="stylesheet" href="/common/px2style/dist/styles.css" type="text/css" />
+<link rel="stylesheet" href="/resources/px2style/styles.css" type="text/css" />
 
 <!-- project common -->
 <link rel="stylesheet" href="/common/styles/common.css" type="text/css" />
