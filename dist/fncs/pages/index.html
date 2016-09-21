@@ -17,13 +17,14 @@ window.config = new (function(){
 <meta http-equiv="x-ua-compatible" content="ie=edge" />
 
 <!-- Bootstrap 4 CSS -->
-<link rel="stylesheet" href="/common/bootstrap/dist/css/bootstrap.css" />
+<link rel="stylesheet" href="/resources/bootstrap/css/bootstrap.css" />
 
 <!-- px2style -->
-<link rel="stylesheet" href="/common/px2style/dist/styles.css" type="text/css" />
+<link rel="stylesheet" href="/resources/px2style/styles.css" type="text/css" />
 
 <!-- project common -->
 <link rel="stylesheet" href="/common/styles/common.css" type="text/css" />
+
 		<link rel="stylesheet" href="/common/px2dtGitUi/px2dtGitUi.css" type="text/css" />
 		<link rel="stylesheet" href="index_files/styles/contents.css" type="text/css" />
 	</head>
@@ -38,11 +39,12 @@ window.config = new (function(){
 			<div class="theme-header__shoulder">
 				<ul>
 					<li><input type="text" class="form-control px2dt-pages-filter" placeholder="Filter" /></li>
-					<li><button class="px2-btn" onclick="window.main.logout();">ログアウト</button></li>
+					<li><button class="px2-btn" onclick="window.location.href='/logout.html';">ログアウト</button></li>
 				</ul>
 			</div>
 		</header>
 		<div class="theme-main">
+
 		<h1>コンテンツ</h1>
 		<div class="contents">
 			<p>...</p>
@@ -52,17 +54,19 @@ window.config = new (function(){
 			<p class="theme-footer__copyright">(C) Pickles 2 Project</p>
 		</footer>
 
+
 <!-- Tether -->
 <script src="/common/tether/dist/js/tether.js"></script>
 
 <!-- px2style -->
-<script src="/common/px2style/dist/scripts.js"></script>
+<script src="/resources/px2style/scripts.js"></script>
 
 <!-- project common -->
 <script src="/common/scripts/main.js"></script>
 
 <!-- jQuery first, then Bootstrap 4 JS. -->
-<script src="/common/bootstrap/dist/js/bootstrap.min.js"></script>
+<script src="/resources/bootstrap/js/bootstrap.min.js"></script>
+
 		<script type="text/javascript" src="/common/px2dtGitUi/px2dtGitUi.js"></script>
 		<script type="text/javascript" src="./index_files/scripts/contents.js"></script>
 		<script>cont.init();</script>

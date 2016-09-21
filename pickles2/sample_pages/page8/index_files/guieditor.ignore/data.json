@@ -24,7 +24,9 @@
           "href": "",
           "image_src": {
            "resKey": "f7cd1fb90cedd7c05dbc26dc7d6a905e",
-           "path": "./index_files/resources/oyaji.png"
+           "path": "./index_files/resources/oyaji.png",
+           "resType": "",
+           "webUrl": ""
           },
           "alt_text": ""
          },

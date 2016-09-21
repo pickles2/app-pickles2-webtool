@@ -21,11 +21,13 @@ var concat = require('gulp-concat');//ファイルの結合ツール
 var plumber = require("gulp-plumber");//コンパイルエラーが起きても watch を抜けないようになる
 var rename = require("gulp-rename");//ファイル名の置き換えを行う
 var twig = require("gulp-twig");//Twigテンプレートエンジン
+var ejs = require("gulp-ejs");//EJSテンプレートエンジン
 var browserify = require("gulp-browserify");//NodeJSのコードをブラウザ向けコードに変換
 var packageJson = require(__dirname+'/package.json');
 var _tasks = [
 	'.html',
 	'.html.twig',
+	'.html.ejs',
 	'.css',
 	'.css.scss',
 	'.js',
@@ -39,31 +41,21 @@ gulp.task("replace-package-dist", function() {
 	gulp.src(["node_modules/pickles2-contents-editor/dist/**/*"])
 		.pipe(gulp.dest( './dist/common/pickles2-contents-editor/dist/' ))
 	;
-	gulp.src(["node_modules/bootstrap/dist/**/*"])
-		.pipe(gulp.dest( './dist/common/bootstrap/dist/' ))
-	;
 	gulp.src(["node_modules/ace-builds/src-noconflict/**/*"])
 		.pipe(gulp.dest( './dist/common/ace-builds/src-noconflict/' ))
-	;
-
-	gulp.src(["node_modules/px2style/dist/scripts.js"])
-		.pipe(gulp.dest( './dist/common/px2style/dist/' ))
-	;
-	gulp.src(["node_modules/px2style/dist/images/**/*"])
-		.pipe(gulp.dest( './dist/common/px2style/dist/images/' ))
 	;
 });
 
 // コピーするだけのファイルを処理
 gulp.task('copy', function(){
-	gulp.src(["src/**/*.svg","src/**/*.png","src/**/*.jpg","src/**/*.gif"])
+	gulp.src(["src/**/*.svg","src/**/*.png","src/**/*.jpg","src/**/*.gif","!src/**/*.ignore*","!src/**/*.ignore*/*"])
 		.pipe(gulp.dest( './dist/' ))
 	;
 });
 
 // src 中の *.css.scss を処理
 gulp.task('.css.scss', function(){
-	gulp.src("src/**/*.css.scss")
+	gulp.src(["src/**/*.css.scss","!src/**/*.ignore*","!src/**/*.ignore*/*"])
 		.pipe(plumber())
 		.pipe(sass())
 		.pipe(autoprefixer())
@@ -74,7 +66,7 @@ gulp.task('.css.scss', function(){
 
 // src 中の *.css を処理
 gulp.task('.css', function(){
-	gulp.src("src/**/*.css")
+	gulp.src(["src/**/*.css","!src/**/*.ignore*","!src/**/*.ignore*/*"])
 		.pipe(plumber())
 		.pipe(gulp.dest( './dist/' ))
 	;
@@ -82,7 +74,7 @@ gulp.task('.css', function(){
 
 // *.js を処理
 gulp.task(".js", function() {
-	gulp.src(["src/**/*.js"])
+	gulp.src(["src/**/*.js","!src/**/*.html.js","!src/**/*.ignore*","!src/**/*.ignore*/*"])
 		.pipe(plumber())
 		.pipe(browserify({
 		}))
@@ -93,7 +85,7 @@ gulp.task(".js", function() {
 
 // *.html を処理
 gulp.task(".html", function() {
-	gulp.src(["src/**/*.html", "src/**/*.htm"])
+	gulp.src(["src/**/*.html", "src/**/*.htm","!src/**/*.html.js","!src/**/*.ignore*","!src/**/*.ignore*/*"])
 		.pipe(plumber())
 		.pipe(gulp.dest( './dist/' ))
 	;
@@ -101,13 +93,26 @@ gulp.task(".html", function() {
 
 // *.html.twig を処理
 gulp.task(".html.twig", function() {
-	gulp.src(["src/**/*.html.twig"])
+	gulp.src(["src/**/*.html.twig","!src/**/*.ignore*","!src/**/*.ignore*/*"])
 		.pipe(plumber())
 		.pipe(twig({
 			data: {
 				packageJson: packageJson,
 				conf: conf
 			}
+		}))
+		.pipe(rename({extname: ''}))
+		.pipe(gulp.dest( './dist/' ))
+	;
+});
+
+// *.html.ejs を処理
+gulp.task(".html.ejs", function() {
+	gulp.src(["src/**/*.html.ejs","!src/**/*.ignore*","!src/**/*.ignore*/*"])
+		.pipe(plumber())
+		.pipe(ejs({
+			packageJson: packageJson,
+			conf: conf
 		}))
 		.pipe(rename({extname: ''}))
 		.pipe(gulp.dest( './dist/' ))
