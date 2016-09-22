@@ -13,11 +13,12 @@
 				<div class="contents">
 <% if(req.userInfo.id){ %>
 					<div>
-						<div class="list-group">
+						<div class="px2-loading"></div>
+						<!-- <div class="list-group">
 							<a href="<%= conf.px2server.origin %>/" target="_blank" class="list-group-item preview">プレビュー</a>
 							<a href="/fncs/pages/" class="list-group-item">コンテンツ</a>
-						</div>
-						<p><button class="btn btn-secondary" onclick="window.location.href='/logout.html';">LOGOUT</button></p>
+						</div> -->
+						<p><button class="px2-btn" onclick="window.location.href='/logout.html';">ログアウト</button></p>
 					</div>
 <% }else{ %>
 					<form action="javascript:;" method="get" class="login-form">
