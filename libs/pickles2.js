@@ -5,10 +5,37 @@ module.exports = function(conf){
 	var _this = this;
 	var Promise = require('es6-promise').Promise;
 	var it79 = require('iterate79');
+	this.px2proj = require('px2agent').createProject( require('path').resolve(conf.px2server.path) );
 
 	/** コンフィグを取得 */
 	this.conf = function(){
 		return conf;
+	}
+
+	/** px2proj を取得する */
+	this.getPx2Project = function(){
+		return this.px2proj;
+	}
+
+	/**
+	 * プロジェクト情報をまとめて取得する
+	 */
+	this.getProjectInfo = function(callback){
+		callback = callback || function(){};
+		var pjInfo = {};
+		_this.px2proj.get_config(function(conf){
+			pjInfo.conf = conf;
+
+			_this.px2proj.get_path_controot(function(contRoot){
+				pjInfo.contRoot = contRoot;
+
+				_this.px2proj.get_path_docroot(function(documentRoot){
+					pjInfo.documentRoot = documentRoot;
+
+					callback(pjInfo);
+				});
+			});
+		});
 	}
 
 	/**

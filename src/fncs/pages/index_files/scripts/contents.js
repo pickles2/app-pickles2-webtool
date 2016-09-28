@@ -41,7 +41,7 @@ window.cont = new (function(){
 	 */
 	this.updatePageList = function(callback){
 		callback = callback || function(){};
-		$cont.html('');
+		$cont.html('<div class="px2-loading"></div>');
 		$.get(
 			'/apis/getSitemap',
 			{},
@@ -156,11 +156,31 @@ window.cont = new (function(){
 					)
 					.append( $('<td>')
 						// 担当者
-						.append( $spanAssignee.text(sitemap[path].assignee) )
+						.append( $spanAssignee.text((function(pageInfo){
+							// console.log(pageInfo);
+							var rtn = (pageInfo.assignee ? pageInfo.assignee : '---');
+							try {
+								rtn = (pageInfo.user_info.name + ' (' +  pageInfo.assignee + ')' || '---')
+							} catch (e) {
+							}
+							return rtn;
+						})( sitemap[path] )) )
 					)
 					.append( $('<td>')
 						// 編集モード
-						.append( $spanEditorType.text('...') )
+						.append( $spanEditorType.html((function(editorType){
+							var editorTypeId = {
+								'html' : 'html',
+								'md' : 'md',
+								'txt' : 'txt',
+								'jade' : 'jade',
+								'html.gui' : 'html-gui',
+								'.not_exists' : 'not-exists',
+								'.page_not_exists' : 'page-not-exists'
+							};
+							var src = '<span class="px2-editor-type__'+editorTypeId[editorType]+' px2-editor-type--fullwidth"></span>';
+							return (editorTypeId[editorType] ? src : '---');
+						})( sitemap[path].editorType )) )
 					)
 					.append( $('<td>')
 						// コミットボタン
@@ -208,38 +228,6 @@ window.cont = new (function(){
 						)
 					)
 				;
-
-				$.get(
-					'/apis/getPageInfo',
-					{'page_path': sitemap[path].path},
-					function(pageInfo){
-						// console.log(pageInfo);
-						$spanAssignee
-							.text((pageInfo.user_info.name + ' (' +  pageInfo.page_info.assignee + ')' || '---'))
-						;
-
-						var editorType = {
-							'html' : 'HTML',
-							'md' : 'Markdown',
-							'html.gui' : 'GUI',
-							'.not_exists' : 'not exists',
-							'.page_not_exists' : 'page not exists'
-						};
-						var editorTypeId = {
-							'html' : 'html',
-							'md' : 'md',
-							'txt' : 'txt',
-							'jade' : 'jade',
-							'html.gui' : 'html-gui',
-							'.not_exists' : 'not-exists',
-							'.page_not_exists' : 'page-not-exists'
-						};
-						var src = '<span class="px2-editor-type__'+editorTypeId[pageInfo.editorType]+' px2-editor-type--fullwidth"></span>';
-						$spanEditorType
-							.html((src || '---'))
-						;
-					}
-				);
 
 				$ul.append($li);
 

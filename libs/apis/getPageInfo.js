@@ -27,12 +27,8 @@ module.exports = function(conf){
 						'appMode': 'web', // 'web' or 'desktop'. default to 'web'
 						'entryScript': require('path').resolve(conf.px2server.path),
 						'customFields': {
-							// 'href': require('./../common/broccoli/broccoli-field-href/server.js'),
-							// 'psd': require('broccoli-field-psd'),
-							// 'table': require('broccoli-field-table')
 						} ,
 						'log': function(msg){
-							console.log(msg);
 						}
 					},
 					function(){
