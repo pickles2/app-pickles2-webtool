@@ -9815,66 +9815,6 @@ return jQuery;
 }));
 
 },{}],2:[function(require,module,exports){
-window.jQuery = window.$ = require('jquery');
-
-window.main = new (function(){
-	var _this = this;
-
-	this.progress = new (require('../../common/scripts/main.progress.js')).init(this, $);
-	this.message = require('../../common/scripts/main.message.js');
-	require('../../common/scripts/main.dialog.js')(this);
-	this.project = new (require('../../common/scripts/main.project.js'))(this);
-	this.git = function(){
-		return new (require('../../common/scripts/main.project.git.js'))(this);
-	}
-
-	/**
-	 * ログアウトする
-	 */
-	this.logout = function(){
-		var $this = $(this);
-
-		$.ajax({
-			'type': 'POST',
-			'url': '/apis/logout',
-			'success': function(data, dataType){
-				window.location.href = '/';
-			},
-			'complete': function(xhr, textStatus){
-			}
-		});
-	} // logout()
-
-	/**
-	 * GETパラメータをパースする
-	 */
-	this.parseUriParam = function(url){
-		var paramsArray = [];
-		parameters = url.split("?");
-		if( parameters.length > 1 ) {
-			var params = parameters[1].split("&");
-			for ( var i = 0; i < params.length; i++ ) {
-				var paramItem = params[i].split("=");
-				for( var i2 in paramItem ){
-					paramItem[i2] = decodeURIComponent( paramItem[i2] );
-				}
-				paramsArray.push( paramItem[0] );
-				paramsArray[paramItem[0]] = paramItem[1];
-			}
-		}
-		return paramsArray;
-	}
-
-	$(function(){
-		_this.project.getConfig(function(conf){
-			// console.log(conf);
-			$('header.theme-header .theme-header__ci__project-name').text(conf.name);
-		});
-	});
-
-})();
-
-},{"../../common/scripts/main.dialog.js":3,"../../common/scripts/main.message.js":4,"../../common/scripts/main.progress.js":5,"../../common/scripts/main.project.git.js":6,"../../common/scripts/main.project.js":7,"jquery":1}],3:[function(require,module,exports){
 (function(module){
 	var $ = require('jquery');
 	var $dialog;
@@ -9995,7 +9935,7 @@ window.main = new (function(){
 
 })(module);
 
-},{"jquery":1}],4:[function(require,module,exports){
+},{"jquery":1}],3:[function(require,module,exports){
 (function(module){
 	var $ = require('jquery');
 	var $msgBox = $('<div class="theme_ui_px_message">');
@@ -10049,7 +9989,7 @@ window.main = new (function(){
 
 })(module);
 
-},{"jquery":1}],5:[function(require,module,exports){
+},{"jquery":1}],4:[function(require,module,exports){
 /**
  * progress window
  */
@@ -10151,7 +10091,7 @@ module.exports.init = function( px, $ ) {
 	return this;
 };
 
-},{}],6:[function(require,module,exports){
+},{}],5:[function(require,module,exports){
 /**
  * main.project.git
  */
@@ -10268,7 +10208,7 @@ module.exports = function( main ){
 	return this;
 };
 
-},{"jquery":1}],7:[function(require,module,exports){
+},{"jquery":1}],6:[function(require,module,exports){
 /**
  * main.project.js
  */
@@ -10295,4 +10235,64 @@ module.exports = function( main ){
 	return this;
 };
 
-},{"jquery":1}]},{},[2])
+},{"jquery":1}],7:[function(require,module,exports){
+window.jQuery = window.$ = require('jquery');
+
+window.main = new (function(){
+	var _this = this;
+
+	this.progress = new (require('../../common/scripts/main.progress.js')).init(this, $);
+	this.message = require('../../common/scripts/main.message.js');
+	require('../../common/scripts/main.dialog.js')(this);
+	this.project = new (require('../../common/scripts/main.project.js'))(this);
+	this.git = function(){
+		return new (require('../../common/scripts/main.project.git.js'))(this);
+	}
+
+	/**
+	 * ログアウトする
+	 */
+	this.logout = function(){
+		var $this = $(this);
+
+		$.ajax({
+			'type': 'POST',
+			'url': '/apis/logout',
+			'success': function(data, dataType){
+				window.location.href = '/';
+			},
+			'complete': function(xhr, textStatus){
+			}
+		});
+	} // logout()
+
+	/**
+	 * GETパラメータをパースする
+	 */
+	this.parseUriParam = function(url){
+		var paramsArray = [];
+		parameters = url.split("?");
+		if( parameters.length > 1 ) {
+			var params = parameters[1].split("&");
+			for ( var i = 0; i < params.length; i++ ) {
+				var paramItem = params[i].split("=");
+				for( var i2 in paramItem ){
+					paramItem[i2] = decodeURIComponent( paramItem[i2] );
+				}
+				paramsArray.push( paramItem[0] );
+				paramsArray[paramItem[0]] = paramItem[1];
+			}
+		}
+		return paramsArray;
+	}
+
+	$(function(){
+		_this.project.getConfig(function(conf){
+			// console.log(conf);
+			$('header.theme-header .theme-header__ci__project-name').text(conf.name);
+		});
+	});
+
+})();
+
+},{"../../common/scripts/main.dialog.js":2,"../../common/scripts/main.message.js":3,"../../common/scripts/main.progress.js":4,"../../common/scripts/main.project.git.js":5,"../../common/scripts/main.project.js":6,"jquery":1}]},{},[7])
