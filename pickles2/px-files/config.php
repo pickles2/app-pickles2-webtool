@@ -99,9 +99,6 @@ return call_user_func( function(){
 
 		// sitemapExcel
 		'tomk79\pickles2\sitemap_excel\pickles_sitemap_excel::exec' ,
-
-		// PX=px2dthelper
-		'tomk79\pickles2\px2dthelper\main::register'
 	];
 
 	// funcs: Before content
@@ -109,6 +106,9 @@ return call_user_func( function(){
 	$conf->funcs->before_content = [
 		// PX=api
 		'picklesFramework2\commands\api::register' ,
+
+		// PX=px2dthelper
+		'tomk79\pickles2\px2dthelper\main::register',
 
 		// PX=publish
 		'picklesFramework2\commands\publish::register' ,
@@ -223,8 +223,43 @@ return call_user_func( function(){
 		"local" => "./px-files/modules/",
 		"FESS" => "../vendor/pickles2/broccoli-module-fess/modules/"
 	];
-	$conf->plugins->px2dt->contents_area_selector = '[data-contents-area]'; // <- コンテンツエリアを識別するセレクタ(複数の要素がマッチしてもよい)
-	$conf->plugins->px2dt->contents_bowl_name_by = 'data-contents-area'; // <- コンテンツエリアのbowl名を指定する属性名
+
+	/** コンテンツエリアを識別するセレクタ(複数の要素がマッチしてもよい) */
+	$conf->plugins->px2dt->contents_area_selector = '[data-contents-area]';
+
+	/** コンテンツエリアのbowl名を指定する属性名 */
+	$conf->plugins->px2dt->contents_bowl_name_by = 'data-contents-area';
+
+	/** パブリッシュのパターンを登録 */
+	$conf->plugins->px2dt->publish_patterns = array(
+		array(
+			'label'=>'すべて',
+			'paths_region'=> array('/'),
+			'paths_ignore'=> array(),
+			'keep_cache'=>false
+		),
+		array(
+			'label'=>'リソース類',
+			'paths_region'=> array('/caches/','/common/'),
+			'paths_ignore'=> array(),
+			'keep_cache'=>true
+		),
+		array(
+			'label'=>'すべて(commonを除く)',
+			'paths_region'=> array('/'),
+			'paths_ignore'=> array('/common/'),
+			'keep_cache'=>false
+		),
+	);
+
+	/** config for GUI Editor. */
+	$conf->plugins->px2dt->guieditor = new stdClass;
+
+	/** GUI編集データディレクトリ */
+	// $conf->plugins->px2dt->guieditor->path_data_dir = '{$dirname}/{$filename}_files/guieditor.ignore/';
+
+	/** GUI編集リソース出力先ディレクトリ */
+	// $conf->plugins->px2dt->guieditor->path_resource_dir = '{$dirname}/{$filename}_files/resources/';
 
 
 	// -------- PHP Setting --------
