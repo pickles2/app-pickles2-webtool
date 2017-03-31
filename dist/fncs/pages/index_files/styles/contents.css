@@ -3,3 +3,27 @@
 
 table.table thead {
   white-space: nowrap; }
+
+.cont_navigation-info ul {
+  margin: 0;
+  padding: 0;
+  border-top: 1px solid #bbb; }
+  .cont_navigation-info ul li {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    border-bottom: 1px solid #bbb; }
+    .cont_navigation-info ul li a {
+      display: block;
+      padding: 0.5em 1em; }
+      .cont_navigation-info ul li a.current {
+        background-color: #f9f9f9; }
+    .cont_navigation-info ul li ul {
+      border-top: 1px dotted #ddd; }
+      .cont_navigation-info ul li ul li {
+        border-bottom: 1px dotted #ddd;
+        font-size: 80%; }
+        .cont_navigation-info ul li ul li:last-child {
+          border-bottom: none; }
+        .cont_navigation-info ul li ul li a {
+          padding-left: 2em; }
