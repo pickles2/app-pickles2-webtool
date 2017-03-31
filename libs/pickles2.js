@@ -44,6 +44,37 @@ module.exports = function(conf){
 	}
 
 	/**
+	 * ユーザー情報を得る
+	 * @param  {[type]}   id       [description]
+	 * @param  {Function} callback [description]
+	 * @return {[type]}            [description]
+	 */
+	this.getUserInfo = function(id, callback){
+		callback = callback || function(){};
+		var pathCsv = require('path').resolve(__dirname, '../config/userlist.csv');
+		// console.log(pathCsv);
+		var findInCsv = new (require('find-in-csv'))(
+			pathCsv ,
+			{
+				"require": ['id']
+			}
+		);
+		// console.log(findInCsv);
+
+		findInCsv.get(
+			{'id':id},
+			function(userInfo){
+				// console.log(findInCsv);
+				// console.log(userInfo);
+				callback(userInfo);
+				return;
+			}
+		);
+		return;
+	}
+
+
+	/**
 	 * ログインする
 	 * @param  {String}   id	   ログインユーザーID(アカウント名)
 	 * @param  {String}   pw	   パスワード

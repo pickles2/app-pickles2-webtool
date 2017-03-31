@@ -8,7 +8,7 @@
 		<link rel="stylesheet" href="index_files/styles/contents.css" type="text/css" />
 		<script id="template-treeview" type="text/template">
 
-			<div class="container">
+			<div class="container-fluid">
 				<div class="row">
 					<div class="col-sm-9">
 						<div class="btn-group">
@@ -18,6 +18,23 @@
 							<button class="px2-btn" data-method="preview" data-page-path="<%%= navigationInfo.parent_info.path %>">見る</button>
 						</div>
 						<h2><%%= navigationInfo.page_info.title %></h2>
+						<p>担当者: <%%= navigationInfo.user_info.name %> (<%%= navigationInfo.user_info.id %>)</p>
+						<%%
+							var editorTypeSrc = (function(editorType){
+								var editorTypeId = {
+									'html' : 'html',
+									'md' : 'md',
+									'txt' : 'txt',
+									'jade' : 'jade',
+									'html.gui' : 'html-gui',
+									'.not_exists' : 'not-exists',
+									'.page_not_exists' : 'page-not-exists'
+								};
+								var src = '<span class="px2-editor-type__'+editorTypeId[editorType]+'"></span>';
+								return (editorTypeId[editorType] ? src : '---');
+							})( navigationInfo.editorType );
+						%>
+						<p>編集モード: <%%- editorTypeSrc %></p>
 						<table class="table">
 							<colgroup><col width="30%" /><col width="70%" /></colgroup>
 							<%% for( var idx in navigationInfo.page_info ){ %>
@@ -34,7 +51,7 @@
 							<p><a href="javascript:;" data-page-path="<%%= navigationInfo.parent_info.path %>">↑ <%%= navigationInfo.parent_info.title %></a></p>
 						<%% } %>
 						<%% if( navigationInfo.bros_info.length ){ %>
-							<div><ul>
+							<div class="cont_navigation-info"><ul>
 								<%% for( var idx in navigationInfo.bros_info ){ %>
 									<li>
 										<a href="javascript:;" data-page-path="<%%= navigationInfo.bros_info[idx].path %>"<%%- (navigationInfo.bros_info[idx].id == navigationInfo.page_info.id ? ' class="current"' : '') %>><%%= navigationInfo.bros_info[idx].title %></a>

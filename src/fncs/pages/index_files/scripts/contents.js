@@ -70,7 +70,7 @@ window.cont = new (function(){
 		callback = callback || function(){}
 		keyword = keyword || '';
 
-		$cont.html(''); // コンテンツエリアを一旦消去
+		$cont.html('<div class="px2-loading"></div>');// コンテンツエリアを一旦消去
 
 		if( keyword.length ){
 			// キーワードが指定されていたら、検索結果を表示する。
@@ -90,9 +90,8 @@ window.cont = new (function(){
 	 * キーワードがなければ、 パンくずの階層構造をツリーで表示する。
 	 */
 	function drawPageListTree(callback){
-		$cont.html('');
 
-		console.log('/apis/getNavigationInfo?page_path='+encodeURIComponent(current_page));
+		// console.log('/apis/getNavigationInfo?page_path='+encodeURIComponent(current_page));
 
 		$.get(
 			'/apis/getNavigationInfo?page_path='+encodeURIComponent(current_page),
@@ -107,7 +106,8 @@ window.cont = new (function(){
 				};
 				var template = ejs.compile(templateSrc.toString(), {});
 				var html = template(data);
-				$cont.append( html );
+
+				$cont.html('').append( html );
 				$cont.find('a,button').on('click', function(e){
 					var $this = $(this);
 					var method = $this.attr('data-method');

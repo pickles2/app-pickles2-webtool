@@ -61,30 +61,6 @@ module.exports = function(px2){
 							.then(function(){ return new Promise(function(rlv, rjt){
 								// console.log('checking assignee info ...');
 								row.user_info = {'name': '---', 'assignee': '---'};
-								function getUserInfo(id, callback){
-									callback = callback || function(){};
-									var pathCsv = require('path').resolve(__dirname, '../../config/userlist.csv');
-									// console.log(pathCsv);
-									var findInCsv = new (require('find-in-csv'))(
-										pathCsv ,
-										{
-											"require": ['id']
-										}
-									);
-									// console.log(findInCsv);
-
-									findInCsv.get(
-										{'id':id},
-										function(userInfo){
-											// console.log(findInCsv);
-											// console.log(userInfo);
-											callback(userInfo);
-											return;
-										}
-									);
-									return;
-
-								}
 
 								// console.log(req.method.toLowerCase());
 								if( req.method.toLowerCase() != 'get' ){
@@ -99,7 +75,7 @@ module.exports = function(px2){
 									return;
 								}
 
-								getUserInfo(row.assignee, function(userInfo){
+								px2.getUserInfo(row.assignee, function(userInfo){
 									// console.log(userInfo);
 									delete(userInfo.pw);//パスワードは忘れる
 									row.user_info = userInfo;

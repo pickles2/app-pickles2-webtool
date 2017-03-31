@@ -8,3 +8,36 @@ table.table{
 		white-space: nowrap;
 	}
 }
+.cont_navigation-info{
+	ul{
+		margin: 0;
+		padding: 0;
+		border-top: 1px solid #bbb;
+		li{
+			list-style-type: none;
+			margin: 0;
+			padding: 0;
+			border-bottom: 1px solid #bbb;
+			a{
+				display: block;
+				padding: 0.5em 1em;
+				&.current{
+					background-color: #f9f9f9;
+				}
+			}
+			ul{
+				border-top: 1px dotted #ddd;
+				li{
+					border-bottom: 1px dotted #ddd;
+					font-size: 80%;
+					&:last-child{
+						border-bottom: none;
+					}
+					a{
+						padding-left: 2em;
+					}
+				}
+			}
+		}
+	}
+}
