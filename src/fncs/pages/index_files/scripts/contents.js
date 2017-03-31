@@ -2,6 +2,7 @@ window.cont = new (function(){
 	var _this = this;
 	var it79 = require('iterate79');
 	var $cont = $('.contents');
+	var ejs = require('ejs');
 
 	var px2dtGitUi = new window.px2dtGitUi(window.main);
 	var timerFilter;
@@ -91,7 +92,8 @@ window.cont = new (function(){
 	function drawPageListTree(callback){
 		$cont.html('');
 
-		// console.log('/apis/getNavigationInfo?page_path='+encodeURIComponent(current_page));
+		console.log('/apis/getNavigationInfo?page_path='+encodeURIComponent(current_page));
+
 		$.get(
 			'/apis/getNavigationInfo?page_path='+encodeURIComponent(current_page),
 			{},
@@ -99,58 +101,57 @@ window.cont = new (function(){
 				// console.log(navigationInfo);
 				current_page = navigationInfo.page_info.path;
 
-				var $div = $('<div>');
-				if( navigationInfo.parent_info !== false){
-					$div.append($('<h2>parent</h2>'));
-					$div.append($('<a>')
-						.attr({
-							'href': 'javascript:;',
-							'data-page-id': navigationInfo.parent_info.id,
-							'data-page-path': navigationInfo.parent_info.path
-						})
-						.text( navigationInfo.parent_info.title )
-						.on('click', function(e){
-							var $this = $(this);
-							current_page = $this.attr('data-page-path');
-							_this.redrawPageList();
-						})
-					);
-				}
-				$div.append($('<h2>bros</h2>'));
-				for( var idx in navigationInfo.bros_info ){
-					$div.append($('<a>')
-						.attr({
-							'href': 'javascript:;',
-							'data-page-id': navigationInfo.bros_info[idx].id,
-							'data-page-path': navigationInfo.bros_info[idx].path
-						})
-						.text( navigationInfo.bros_info[idx].title )
-						.on('click', function(e){
-							var $this = $(this);
-							current_page = $this.attr('data-page-path');
-							_this.redrawPageList();
-						})
-					);
-				}
-				$div.append($('<h2>children</h2>'));
-				for( var idx in navigationInfo.children_info ){
-					$div.append($('<a>')
-						.attr({
-							'href': 'javascript:;',
-							'data-page-id': navigationInfo.children_info[idx].id,
-							'data-page-path': navigationInfo.children_info[idx].path
-						})
-						.text( navigationInfo.children_info[idx].title )
-						.on('click', function(e){
-							var $this = $(this);
-							current_page = $this.attr('data-page-path');
-							_this.redrawPageList();
-						})
-					);
-				}
+				var templateSrc = document.getElementById('template-treeview').innerHTML;
+				var data = {
+					"navigationInfo": navigationInfo
+				};
+				var template = ejs.compile(templateSrc.toString(), {});
+				var html = template(data);
+				$cont.append( html );
+				$cont.find('a,button').on('click', function(e){
+					var $this = $(this);
+					var method = $this.attr('data-method');
+					if( method == 'edit' ){
+						// 編集ボタン
+						openEditor( $(this).attr('data-page-path') );
+						return false;
 
-				$cont.append( $div );
+					}else if( method == 'commit' ){
+						// コミットボタン
+						px2dtGitUi.commit(
+							'contents',
+							{'page_path': $this.attr('data-page-path')},
+							function(){
+								// alert('complete');
+							}
+						);
+						return false;
+
+					}else if( method == 'log' ){
+						// ログボタン
+						px2dtGitUi.log(
+							'contents',
+							{'page_path': $this.attr('data-page-path')},
+							function(){
+								// alert('complete');
+							}
+						);
+						return false;
+
+					}else if( method == 'preview' ){
+						// 見るボタン
+						window.open( window.config.urlPreview + $this.attr('data-page-path') );
+						return false;
+
+					}else{
+						current_page = $this.attr('data-page-path');
+						_this.redrawPageList();
+						return false;
+					}
+				});
+
 				callback();
+				return;
 			}
 		);
 		return;
@@ -240,7 +241,7 @@ window.cont = new (function(){
 								'href': 'javascript:;',
 								'data-page-path': path
 							})
-							.click(function(){
+							.on('click', function(){
 								openEditor( $(this).attr('data-page-path') );
 								return false;
 							})
@@ -284,7 +285,7 @@ window.cont = new (function(){
 						// コミットボタン
 						.append( $('<a>')
 							.attr({'href':'javascript:;'})
-							.click(function(){
+							.on('click', function(){
 								px2dtGitUi.commit(
 									'contents',
 									{'page_path': path},
@@ -300,7 +301,7 @@ window.cont = new (function(){
 						// ログボタン
 						.append( $('<a>')
 							.attr({'href':'javascript:;'})
-							.click(function(){
+							.on('click', function(){
 								px2dtGitUi.log(
 									'contents',
 									{'page_path': path},
@@ -316,7 +317,7 @@ window.cont = new (function(){
 						// プレビューボタン
 						.append( $('<a>')
 							.attr({'href':'javascript:;'})
-							.click(function(){
+							.on('click', function(){
 								window.open( window.config.urlPreview+path );
 								return false;
 							})

@@ -1,4 +1,5 @@
 window.jQuery = window.$ = require('jquery');
+window.ejs = require('ejs');
 
 window.main = new (function(){
 	var _this = this;

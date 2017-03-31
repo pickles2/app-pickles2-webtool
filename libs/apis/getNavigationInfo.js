@@ -18,31 +18,33 @@ module.exports = function(px2){
 		var page_path = req.param('page_path');
 		if( !page_path ){ page_path = '/'; }
 		// console.log( page_path+'?PX=px2dthelper.get.navigation_info' );
+		px2proj.href(page_path, function(page_path){
+			px2proj.query(page_path+'?PX=px2dthelper.get.navigation_info', {
+				"output": "json",
+				"userAgent": "Mozilla/5.0",
+				"success": function(data){
+					// console.log(data);
+				},
+				"complete": function(data, code){
+					// console.log(data, code);
+					var navigation_info;
+					try {
+						navigation_info = JSON.parse(data);
+					} catch (e) {
+						navigation_info = false;
+					}
+					// console.log(navigation_info);
 
-		px2proj.query(page_path+'?PX=px2dthelper.get.navigation_info', {
-			"output": "json",
-			"userAgent": "Mozilla/5.0",
-			"success": function(data){
-				// console.log(data);
-			},
-			"complete": function(data, code){
-				// console.log(data, code);
-				var navigation_info;
-				try {
-					navigation_info = JSON.parse(data);
-				} catch (e) {
-					navigation_info = false;
+					res.status(200);
+					res.set('Content-Type', 'text/json')
+					res.send(JSON.stringify(navigation_info)).end();
+
+					return;
 				}
-				// console.log(navigation_info);
-
-				res.status(200);
-				res.set('Content-Type', 'text/json')
-				res.send(JSON.stringify(navigation_info)).end();
-
-				return;
-			}
+			});
 		});
 
+		return;
 	};
 
 
