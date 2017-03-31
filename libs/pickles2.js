@@ -23,19 +23,24 @@ module.exports = function(conf){
 	this.getProjectInfo = function(callback){
 		callback = callback || function(){};
 		var pjInfo = {};
-		_this.px2proj.get_config(function(conf){
-			pjInfo.conf = conf;
-
-			_this.px2proj.get_path_controot(function(contRoot){
-				pjInfo.contRoot = contRoot;
-
-				_this.px2proj.get_path_docroot(function(documentRoot){
-					pjInfo.documentRoot = documentRoot;
-
-					callback(pjInfo);
-				});
-			});
+		_this.px2proj.query('/?PX=px2dthelper.get.all', {
+			"output": "json",
+			"userAgent": "Mozilla/5.0",
+			"success": function(data){
+				// console.log(data);
+			},
+			"complete": function(data, code){
+				// console.log(data, code);
+				try {
+					pjInfo = JSON.parse(data);
+				} catch (e) {
+					pjInfo = false;
+				}
+				// console.log(pjInfo);
+				callback(pjInfo);
+			}
 		});
+		return;
 	}
 
 	/**

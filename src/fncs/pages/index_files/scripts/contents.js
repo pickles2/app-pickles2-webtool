@@ -1,29 +1,34 @@
 window.cont = new (function(){
 	var _this = this;
+	var it79 = require('iterate79');
 	var $cont = $('.contents');
 
 	var px2dtGitUi = new window.px2dtGitUi(window.main);
 	var timerFilter;
+	var keyword = '';
+	var current_page = '';
 
 	/**
 	 * 画面を初期化
-	 * @param  {Function} callback [description]
-	 * @return {[type]}            [description]
 	 */
 	this.init = function(callback){
 		callback = callback || function(){};
 
 		$(window).load(function(){
+			// ページ検索フォーム
 			$('.px2dt-pages-filter').bind('change keyup', function(){
 				var $this = $(this);
 				clearTimeout(timerFilter);
 				timerFilter = setTimeout(function(){
-					_this.redrawPageList( $this.val(), function(){
+					keyword = $this.val();
+					_this.redrawPageList( function(){
 						console.log('refreshed.');
 					} );
 				}, 500);
 			});
-			_this.updatePageList();
+			_this.updatePageList(function(){
+				callback();
+			});
 		});
 
 	}
@@ -47,22 +52,115 @@ window.cont = new (function(){
 			{},
 			function(sitemap){
 				_this.sitemap = sitemap;
-				_this.redrawPageList( '', function(){
+				// console.log(sitemap);
+				_this.redrawPageList( function(){
 					callback();
 				} );
 
 			}
 		);
-
+		return;
 	}
 
 	/**
 	 * ページリストを再描画する
 	 */
-	this.redrawPageList = function(keyword, callback){
+	this.redrawPageList = function(callback){
+		callback = callback || function(){}
 		keyword = keyword || '';
-		var sitemap = _this.sitemap;
 
+		$cont.html(''); // コンテンツエリアを一旦消去
+
+		if( keyword.length ){
+			// キーワードが指定されていたら、検索結果を表示する。
+			drawPageListSearch( function(){
+				callback();
+			} );
+		}else{
+			// キーワードがなければ、 パンくずの階層構造をツリーで表示する
+			drawPageListTree( function(){
+				callback();
+			} );
+		}
+		return;
+	}
+
+	/**
+	 * キーワードがなければ、 パンくずの階層構造をツリーで表示する。
+	 */
+	function drawPageListTree(callback){
+		$cont.html('');
+
+		// console.log('/apis/getNavigationInfo?page_path='+encodeURIComponent(current_page));
+		$.get(
+			'/apis/getNavigationInfo?page_path='+encodeURIComponent(current_page),
+			{},
+			function(navigationInfo){
+				// console.log(navigationInfo);
+				current_page = navigationInfo.page_info.path;
+
+				var $div = $('<div>');
+				if( navigationInfo.parent_info !== false){
+					$div.append($('<h2>parent</h2>'));
+					$div.append($('<a>')
+						.attr({
+							'href': 'javascript:;',
+							'data-page-id': navigationInfo.parent_info.id,
+							'data-page-path': navigationInfo.parent_info.path
+						})
+						.text( navigationInfo.parent_info.title )
+						.on('click', function(e){
+							var $this = $(this);
+							current_page = $this.attr('data-page-path');
+							_this.redrawPageList();
+						})
+					);
+				}
+				$div.append($('<h2>bros</h2>'));
+				for( var idx in navigationInfo.bros_info ){
+					$div.append($('<a>')
+						.attr({
+							'href': 'javascript:;',
+							'data-page-id': navigationInfo.bros_info[idx].id,
+							'data-page-path': navigationInfo.bros_info[idx].path
+						})
+						.text( navigationInfo.bros_info[idx].title )
+						.on('click', function(e){
+							var $this = $(this);
+							current_page = $this.attr('data-page-path');
+							_this.redrawPageList();
+						})
+					);
+				}
+				$div.append($('<h2>children</h2>'));
+				for( var idx in navigationInfo.children_info ){
+					$div.append($('<a>')
+						.attr({
+							'href': 'javascript:;',
+							'data-page-id': navigationInfo.children_info[idx].id,
+							'data-page-path': navigationInfo.children_info[idx].path
+						})
+						.text( navigationInfo.children_info[idx].title )
+						.on('click', function(e){
+							var $this = $(this);
+							current_page = $this.attr('data-page-path');
+							_this.redrawPageList();
+						})
+					);
+				}
+
+				$cont.append( $div );
+				callback();
+			}
+		);
+		return;
+	}
+
+	/**
+	 * キーワードが指定されていたら、検索結果を表示する。
+	 */
+	function drawPageListSearch(callback){
+		var sitemap = _this.sitemap;
 		// console.log(sitemap);
 		var $ul = $('<table class="table table-striped table-sm table-hover cont_pagelist">');
 		$cont.html('').append( $('<div>')
@@ -235,7 +333,7 @@ window.cont = new (function(){
 
 		}
 		callback();
-
+		return;
 	}
 
 })();
