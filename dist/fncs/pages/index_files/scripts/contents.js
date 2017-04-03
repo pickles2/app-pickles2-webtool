@@ -2881,7 +2881,7 @@ window.cont = new (function(){
 							.append( $('<th>').text('タイトル') )
 							.append( $('<th>').text('ページのパス') )
 							.append( $('<th>').text('担当者') )
-							.append( $('<th>').text('編集モード') )
+							// .append( $('<th>').text('編集モード') )
 							.append( $('<th>').text('-') )
 							.append( $('<th>').text('-') )
 							.append( $('<th>').text('プレビュー') )
@@ -2974,28 +2974,28 @@ window.cont = new (function(){
 									// console.log(pageInfo);
 									var rtn = (pageInfo.assignee ? pageInfo.assignee : '---');
 									try {
-										rtn = (pageInfo.user_info.name + ' (' +  pageInfo.assignee + ')' || '---')
+										rtn = (_this.userList[pageInfo.assignee].name + ' (' +  pageInfo.assignee + ')' || '---')
 									} catch (e) {
 									}
 									return rtn;
 								})( sitemap[path] )) )
 							)
-							.append( $('<td>')
-								// 編集モード
-								.append( $spanEditorType.html((function(editorType){
-									var editorTypeId = {
-										'html' : 'html',
-										'md' : 'md',
-										'txt' : 'txt',
-										'jade' : 'jade',
-										'html.gui' : 'html-gui',
-										'.not_exists' : 'not-exists',
-										'.page_not_exists' : 'page-not-exists'
-									};
-									var src = '<span class="px2-editor-type__'+editorTypeId[editorType]+' px2-editor-type--fullwidth"></span>';
-									return (editorTypeId[editorType] ? src : '---');
-								})( sitemap[path].editorType )) )
-							)
+							// .append( $('<td>')
+							// 	// 編集モード
+							// 	.append( $spanEditorType.html((function(editorType){
+							// 		var editorTypeId = {
+							// 			'html' : 'html',
+							// 			'md' : 'md',
+							// 			'txt' : 'txt',
+							// 			'jade' : 'jade',
+							// 			'html.gui' : 'html-gui',
+							// 			'.not_exists' : 'not-exists',
+							// 			'.page_not_exists' : 'page-not-exists'
+							// 		};
+							// 		var src = '<span class="px2-editor-type__'+editorTypeId[editorType]+' px2-editor-type--fullwidth"></span>';
+							// 		return (editorTypeId[editorType] ? src : '---');
+							// 	})( sitemap[path].editorType )) )
+							// )
 							.append( $('<td>')
 								// コミットボタン
 								.append( $('<a>')
