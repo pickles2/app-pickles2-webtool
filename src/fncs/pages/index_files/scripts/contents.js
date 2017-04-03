@@ -23,6 +23,10 @@ window.cont = new (function(){
 				var $this = $(this);
 				clearTimeout(timerFilter);
 				timerFilter = setTimeout(function(){
+					if( keyword == $this.val() ){
+						// 変更されていなかったらスキップ
+						return;
+					}
 					keyword = $this.val();
 					_this.redrawPageList( function(){
 						console.log('refreshed.');
@@ -78,7 +82,7 @@ window.cont = new (function(){
 				for(var idx in userList){
 					_this.userList[userList[idx].id] = userList[idx];
 				}
-				console.log(_this.userList);
+				// console.log(_this.userList);
 				callback();
 			}
 		);
@@ -113,7 +117,7 @@ window.cont = new (function(){
 	 */
 	function drawPageListTree(callback){
 
-		console.log('/apis/getNavigationInfo?page_path='+encodeURIComponent(current_page));
+		// console.log('/apis/getNavigationInfo?page_path='+encodeURIComponent(current_page));
 
 		$.get(
 			'/apis/getNavigationInfo?page_path='+encodeURIComponent(current_page),
@@ -231,162 +235,169 @@ window.cont = new (function(){
 				}
 
 				var hitCount = 0;
-				for( var path in sitemap ){
-					(function($ul, sitemap, path){
-						if( keyword.length ){
-							if(
-								!isMatchKeywords(sitemap[path].id) &&
-								!isMatchKeywords(sitemap[path].path) &&
-								!isMatchKeywords(sitemap[path].content) &&
-								!isMatchKeywords(sitemap[path].title) &&
-								!isMatchKeywords(sitemap[path].title_breadcrumb) &&
-								!isMatchKeywords(sitemap[path].title_h1) &&
-								!isMatchKeywords(sitemap[path].title_label) &&
-								!isMatchKeywords(sitemap[path].title_full) &&
-								!isMatchKeywords(sitemap[path].assignee)
-							){
-								console.log('=> skiped.');
+				it79.ary(
+					sitemap,
+					function(it2, page_info, path){
+
+						(function($ul, sitemap, path){
+							if( keyword.length ){
+								if(
+									!isMatchKeywords(sitemap[path].id) &&
+									!isMatchKeywords(sitemap[path].path) &&
+									!isMatchKeywords(sitemap[path].content) &&
+									!isMatchKeywords(sitemap[path].title) &&
+									!isMatchKeywords(sitemap[path].title_breadcrumb) &&
+									!isMatchKeywords(sitemap[path].title_h1) &&
+									!isMatchKeywords(sitemap[path].title_label) &&
+									!isMatchKeywords(sitemap[path].title_full) &&
+									!isMatchKeywords(sitemap[path].assignee)
+								){
+									console.log('=> skiped.');
+									return;
+								}
+							}
+
+							hitCount ++;
+							if( hitCount > listMaxCount ){
 								return;
 							}
-						}
 
-						hitCount ++;
-						if( hitCount > listMaxCount ){
-							return;
-						}
-
-						var $spanAssignee = $('<span>');
-						var $spanEditorType = $('<span>');
-						var $li = $('<tr>');
-						$li
-							.attr({
-								'data-page-path': path
-							})
-							.css({
-								'cursor': 'default'
-							})
-							.on('dblclick', function(e){
-								openEditor( $(this).attr('data-page-path') );
-								return false;
-							})
-							.append( $('<th>')
-								// ページID
-								.append( $('<span>')
-									.text(sitemap[path].id)
-								)
-							)
-							.append( $('<td>')
-								// タイトル
-								.append( $('<a>')
-									.text(sitemap[path].title)
-									.attr({
-										'href': 'javascript:;',
-										'data-page-path': path
-									})
-									.on('click', function(){
-										keyword = '';
-										current_page = $(this).attr('data-page-path');
-										_this.redrawPageList();
-										return false;
-										// openEditor( $(this).attr('data-page-path') );
-										// return false;
-									})
-								)
-							)
-							.append( $('<td>')
-								// パス
-								.append( $('<span>')
-									.text(sitemap[path].path)
-								)
-							)
-							.append( $('<td>')
-								// 担当者
-								.append( $spanAssignee.text((function(pageInfo){
-									// console.log(pageInfo);
-									var rtn = (pageInfo.assignee ? pageInfo.assignee : '---');
-									try {
-										rtn = (_this.userList[pageInfo.assignee].name + ' (' +  pageInfo.assignee + ')' || '---')
-									} catch (e) {
-									}
-									return rtn;
-								})( sitemap[path] )) )
-							)
-							// .append( $('<td>')
-							// 	// 編集モード
-							// 	.append( $spanEditorType.html((function(editorType){
-							// 		var editorTypeId = {
-							// 			'html' : 'html',
-							// 			'md' : 'md',
-							// 			'txt' : 'txt',
-							// 			'jade' : 'jade',
-							// 			'html.gui' : 'html-gui',
-							// 			'.not_exists' : 'not-exists',
-							// 			'.page_not_exists' : 'page-not-exists'
-							// 		};
-							// 		var src = '<span class="px2-editor-type__'+editorTypeId[editorType]+' px2-editor-type--fullwidth"></span>';
-							// 		return (editorTypeId[editorType] ? src : '---');
-							// 	})( sitemap[path].editorType )) )
-							// )
-							.append( $('<td>')
-								// コミットボタン
-								.append( $('<a>')
-									.attr({'href':'javascript:;'})
-									.on('click', function(){
-										px2dtGitUi.commit(
-											'contents',
-											{'page_path': path},
-											function(){
-												// alert('complete');
-											}
-										);
-									})
-									.text('コミット')
-								)
-							)
-							.append( $('<td>')
-								// ログボタン
-								.append( $('<a>')
-									.attr({'href':'javascript:;'})
-									.on('click', function(){
-										px2dtGitUi.log(
-											'contents',
-											{'page_path': path},
-											function(){
-												// alert('complete');
-											}
-										);
-									})
-									.text('ログ')
-								)
-							)
-							.append( $('<td>')
-								// プレビューボタン
-								.append( $('<a>')
-									.attr({'href':'javascript:;'})
-									.on('click', function(){
-										window.open( window.config.urlPreview+path );
-										return false;
-									})
-									.append( $('<span class="icn-preview">')
-										.text('見る')
+							var $spanAssignee = $('<span>');
+							var $spanEditorType = $('<span>');
+							var $li = $('<tr>');
+							$li
+								.attr({
+									'data-page-path': path
+								})
+								.css({
+									'cursor': 'default'
+								})
+								.on('dblclick', function(e){
+									openEditor( $(this).attr('data-page-path') );
+									return false;
+								})
+								.append( $('<th>')
+									// ページID
+									.append( $('<span>')
+										.text(sitemap[path].id)
 									)
 								)
-							)
-						;
+								.append( $('<td>')
+									// タイトル
+									.append( $('<a>')
+										.text(sitemap[path].title)
+										.attr({
+											'href': 'javascript:;',
+											'data-page-path': path
+										})
+										.on('click', function(){
+											keyword = '';
+											current_page = $(this).attr('data-page-path');
+											_this.redrawPageList();
+											return false;
+											// openEditor( $(this).attr('data-page-path') );
+											// return false;
+										})
+									)
+								)
+								.append( $('<td>')
+									// パス
+									.append( $('<span>')
+										.text(sitemap[path].path)
+									)
+								)
+								.append( $('<td>')
+									// 担当者
+									.append( $spanAssignee.text((function(pageInfo){
+										// console.log(pageInfo);
+										var rtn = (pageInfo.assignee ? pageInfo.assignee : '---');
+										try {
+											rtn = (_this.userList[pageInfo.assignee].name + ' (' +  pageInfo.assignee + ')' || '---')
+										} catch (e) {
+										}
+										return rtn;
+									})( sitemap[path] )) )
+								)
+								// .append( $('<td>')
+								// 	// 編集モード
+								// 	.append( $spanEditorType.html((function(editorType){
+								// 		var editorTypeId = {
+								// 			'html' : 'html',
+								// 			'md' : 'md',
+								// 			'txt' : 'txt',
+								// 			'jade' : 'jade',
+								// 			'html.gui' : 'html-gui',
+								// 			'.not_exists' : 'not-exists',
+								// 			'.page_not_exists' : 'page-not-exists'
+								// 		};
+								// 		var src = '<span class="px2-editor-type__'+editorTypeId[editorType]+' px2-editor-type--fullwidth"></span>';
+								// 		return (editorTypeId[editorType] ? src : '---');
+								// 	})( sitemap[path].editorType )) )
+								// )
+								.append( $('<td>')
+									// コミットボタン
+									.append( $('<a>')
+										.attr({'href':'javascript:;'})
+										.on('click', function(){
+											px2dtGitUi.commit(
+												'contents',
+												{'page_path': path},
+												function(){
+													// alert('complete');
+												}
+											);
+										})
+										.text('コミット')
+									)
+								)
+								.append( $('<td>')
+									// ログボタン
+									.append( $('<a>')
+										.attr({'href':'javascript:;'})
+										.on('click', function(){
+											px2dtGitUi.log(
+												'contents',
+												{'page_path': path},
+												function(){
+													// alert('complete');
+												}
+											);
+										})
+										.text('ログ')
+									)
+								)
+								.append( $('<td>')
+									// プレビューボタン
+									.append( $('<a>')
+										.attr({'href':'javascript:;'})
+										.on('click', function(){
+											window.open( window.config.urlPreview+path );
+											return false;
+										})
+										.append( $('<span class="icn-preview">')
+											.text('見る')
+										)
+									)
+								)
+							;
 
-						$ul.append($li);
+							$ul.append($li);
 
-					})($ul, sitemap, path);
+						})($ul, sitemap, path);
 
-					if( hitCount > listMaxCount ){
-						$cont.append( $('<p>')
-							.text(listMaxCount+'件までのページを表示しています。 条件を追加して検索結果を絞ってください。')
-						);
-						break;
+						if( hitCount > listMaxCount ){
+							$cont.append( $('<p>')
+								.text(listMaxCount+'件までのページを表示しています。 条件を追加して検索結果を絞ってください。')
+							);
+							it1.next(arg);
+							return;
+						}
+						it2.next();
+					},
+					function(){
+						it1.next(arg);
 					}
-
-				}
-				it1.next(arg);
+				);
 				return;
 			},
 			function(it1, arg){

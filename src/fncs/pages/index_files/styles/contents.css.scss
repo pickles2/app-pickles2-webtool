@@ -5,7 +5,16 @@
 }
 table.table{
 	thead{
-		white-space: nowrap;
+		th, td{
+			white-space: nowrap;
+		}
+	}
+	tbody{
+		th, td{
+			word-wrap:break-word;
+			white-space: pre-wrap;
+			word-break: break-all;
+		}
 	}
 }
 .cont_navigation-info{

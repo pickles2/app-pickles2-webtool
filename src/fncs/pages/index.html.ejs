@@ -35,14 +35,16 @@
 							})( navigationInfo.editorType );
 						%>
 						<p>編集モード: <%%- editorTypeSrc %></p>
-						<table class="table">
+						<table class="table" style="width:100%;">
 							<colgroup><col width="30%" /><col width="70%" /></colgroup>
+							<tbody>
 							<%% for( var idx in navigationInfo.page_info ){ %>
 								<tr>
 									<th><%%= idx %></th>
 									<td><%%= navigationInfo.page_info[idx] %></td>
 								</tr>
 							<%% } %>
+							</tbody>
 						</table>
 
 					</div>

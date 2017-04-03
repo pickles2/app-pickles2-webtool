@@ -1,8 +1,13 @@
 .cont_pagelist td {
   white-space: nowrap; }
 
-table.table thead {
+table.table thead th, table.table thead td {
   white-space: nowrap; }
+
+table.table tbody th, table.table tbody td {
+  word-wrap: break-word;
+  white-space: pre-wrap;
+  word-break: break-all; }
 
 .cont_navigation-info ul {
   margin: 0;
