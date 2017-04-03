@@ -12,10 +12,10 @@
 				<div class="row">
 					<div class="col-sm-9">
 						<div class="btn-group">
-							<button class="px2-btn px2-btn--primary" data-method="edit" data-page-path="<%%= navigationInfo.parent_info.path %>">編集する</button>
-							<button class="px2-btn" data-method="commit" data-page-path="<%%= navigationInfo.parent_info.path %>">コミット</button>
-							<button class="px2-btn" data-method="log" data-page-path="<%%= navigationInfo.parent_info.path %>">ログ</button>
-							<button class="px2-btn" data-method="preview" data-page-path="<%%= navigationInfo.parent_info.path %>">見る</button>
+							<button class="px2-btn px2-btn--primary" data-method="edit" data-page-path="<%%= navigationInfo.page_info.path %>">編集する</button>
+							<button class="px2-btn" data-method="commit" data-page-path="<%%= navigationInfo.page_info.path %>">コミット</button>
+							<button class="px2-btn" data-method="log" data-page-path="<%%= navigationInfo.page_info.path %>">ログ</button>
+							<button class="px2-btn" data-method="preview" data-page-path="<%%= navigationInfo.page_info.path %>">見る</button>
 						</div>
 						<h2><%%= navigationInfo.page_info.title %></h2>
 						<p>担当者: <%%= navigationInfo.user_info.name %> (<%%= navigationInfo.user_info.id %>)</p>
