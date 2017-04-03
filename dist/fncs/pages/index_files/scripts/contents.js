@@ -2678,6 +2678,7 @@ window.cont = new (function(){
 	var keyword = '';
 	var current_page = '';
 	_this.sitemap = false;
+	_this.userList = false;
 
 	/**
 	 * 画面を初期化
@@ -2697,9 +2698,11 @@ window.cont = new (function(){
 					} );
 				}, 500);
 			});
-			_this.redrawPageList( function(){
-				callback();
-			} );
+			_this.updateUserList(function(){
+				_this.redrawPageList( function(){
+					callback();
+				} );
+			});
 		});
 
 	}
@@ -2715,7 +2718,7 @@ window.cont = new (function(){
 	/**
 	 * ページリストを更新する
 	 */
-	this.updatePageList = function(callback){
+	this.updateSitemap = function(callback){
 		callback = callback || function(){};
 		$cont.html('<div class="px2-loading"></div>');
 		$.get(
@@ -2724,10 +2727,28 @@ window.cont = new (function(){
 			function(sitemap){
 				_this.sitemap = sitemap;
 				// console.log(sitemap);
-				_this.redrawPageList( function(){
-					callback();
-				} );
+				callback();
+			}
+		);
+		return;
+	}
 
+	/**
+	 * ユーザーリストを更新する
+	 */
+	this.updateUserList = function(callback){
+		callback = callback || function(){};
+		$cont.html('<div class="px2-loading"></div>');
+		$.get(
+			'/apis/getUserList',
+			{},
+			function(userList){
+				_this.userList = {};
+				for(var idx in userList){
+					_this.userList[userList[idx].id] = userList[idx];
+				}
+				console.log(_this.userList);
+				callback();
 			}
 		);
 		return;
@@ -2814,6 +2835,7 @@ window.cont = new (function(){
 						return false;
 
 					}else{
+						keyword = '';
 						current_page = $this.attr('data-page-path');
 						_this.redrawPageList();
 						return false;
@@ -2831,6 +2853,7 @@ window.cont = new (function(){
 	 * キーワードが指定されていたら、検索結果を表示する。
 	 */
 	function drawPageListSearch(callback){
+		var listMaxCount = 100;
 		it79.fnc({},[
 			function(it1, arg){
 				if( _this.sitemap !== false ){
@@ -2838,7 +2861,7 @@ window.cont = new (function(){
 					it1.next(arg);
 					return;
 				}
-				_this.updatePageList(function(){
+				_this.updateSitemap(function(){
 					it1.next(arg);
 				});
 				return;
@@ -2876,6 +2899,7 @@ window.cont = new (function(){
 					return false;
 				}
 
+				var hitCount = 0;
 				for( var path in sitemap ){
 					(function($ul, sitemap, path){
 						if( keyword.length ){
@@ -2895,6 +2919,10 @@ window.cont = new (function(){
 							}
 						}
 
+						hitCount ++;
+						if( hitCount > listMaxCount ){
+							return;
+						}
 
 						var $spanAssignee = $('<span>');
 						var $spanEditorType = $('<span>');
@@ -2925,8 +2953,12 @@ window.cont = new (function(){
 										'data-page-path': path
 									})
 									.on('click', function(){
-										openEditor( $(this).attr('data-page-path') );
+										keyword = '';
+										current_page = $(this).attr('data-page-path');
+										_this.redrawPageList();
 										return false;
+										// openEditor( $(this).attr('data-page-path') );
+										// return false;
 									})
 								)
 							)
@@ -3014,6 +3046,13 @@ window.cont = new (function(){
 						$ul.append($li);
 
 					})($ul, sitemap, path);
+
+					if( hitCount > listMaxCount ){
+						$cont.append( $('<p>')
+							.text(listMaxCount+'件までのページを表示しています。 条件を追加して検索結果を絞ってください。')
+						);
+						break;
+					}
 
 				}
 				it1.next(arg);
