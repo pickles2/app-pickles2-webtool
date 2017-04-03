@@ -9,6 +9,14 @@
 		<script id="template-treeview" type="text/template">
 
 			<div class="container-fluid">
+				<div class="cont_breadcrumb">
+					<ul>
+						<%% for(var idx in navigationInfo.breadcrumb_info ){ %>
+							<li><a href="javascript:;" data-page-path="<%%= navigationInfo.breadcrumb_info[idx].path %>"><%%= navigationInfo.breadcrumb_info[idx].title_breadcrumb %></a></li>
+						<%% }%>
+						<li><span><%%= navigationInfo.page_info.title_breadcrumb %></span></li>
+					</ul>
+				</div>
 				<div class="row">
 					<div class="col-sm-9">
 						<div class="btn-group">

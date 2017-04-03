@@ -9,6 +9,19 @@ table.table tbody th, table.table tbody td {
   white-space: pre-wrap;
   word-break: break-all; }
 
+.cont_breadcrumb {
+  margin: 10px 0 2em 0; }
+  .cont_breadcrumb ul, .cont_breadcrumb li {
+    margin: 0;
+    padding: 0;
+    list-style-type: none; }
+  .cont_breadcrumb li {
+    display: inline; }
+    .cont_breadcrumb li:after {
+      content: " > "; }
+    .cont_breadcrumb li:last-child:after {
+      content: ""; }
+
 .cont_navigation-info ul {
   margin: 0;
   padding: 0;

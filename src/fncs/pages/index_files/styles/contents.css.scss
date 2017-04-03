@@ -17,6 +17,22 @@ table.table{
 		}
 	}
 }
+.cont_breadcrumb{
+	margin: 10px 0 2em 0;
+	ul, li{
+		margin: 0; padding: 0;
+		list-style-type: none;
+	}
+	li{
+		display: inline;
+		&:after{
+			content: " > ";
+		}
+		&:last-child:after{
+			content: "";
+		}
+	}
+}
 .cont_navigation-info{
 	ul{
 		margin: 0;
