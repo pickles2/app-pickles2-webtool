@@ -25,91 +25,67 @@ module.exports = function(px2){
 					function(it1, row, idx){
 						new Promise(function(rlv){rlv();})
 							.then(function(){ return new Promise(function(rlv, rjt){
-								console.log(idx + ': ' + row.title);
+								// console.log(idx + ': ' + row.title);
 								rlv();
 							}); })
+							// .then(function(){ return new Promise(function(rlv, rjt){
+							// 	// console.log('checking editorType...');
+							// 	row.editorType = '---';
+							//
+							// 	px2proj.realpath_files(row.path, '', function(realpathDataDir){
+							// 		try {
+							// 			realpathDataDir = require('path').resolve(realpathDataDir, 'guieditor.ignore')+'/';
+							//
+							// 			var rtn = '.not_exists';
+							// 			if( row === null ){
+							// 				callback('.page_not_exists');
+							// 				return;
+							// 			}
+							// 			if( utils79.is_file( pjInfo.realpath_docroot + pjInfo.path_controot + row.content ) ){
+							// 				rtn = 'html';
+							// 				if( utils79.is_file( realpathDataDir + '/data.json' ) ){
+							// 					rtn = 'html.gui';
+							// 				}
+							//
+							// 			}else if( utils79.is_file( pjInfo.realpath_docroot + pjInfo.path_controot + row.content + '.md' ) ){
+							// 				rtn = 'md';
+							// 			}
+							//
+							// 			row.editorType = rtn;
+							// 		} catch (e) {
+							// 		}
+							// 		rlv();
+							// 	});
+							//
+							// }); })
+							// .then(function(){ return new Promise(function(rlv, rjt){
+							// 	// console.log('checking assignee info ...');
+							// 	row.user_info = {'name': '---', 'assignee': '---'};
+							//
+							// 	// console.log(req.method.toLowerCase());
+							// 	if( req.method.toLowerCase() != 'get' ){
+							// 		console.log('method is not GET: '+req.method);
+							// 		rlv();
+							// 		return;
+							// 	}
+							// 	// console.log(rtn.page_info.assignee);
+							// 	if( typeof(row.assignee) != typeof('') ){
+							// 		console.log('no assignee');
+							// 		rlv();
+							// 		return;
+							// 	}
+							//
+							// 	px2.getUserInfo(row.assignee, function(userInfo){
+							// 		// console.log(userInfo);
+							// 		delete(userInfo.pw);//パスワードは忘れる
+							// 		row.user_info = userInfo;
+							// 		rlv();
+							// 		return;
+							// 	});
+							// 	return;
+							// }); })
 							.then(function(){ return new Promise(function(rlv, rjt){
-								console.log('checking editorType...');
-								row.editorType = '---';
-
-								px2proj.realpath_files(row.path, '', function(realpathDataDir){
-									try {
-										realpathDataDir = require('path').resolve(realpathDataDir, 'guieditor.ignore')+'/';
-
-										var rtn = '.not_exists';
-										if( row === null ){
-											callback('.page_not_exists');
-											return;
-										}
-										if( utils79.is_file( pjInfo.documentRoot + pjInfo.contRoot + row.content ) ){
-											rtn = 'html';
-											if( utils79.is_file( realpathDataDir + '/data.json' ) ){
-												rtn = 'html.gui';
-											}
-
-										}else if( utils79.is_file( pjInfo.documentRoot + pjInfo.contRoot + row.content + '.md' ) ){
-											rtn = 'md';
-										}
-
-										row.editorType = rtn;
-									} catch (e) {
-									}
-									rlv();
-								});
-
-							}); })
-							.then(function(){ return new Promise(function(rlv, rjt){
-								console.log('checking assignee info ...');
-								row.user_info = {'name': '---', 'assignee': '---'};
-								function getUserInfo(id, callback){
-									callback = callback || function(){};
-									var pathCsv = require('path').resolve(__dirname, '../../config/userlist.csv');
-									// console.log(pathCsv);
-									var findInCsv = new (require('find-in-csv'))(
-										pathCsv ,
-										{
-											"require": ['id']
-										}
-									);
-									// console.log(findInCsv);
-
-									findInCsv.get(
-										{'id':id},
-										function(userInfo){
-											// console.log(findInCsv);
-											// console.log(userInfo);
-											callback(userInfo);
-											return;
-										}
-									);
-									return;
-
-								}
-
-								// console.log(req.method.toLowerCase());
-								if( req.method.toLowerCase() != 'get' ){
-									console.log('method is not GET: '+req.method);
-									rlv();
-									return;
-								}
-								// console.log(rtn.page_info.assignee);
-								if( typeof(row.assignee) != typeof('') ){
-									console.log('no assignee');
-									rlv();
-									return;
-								}
-
-								getUserInfo(row.assignee, function(userInfo){
-									// console.log(userInfo);
-									delete(userInfo.pw);//パスワードは忘れる
-									row.user_info = userInfo;
-									rlv();
-									return;
-								});
-								return;
-							}); })
-							.then(function(){ return new Promise(function(rlv, rjt){
-								console.log('done.');
+								// console.log('done.');
 								it1.next();
 								rlv();
 							}); })

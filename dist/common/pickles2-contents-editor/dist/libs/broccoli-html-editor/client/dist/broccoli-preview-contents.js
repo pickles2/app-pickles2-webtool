@@ -14,6 +14,16 @@
 		callbackMessage('unselectInstance');
 		callbackMessage('unfocusInstance');
 	});
+	// dropイベントをキャンセル
+	$iframeWindow.bind('dragover', function(e){
+		e.stopPropagation();
+		e.preventDefault();
+		return;
+	}).bind('drop', function(e){
+		e.stopPropagation();
+		e.preventDefault();
+		return;
+	});
 
 	// console.log(window.location);
 
@@ -30,7 +40,7 @@
 	}
 
 	function tabCancel(){
-		$('body *').attr({'tabindex':'-1'});
+		$('body *').attr({'tabindex':'-1'}).css({'outline':'none'});
 	}
 
 	window.addEventListener('message',function(event){

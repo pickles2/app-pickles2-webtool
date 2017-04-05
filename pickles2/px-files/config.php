@@ -46,14 +46,24 @@ return call_user_func( function(){
 
 
 
-	// paths_proc_type
-	// パスのパターン別に処理方法を設定します。
-	//     - ignore = 対象外パス
-	//     - direct = 加工せずそのまま出力する(デフォルト)
-	//     - その他 = extension 名
-	// パターンは先頭から検索され、はじめにマッチした設定を採用します。
-	// ワイルドカードとして "*"(アスタリスク) が使用可能です。
-	// 処理は、 `$conf->funcs->processor` に設定した順に実行されます。
+	/**
+	 * paths_proc_type
+	 *
+	 * パスのパターン別に処理方法を設定します。
+	 *
+	 * - ignore = 対象外パス。Pickles 2 のアクセス可能範囲から除外します。このパスにへのアクセスは拒絶され、パブリッシュの対象からも外されます。
+	 * - direct = 物理ファイルを、ファイルとして読み込んでから加工処理を通します。 (direct以外の通常の処理は、PHPファイルとして `include()` されます)
+	 * - pass = 物理ファイルを、そのまま無加工で出力します。 (デフォルト)
+	 * - その他 = extension名
+	 *
+	 * パターンは先頭から検索され、はじめにマッチした設定を採用します。
+	 * ワイルドカードとして "*"(アスタリスク) が使用可能です。
+	 * 部分一致ではなく、完全一致で評価されます。従って、ディレクトリ以下すべてを表現する場合は、 `/*` で終わるようにしてください。
+	 *
+	 * extensionは、 `$conf->funcs->processor` に設定し、設定した順に実行されます。
+	 * 例えば、 '*.html' => 'html' にマッチしたリクエストは、
+	 * $conf->funcs->processor->html に設定したプロセッサのリストに沿って、上から順に処理されます。
+	 */
 	$conf->paths_proc_type = array(
 		'/.htaccess' => 'ignore' ,
 		'/.px_execute.php' => 'ignore' ,
@@ -74,10 +84,26 @@ return call_user_func( function(){
 		'*.htm' => 'html' ,
 		'*.css' => 'css' ,
 		'*.js' => 'js' ,
-		'*.png' => 'direct' ,
-		'*.jpg' => 'direct' ,
-		'*.gif' => 'direct' ,
-		'*.svg' => 'direct' ,
+		'*.png' => 'pass' ,
+		'*.jpg' => 'pass' ,
+		'*.gif' => 'pass' ,
+		'*.svg' => 'pass' ,
+	);
+
+	/**
+	 * paths_enable_sitemap
+	 *
+	 * サイトマップのロードを有効にするパスのパターンを設定します。
+	 * ワイルドカードとして "*"(アスタリスク) が使用可能です。
+	 *
+	 * サイトマップ中のページ数が増えると、サイトマップのロード自体に時間を要する場合があります。
+	 * サイトマップへのアクセスが必要ないファイルでは、この処理はスキップするほうがよいでしょう。
+	 *
+	 * 多くの場合では、 *.html と *.htm 以外ではロードする必要はありません。
+	 */
+	$conf->paths_enable_sitemap = array(
+		'*.html',
+		'*.htm',
 	);
 
 
@@ -99,9 +125,6 @@ return call_user_func( function(){
 
 		// sitemapExcel
 		'tomk79\pickles2\sitemap_excel\pickles_sitemap_excel::exec' ,
-
-		// PX=px2dthelper
-		'tomk79\pickles2\px2dthelper\main::register'
 	];
 
 	// funcs: Before content
@@ -109,6 +132,9 @@ return call_user_func( function(){
 	$conf->funcs->before_content = [
 		// PX=api
 		'picklesFramework2\commands\api::register' ,
+
+		// PX=px2dthelper
+		'tomk79\pickles2\px2dthelper\main::register',
 
 		// PX=publish
 		'picklesFramework2\commands\publish::register' ,
@@ -223,21 +249,75 @@ return call_user_func( function(){
 		"local" => "./px-files/modules/",
 		"FESS" => "../vendor/pickles2/broccoli-module-fess/modules/"
 	];
-	$conf->plugins->px2dt->contents_area_selector = '[data-contents-area]'; // <- コンテンツエリアを識別するセレクタ(複数の要素がマッチしてもよい)
-	$conf->plugins->px2dt->contents_bowl_name_by = 'data-contents-area'; // <- コンテンツエリアのbowl名を指定する属性名
+
+	/** コンテンツエリアを識別するセレクタ(複数の要素がマッチしてもよい) */
+	$conf->plugins->px2dt->contents_area_selector = '[data-contents-area]';
+
+	/** コンテンツエリアのbowl名を指定する属性名 */
+	$conf->plugins->px2dt->contents_bowl_name_by = 'data-contents-area';
+
+	/** パブリッシュのパターンを登録 */
+	$conf->plugins->px2dt->publish_patterns = array(
+		array(
+			'label'=>'すべて',
+			'paths_region'=> array('/'),
+			'paths_ignore'=> array(),
+			'keep_cache'=>false
+		),
+		array(
+			'label'=>'リソース類',
+			'paths_region'=> array('/caches/','/common/'),
+			'paths_ignore'=> array(),
+			'keep_cache'=>true
+		),
+		array(
+			'label'=>'すべて(commonを除く)',
+			'paths_region'=> array('/'),
+			'paths_ignore'=> array('/common/'),
+			'keep_cache'=>false
+		),
+	);
+
+	/** config for GUI Editor. */
+	$conf->plugins->px2dt->guieditor = new stdClass;
+
+	/** GUI編集データディレクトリ */
+	// $conf->plugins->px2dt->guieditor->path_data_dir = '{$dirname}/{$filename}_files/guieditor.ignore/';
+
+	/** GUI編集リソース出力先ディレクトリ */
+	// $conf->plugins->px2dt->guieditor->path_resource_dir = '{$dirname}/{$filename}_files/resources/';
 
 
 	// -------- PHP Setting --------
 
-	// [memory_limit]
-	// PHPのメモリの使用量の上限を設定します。
-	// 正の整数値で上限値(byte)を与えます。
-	//     例: 1000000 (1,000,000 bytes)
-	//     例: "128K" (128 kilo bytes)
-	//     例: "128M" (128 mega bytes)
-	// -1 を与えた場合、無限(システムリソースの上限まで)に設定されます。
-	// サイトマップやコンテンツなどで、容量の大きなデータを扱う場合に調整してください。
-	// @ini_set( 'memory_limit' , -1 );
+	/**
+	 * `memory_limit`
+	 *
+	 * PHPのメモリの使用量の上限を設定します。
+	 * 正の整数値で上限値(byte)を与えます。
+	 *
+	 *     例: 1000000 (1,000,000 bytes)
+	 *     例: "128K" (128 kilo bytes)
+	 *     例: "128M" (128 mega bytes)
+	 *
+	 * -1 を与えた場合、無限(システムリソースの上限まで)に設定されます。
+	 * サイトマップやコンテンツなどで、容量の大きなデータを扱う場合に調整してください。
+	 */
+	@ini_set( 'memory_limit' , -1 );
+
+	/**
+	 * `display_errors`, `error_reporting`
+	 *
+	 * エラーを標準出力するための設定です。
+	 *
+	 * PHPの設定によっては、エラーが発生しても表示されない場合があります。
+	 * もしも、「なんか挙動がおかしいな？」と感じたら、
+	 * 必要に応じてこれらのコメントを外し、エラー出力を有効にしてみてください。
+	 *
+	 * エラーメッセージは問題解決の助けになります。
+	 */
+	@ini_set('display_errors', 1);
+	@ini_set('error_reporting', E_ALL);
 
 
 	return $conf;

@@ -1,5 +1,8 @@
 {
   "main": "libs/main.js",
+  "version": "2.0.0-beta.1+nb",
+  "description": "",
+  "private": true,
   "scripts": {
     "preinstall": "git submodule update --init --recursive --force",
     "start": "node ./libs/main.js;",
