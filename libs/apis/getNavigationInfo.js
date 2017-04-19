@@ -17,7 +17,7 @@ module.exports = function(px2){
 
 		var page_path = req.param('page_path');
 		if( !page_path ){ page_path = '/'; }
-		// console.log( page_path+'?PX=px2dthelper.get.navigation_info' );
+		// console.log( page_path+'?PX=px2dthelper.get.navigation_info&filter=false' );
 
 		var navigation_info;
 		var pjInfo;
@@ -32,7 +32,7 @@ module.exports = function(px2){
 				});
 			}); })
 			.then(function(){ return new Promise(function(rlv, rjt){
-				px2proj.query(page_path+'?PX=px2dthelper.get.all', {
+				px2proj.query(page_path+'?PX=px2dthelper.get.all&filter=false', {
 					"output": "json",
 					"userAgent": "Mozilla/5.0",
 					"success": function(data){

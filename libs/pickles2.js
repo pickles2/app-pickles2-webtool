@@ -23,7 +23,7 @@ module.exports = function(conf){
 	this.getProjectInfo = function(callback){
 		callback = callback || function(){};
 		var pjInfo = {};
-		_this.px2proj.query('/?PX=px2dthelper.get.all', {
+		_this.px2proj.query('/?PX=px2dthelper.get.all&filter=false', {
 			"output": "json",
 			"userAgent": "Mozilla/5.0",
 			"success": function(data){

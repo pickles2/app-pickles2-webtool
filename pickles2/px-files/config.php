@@ -124,7 +124,9 @@ return call_user_func( function(){
 		'picklesFramework2\commands\phpinfo::register' ,
 
 		// sitemapExcel
-		'tomk79\pickles2\sitemap_excel\pickles_sitemap_excel::exec' ,
+		'tomk79\pickles2\sitemap_excel\pickles_sitemap_excel::exec('.json_encode(array(
+			'master_format'=>'xlsx'
+		)).')' ,
 	];
 
 	// funcs: Before content
