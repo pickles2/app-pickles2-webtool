@@ -75,6 +75,7 @@ app.use( '/apis/getNavigationInfo', require('./apis/getNavigationInfo.js')(px2) 
 app.use( '/apis/getUserInfo', require('./apis/getUserInfo.js')(conf) );
 app.use( '/apis/getUserList', require('./apis/getUserList.js')(conf) );
 app.use( '/apis/pickles2ContentsEditorGpi', require('./apis/pickles2ContentsEditorGpi.js')(conf) );
+app.use( '/apis/pxCommand', require('./apis/pxCommand.js')(conf) );
 app.use( '/apis/px2git/:method', require('./apis/px2git/px2git.js')(conf) );
 app.use( '/apis/getServerConf', require('./apis/getServerConf.js')(conf) );
 app.use( '/apis/getPageInfo', require('./apis/getPageInfo.js')(conf) );

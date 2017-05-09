@@ -2859,7 +2859,115 @@ window.cont = new (function(){
 							if( !confirm('現状のコンテンツを破棄し、他のページを複製して取り込みます。よろしいですか？') ){
 								return false;
 							}
-							alert('開発中の機能です。');
+
+							var $this = $(this);
+							var $body = $('<div>')
+								.append( $('#template-copy-from-other-page').html() )
+							;
+							var $input = $body.find('input');
+							var $list = $body.find('.cont_sample_list')
+								.css({
+									'overflow': 'auto',
+									'height': 200,
+									'background-color': '#f9f9f9',
+									'border': '1px solid #bbb',
+									'padding': 10,
+									'margin': '10px auto',
+									'border-radius': 5
+								})
+							;
+							$input.on('change', function(){
+								var val = $input.val();
+								$list.html('<div class="px2-loading"></div>');
+								main.project.pxCommand(
+									'/',
+									'px2dthelper.search_sitemap',
+									{
+										'keyword': val
+									},
+									function(page_list){
+										var $ul = $('<ul>')
+										for(var i in page_list){
+											var $li = $('<li>')
+											$li.append( $('<a>')
+												.text(page_list[i].path)
+												.attr({
+													'href': 'javascript:;',
+													'data-path': page_list[i].path
+												})
+												.on('click', function(e){
+													var path = $(this).attr('data-path');
+													$input.val(path);
+												})
+											);
+											$ul.append($li);
+										}
+										$list.html('').append($ul);
+									}
+								);
+							});
+
+							px2style.modal(
+								{
+									'title': '他のページから複製',
+									'body': $body,
+									'buttons': [
+										$('<button>')
+											.text('OK')
+											.addClass('px2-btn')
+											.addClass('px2-btn--primary')
+											.on('click', function(){
+												var page_path = $input.val();
+												console.log(page_path);
+
+												main.project.pxCommand(
+													page_path,
+													'px2dthelper.get.all',
+													{},
+													function(pageAllInfo){
+														var pageinfo = pageAllInfo.page_info;
+														// console.log(pageAllInfo);
+														if( !pageinfo ){
+															alert('存在しないページです。');
+															return false;
+														}
+														// console.log($this.attr('data-path'));
+														// console.log(pageinfo.path);
+														main.project.pxCommand(
+															'/',
+															'px2dthelper.copy_content',
+															{
+																'from': $this.attr('data-path'),
+																'to': pageinfo.path
+															},
+															function(result){
+																console.log(result);
+
+																if( !result[0] ){
+																	alert('コンテンツの複製に失敗しました。'+result[1]);
+																	return;
+																}
+																px2style.closeModal();
+																// app.loadPreview( _lastPreviewPath, {"force":true}, function(){
+																// } );
+															}
+														);
+													}
+												);
+
+											}),
+										$('<button>')
+											.text('Cancel')
+											.addClass('px2-btn')
+											.on('click', function(){
+												px2style.closeModal();
+											})
+									]
+								},
+								function(){
+									console.log('done.');
+								}
+							);
 						})
 					)
 				);
