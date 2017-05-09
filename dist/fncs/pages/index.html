@@ -16,7 +16,7 @@ window.config = new (function(){
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
 <meta http-equiv="x-ua-compatible" content="ie=edge" />
 
-<!-- Bootstrap 4 CSS -->
+<!-- Bootstrap 3 CSS -->
 <link rel="stylesheet" href="/resources/bootstrap/css/bootstrap.css" />
 
 <!-- px2style -->
@@ -33,7 +33,7 @@ window.config = new (function(){
 				<div class="cont_breadcrumb">
 					<ul>
 						<% for(var idx in navigationInfo.breadcrumb_info ){ %>
-							<li><a href="javascript:;" data-page-path="<%= navigationInfo.breadcrumb_info[idx].path %>"><%= navigationInfo.breadcrumb_info[idx].title_breadcrumb %></a></li>
+							<li><a href="javascript:;" data-method="goto" data-page-path="<%= navigationInfo.breadcrumb_info[idx].path %>"><%= navigationInfo.breadcrumb_info[idx].title_breadcrumb %></a></li>
 						<% }%>
 						<li><span><%= navigationInfo.page_info.title_breadcrumb %></span></li>
 					</ul>
@@ -41,10 +41,16 @@ window.config = new (function(){
 				<div class="row">
 					<div class="col-sm-9">
 						<div class="btn-group">
-							<button class="px2-btn px2-btn--primary" data-method="edit" data-page-path="<%= navigationInfo.page_info.path %>">編集する</button>
-							<button class="px2-btn" data-method="commit" data-page-path="<%= navigationInfo.page_info.path %>">コミット</button>
-							<button class="px2-btn" data-method="log" data-page-path="<%= navigationInfo.page_info.path %>">ログ</button>
-							<button class="px2-btn" data-method="preview" data-page-path="<%= navigationInfo.page_info.path %>">見る</button>
+							<button class="btn px2-btn px2-btn--primary" data-method="edit" data-page-path="<%= navigationInfo.page_info.path %>">編集する</button>
+							<button class="btn px2-btn" data-method="commit" data-page-path="<%= navigationInfo.page_info.path %>">コミット</button>
+							<button class="btn px2-btn" data-method="log" data-page-path="<%= navigationInfo.page_info.path %>">ログ</button>
+							<button class="btn px2-btn" data-method="preview" data-page-path="<%= navigationInfo.page_info.path %>">見る</button>
+							<button class="btn px2-btn dropdown-toggle" type="button" data-toggle="dropdown">
+								<span class="caret"></span>
+								<span class="sr-only">Toggle Dropdown</span>
+							</button>
+							<ul class="dropdown-menu cont_page-dropdown-menu">
+							</ul>
 						</div>
 						<h2><%= navigationInfo.page_info.title %></h2>
 						<p>担当者: <%= navigationInfo.user_info.name %> (<%= navigationInfo.user_info.id %>)</p>
@@ -79,17 +85,17 @@ window.config = new (function(){
 					</div>
 					<div class="col-sm-3">
 						<% if( navigationInfo.parent_info ){ %>
-							<p><a href="javascript:;" data-page-path="<%= navigationInfo.parent_info.path %>">↑ <%= navigationInfo.parent_info.title %></a></p>
+							<p><a href="javascript:;" data-method="goto" data-page-path="<%= navigationInfo.parent_info.path %>">↑ <%= navigationInfo.parent_info.title %></a></p>
 						<% } %>
 						<% if( navigationInfo.bros_info.length ){ %>
 							<div class="cont_navigation-info"><ul>
 								<% for( var idx in navigationInfo.bros_info ){ %>
 									<li>
-										<a href="javascript:;" data-page-path="<%= navigationInfo.bros_info[idx].path %>"<%- (navigationInfo.bros_info[idx].id == navigationInfo.page_info.id ? ' class="current"' : '') %>><%= navigationInfo.bros_info[idx].title %></a>
+										<a href="javascript:;" data-method="goto" data-page-path="<%= navigationInfo.bros_info[idx].path %>"<%- (navigationInfo.bros_info[idx].id == navigationInfo.page_info.id ? ' class="current"' : '') %>><%= navigationInfo.bros_info[idx].title %></a>
 										<% if( navigationInfo.bros_info[idx].id == navigationInfo.page_info.id && navigationInfo.children_info.length ){ %>
 											<ul>
 												<% for( var idx2 in navigationInfo.children_info ){ %>
-													<li><a href="javascript:;" data-page-path="<%= navigationInfo.children_info[idx2].path %>"><%= navigationInfo.children_info[idx2].title %></a></li>
+													<li><a href="javascript:;" data-method="goto" data-page-path="<%= navigationInfo.children_info[idx2].path %>"><%= navigationInfo.children_info[idx2].title %></a></li>
 												<% } %>
 											</ul>
 										<% } %>
@@ -146,7 +152,7 @@ window.config = new (function(){
 <!-- project common -->
 <script src="/common/scripts/main.js"></script>
 
-<!-- jQuery first, then Bootstrap 4 JS. -->
+<!-- jQuery first, then Bootstrap 3 JS. -->
 <script src="/resources/bootstrap/js/bootstrap.min.js"></script>
 
 		<script type="text/javascript" src="/common/px2dtGitUi/px2dtGitUi.js"></script>

@@ -7,5 +7,5 @@
 <!-- project common -->
 <script src="/common/scripts/main.js"></script>
 
-<!-- jQuery first, then Bootstrap 4 JS. -->
+<!-- jQuery first, then Bootstrap 3 JS. -->
 <script src="/resources/bootstrap/js/bootstrap.min.js"></script>

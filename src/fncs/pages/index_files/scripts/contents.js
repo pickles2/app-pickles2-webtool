@@ -33,6 +33,7 @@ window.cont = new (function(){
 					} );
 				}, 500);
 			});
+
 			_this.updateUserList(function(){
 				_this.redrawPageList( function(){
 					callback();
@@ -134,7 +135,7 @@ window.cont = new (function(){
 				var html = template(data);
 
 				$cont.html('').append( html );
-				$cont.find('a,button').on('click', function(e){
+				$cont.find('a[data-method],button[data-method]').on('click', function(e){
 					var $this = $(this);
 					var method = $this.attr('data-method');
 					if( method == 'edit' ){
@@ -169,13 +170,31 @@ window.cont = new (function(){
 						window.open( window.config.urlPreview + $this.attr('data-page-path') );
 						return false;
 
-					}else{
+					}else if( method == 'goto' ){
 						keyword = '';
 						current_page = $this.attr('data-page-path');
 						_this.redrawPageList();
 						return false;
 					}
 				});
+
+				var $dropdownMenu = $('.cont_page-dropdown-menu');
+				$dropdownMenu.append($('<li>')
+					.append($('<a>')
+						.text('他のページから複製して取り込む')
+						.attr({
+							'data-path': current_page ,
+							'href':'javascript:;'
+						})
+						.on('click', function(e){
+							$cont.find('.dropdown-toggle').click();
+							if( !confirm('現状のコンテンツを破棄し、他のページを複製して取り込みます。よろしいですか？') ){
+								return false;
+							}
+							alert('開発中の機能です。');
+						})
+					)
+				);
 
 				callback();
 				return;
