@@ -5,6 +5,8 @@ h1 {
   font-size: 24px;
   font-weight: bold;
   margin: 120px auto 20px auto; }
+  h1 img {
+    max-width: 300px; }
 
 .cont-main {
   background-color: #fff;

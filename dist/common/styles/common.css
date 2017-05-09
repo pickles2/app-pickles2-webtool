@@ -30,28 +30,49 @@ h2, h3, h4, h5, h6 {
 .theme-main,
 .theme-footer {
   width: 97%;
-  max-width: 1200px;
   margin: 0 auto;
   color: #666;
   text-shadow: 0px 1px 1px rgba(0, 0, 0, 0.05); }
 
 .theme-header {
-  padding: 15px 0 10px 0; }
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 1200;
+  background-color: #fff;
+  width: 100%;
+  border-bottom: 3px solid #00a0e6;
+  border-bottom-color: #00a0e6;
+  color: #00a0e6;
+  box-shadow: 0 5px 13px rgba(0, 0, 0, 0.1); }
+  .theme-header__inner {
+    padding: 0 0 0 60px; }
+  .theme-header__px2logo {
+    position: fixed;
+    top: 0;
+    left: 10px;
+    padding: 6px;
+    background-color: #fff;
+    width: 45px;
+    height: 45px; }
+    .theme-header__px2logo img {
+      height: 100%;
+      width: 100%; }
   .theme-header__ci {
     float: left;
-    text-align: left; }
+    text-align: left;
+    padding: 10px 0 0 0; }
     .theme-header__ci * {
       margin: 0;
       color: inherit; }
-    .theme-header__ci__service-name {
-      font-size: 13px; }
     .theme-header__ci__project-name {
-      font-size: 36px; }
+      font-size: 13px; }
     .theme-header__ci a:hover {
       text-decoration: none; }
   .theme-header__shoulder {
     float: right;
-    text-align: right; }
+    text-align: right;
+    padding: 5px 0; }
     .theme-header__shoulder ul {
       margin: 0;
       padding: 0;
@@ -67,11 +88,9 @@ h2, h3, h4, h5, h6 {
 
 .theme-main {
   background-color: #fff;
+  margin-top: 40px;
   padding: 30px;
   text-shadow: none; }
-  .theme-main h1 {
-    text-align: center;
-    margin: 1em; }
 
 .theme-footer {
   font-size: 13px;
