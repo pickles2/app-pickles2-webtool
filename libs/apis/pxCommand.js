@@ -21,7 +21,7 @@ module.exports = function(conf){
 				rlv();
 			}); })
 			.then(function(){ return new Promise(function(rlv, rjt){
-				// console.log(query);
+				console.log(query);
 				px2proj.query(query, {
 					'output': 'json',
 					"userAgent": "Mozilla/5.0",

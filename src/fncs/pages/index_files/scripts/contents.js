@@ -269,8 +269,8 @@ window.cont = new (function(){
 															'/',
 															'px2dthelper.copy_content',
 															{
-																'from': $this.attr('data-path'),
-																'to': pageinfo.path
+																'from': pageinfo.path,
+																'to': $this.attr('data-path')
 															},
 															function(result){
 																console.log(result);
@@ -279,9 +279,9 @@ window.cont = new (function(){
 																	alert('コンテンツの複製に失敗しました。'+result[1]);
 																	return;
 																}
-																px2style.closeModal();
-																// app.loadPreview( _lastPreviewPath, {"force":true}, function(){
-																// } );
+																_this.redrawPageList( function(){
+																	px2style.closeModal();
+																} );
 															}
 														);
 													}

@@ -11722,9 +11722,11 @@ module.exports = function( main ){
 		callback = callback || function(){};
 
 		var strParam = '';
+		var aryParams = [];
 		for(var key in params){
-			strParam += encodeURIComponent(key)+'='+encodeURIComponent(params[key])
+			aryParams.push( encodeURIComponent(key)+'='+encodeURIComponent(params[key]) );
 		}
+		strParam = aryParams.join('&');
 
 		var rtn = false;
 		$.ajax({
