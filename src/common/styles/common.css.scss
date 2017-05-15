@@ -29,26 +29,45 @@ h2, h3, h4, h5, h6{
 .theme-main,
 .theme-footer{
 	width: 97%;
-	max-width:1200px;
 	margin: 0 auto;
 	color: #666;
 	text-shadow: 0px 1px 1px rgba(0,0,0,0.05);
 
 }
 .theme-header{
-	padding: 15px 0 10px 0;
+	position: fixed;
+	left: 0; top: 0;
+	z-index: 1200;
+	background-color: #fff;
+	width: 100%;
+	border-bottom: 3px solid #00a0e6;
+	border-bottom-color: rgb(0, 160, 230);
+	color: rgb(0, 160, 230);
+	box-shadow: 0 5px 13px rgba(0, 0, 0, 0.1);
+	&__inner{
+		padding: 0 0 0 60px;
+	}
+	&__px2logo{
+		position: fixed;
+		top: 0; left: 10px;
+		padding: 6px;
+		background-color: #fff;
+		width: 45px; height: 45px;
+		img{
+			height: 100%;
+			width: 100%;
+		}
+	}
 	&__ci{
 		float: left;
 		text-align: left;
+		padding: 10px 0 0 0;
 		*{
 			margin: 0;
 			color: inherit;
 		}
-		&__service-name{
-			font-size: 13px;
-		}
 		&__project-name{
-			font-size: 36px;
+			font-size: 13px;
 		}
 		a{
 			&:hover{
@@ -59,6 +78,7 @@ h2, h3, h4, h5, h6{
 	&__shoulder{
 		float: right;
 		text-align: right;
+		padding: 5px 0;
 		ul{
 			margin: 0;
 			padding: 0;
@@ -76,12 +96,9 @@ h2, h3, h4, h5, h6{
 }
 .theme-main{
 	background-color: #fff;
+	margin-top: 40px;
 	padding: 30px;
 	text-shadow: none;
-	h1{
-		text-align: center;
-		margin: 1em;
-	}
 }
 .theme-footer{
 	font-size: 13px;

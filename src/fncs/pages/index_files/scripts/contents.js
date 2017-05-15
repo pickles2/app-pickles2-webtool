@@ -33,6 +33,7 @@ window.cont = new (function(){
 					} );
 				}, 500);
 			});
+
 			_this.updateUserList(function(){
 				_this.redrawPageList( function(){
 					callback();
@@ -134,7 +135,7 @@ window.cont = new (function(){
 				var html = template(data);
 
 				$cont.html('').append( html );
-				$cont.find('a,button').on('click', function(e){
+				$cont.find('a[data-method],button[data-method]').on('click', function(e){
 					var $this = $(this);
 					var method = $this.attr('data-method');
 					if( method == 'edit' ){
@@ -169,13 +170,139 @@ window.cont = new (function(){
 						window.open( window.config.urlPreview + $this.attr('data-page-path') );
 						return false;
 
-					}else{
+					}else if( method == 'goto' ){
 						keyword = '';
 						current_page = $this.attr('data-page-path');
 						_this.redrawPageList();
 						return false;
 					}
 				});
+
+				var $dropdownMenu = $('.cont_page-dropdown-menu');
+				$dropdownMenu.append($('<li>')
+					.append($('<a>')
+						.text('他のページから複製して取り込む')
+						.attr({
+							'data-path': current_page ,
+							'href':'javascript:;'
+						})
+						.on('click', function(e){
+							$cont.find('.dropdown-toggle').click();
+							if( !confirm('現状のコンテンツを破棄し、他のページを複製して取り込みます。よろしいですか？') ){
+								return false;
+							}
+
+							var $this = $(this);
+							var $body = $('<div>')
+								.append( $('#template-copy-from-other-page').html() )
+							;
+							var $input = $body.find('input');
+							var $list = $body.find('.cont_sample_list')
+								.css({
+									'overflow': 'auto',
+									'height': 200,
+									'background-color': '#f9f9f9',
+									'border': '1px solid #bbb',
+									'padding': 10,
+									'margin': '10px auto',
+									'border-radius': 5
+								})
+							;
+							$input.on('change', function(){
+								var val = $input.val();
+								$list.html('<div class="px2-loading"></div>');
+								main.project.pxCommand(
+									'/',
+									'px2dthelper.search_sitemap',
+									{
+										'keyword': val
+									},
+									function(page_list){
+										var $ul = $('<ul>')
+										for(var i in page_list){
+											var $li = $('<li>')
+											$li.append( $('<a>')
+												.text(page_list[i].path)
+												.attr({
+													'href': 'javascript:;',
+													'data-path': page_list[i].path
+												})
+												.on('click', function(e){
+													var path = $(this).attr('data-path');
+													$input.val(path);
+												})
+											);
+											$ul.append($li);
+										}
+										$list.html('').append($ul);
+									}
+								);
+							});
+
+							px2style.modal(
+								{
+									'title': '他のページから複製',
+									'body': $body,
+									'buttons': [
+										$('<button>')
+											.text('OK')
+											.addClass('px2-btn')
+											.addClass('px2-btn--primary')
+											.on('click', function(){
+												var page_path = $input.val();
+												console.log(page_path);
+
+												main.project.pxCommand(
+													page_path,
+													'px2dthelper.get.all',
+													{},
+													function(pageAllInfo){
+														var pageinfo = pageAllInfo.page_info;
+														// console.log(pageAllInfo);
+														if( !pageinfo ){
+															alert('存在しないページです。');
+															return false;
+														}
+														// console.log($this.attr('data-path'));
+														// console.log(pageinfo.path);
+														main.project.pxCommand(
+															'/',
+															'px2dthelper.copy_content',
+															{
+																'from': pageinfo.path,
+																'to': $this.attr('data-path')
+															},
+															function(result){
+																console.log(result);
+
+																if( !result[0] ){
+																	alert('コンテンツの複製に失敗しました。'+result[1]);
+																	return;
+																}
+																_this.redrawPageList( function(){
+																	px2style.closeModal();
+																} );
+															}
+														);
+													}
+												);
+
+											}),
+										$('<button>')
+											.text('Cancel')
+											.addClass('px2-btn')
+											.on('click', function(){
+												px2style.closeModal();
+											})
+									]
+								},
+								function(){
+									console.log('done.');
+								}
+							);
+						})
+					)
+				);
 
 				callback();
 				return;

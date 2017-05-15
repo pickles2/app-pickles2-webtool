@@ -1014,18 +1014,18 @@ module.exports={
   "_args": [
     [
       {
-        "raw": "ejs@2.5.6",
+        "raw": "ejs@^2.5.2",
         "scope": null,
         "escapedName": "ejs",
         "name": "ejs",
-        "rawSpec": "2.5.6",
-        "spec": "2.5.6",
-        "type": "version"
+        "rawSpec": "^2.5.2",
+        "spec": ">=2.5.2 <3.0.0",
+        "type": "range"
       },
-      "/mydoc_TomK/Dropbox/localhosts/pickles2projects/pickles2/pickles2webtool"
+      "/mydoc_TomK/Dropbox/localhosts/pickles2projects/pickles2/app-pickles2-webtool"
     ]
   ],
-  "_from": "ejs@2.5.6",
+  "_from": "ejs@>=2.5.2 <3.0.0",
   "_id": "ejs@2.5.6",
   "_inCache": true,
   "_location": "/ejs",
@@ -1041,16 +1041,15 @@ module.exports={
   "_npmVersion": "3.10.8",
   "_phantomChildren": {},
   "_requested": {
-    "raw": "ejs@2.5.6",
+    "raw": "ejs@^2.5.2",
     "scope": null,
     "escapedName": "ejs",
     "name": "ejs",
-    "rawSpec": "2.5.6",
-    "spec": "2.5.6",
-    "type": "version"
+    "rawSpec": "^2.5.2",
+    "spec": ">=2.5.2 <3.0.0",
+    "type": "range"
   },
   "_requiredBy": [
-    "#USER",
     "/",
     "/broccoli-html-editor",
     "/langbank",
@@ -1059,8 +1058,8 @@ module.exports={
   "_resolved": "https://registry.npmjs.org/ejs/-/ejs-2.5.6.tgz",
   "_shasum": "479636bfa3fe3b1debd52087f0acb204b4f19c88",
   "_shrinkwrap": null,
-  "_spec": "ejs@2.5.6",
-  "_where": "/mydoc_TomK/Dropbox/localhosts/pickles2projects/pickles2/pickles2webtool",
+  "_spec": "ejs@^2.5.2",
+  "_where": "/mydoc_TomK/Dropbox/localhosts/pickles2projects/pickles2/app-pickles2-webtool",
   "author": {
     "name": "Matthew Eernisse",
     "email": "mde@fleegix.org",
@@ -11712,6 +11711,38 @@ module.exports = function( main ){
 				callback( data );
 			},
 			'complete': function(xhr, textStatus){
+			}
+		});
+	}
+
+	/**
+	 * PXコマンドを実行する
+	 */
+	this.pxCommand = function(page_path, command, params, callback){
+		callback = callback || function(){};
+
+		var strParam = '';
+		var aryParams = [];
+		for(var key in params){
+			aryParams.push( encodeURIComponent(key)+'='+encodeURIComponent(params[key]) );
+		}
+		strParam = aryParams.join('&');
+
+		var rtn = false;
+		$.ajax({
+			'type': 'POST',
+			'url': '/apis/pxCommand',
+			'data': {
+				'page_path': page_path,
+				'PX': command,
+				'params': strParam
+			},
+			"success": function(data, dataType){
+				// console.log(data);
+				rtn = data;
+			},
+			"complete": function(XMLHttpRequest, textStatus){
+				callback(rtn);
 			}
 		});
 	}
