@@ -52,8 +52,11 @@ var mdlWareSession = session({
 app.use( mdlWareSession );
 
 // リソース系
-app.use( '/resources/px2style/', express.static( __dirname+'/../node_modules/px2style/dist/' ) );
 app.use( '/resources/bootstrap/', express.static( __dirname+'/../node_modules/bootstrap/dist/' ) );
+app.use( '/resources/ace-builds/src-noconflict/', express.static( __dirname+'/../node_modules/ace-builds/src-noconflict/' ) );
+app.use( '/resources/px2style/', express.static( __dirname+'/../node_modules/px2style/dist/' ) );
+app.use( '/resources/pickles2-contents-editor/', express.static( __dirname+'/../node_modules/pickles2-contents-editor/dist/' ) );
+app.use( '/resources/broccoli-html-editor/', express.static( __dirname+'/../node_modules/broccoli-html-editor/client/dist/' ) );
 
 // ログイン処理系
 app.use( require('./preprocess/userInfo.js')(px2) );
@@ -127,7 +130,7 @@ appPx2.use( '/*', expressPickles2(
 		'processor': function(bin, ext, callback){
 			if( ext == 'html' ){
 				bin += (function(){
-					var scriptSrc = fs.readFileSync(__dirname+'/../dist/common/pickles2-contents-editor/dist/libs/broccoli-html-editor/client/dist/broccoli-preview-contents.js').toString('utf-8');
+					var scriptSrc = fs.readFileSync(__dirname+'/../node_modules/broccoli-html-editor/client/dist/broccoli-preview-contents.js').toString('utf-8');
 					var fin = '';
 						fin += '<script data-broccoli-receive-message="yes">'+"\n";
 						// fin += 'console.log(window.location);'+"\n";

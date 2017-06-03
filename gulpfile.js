@@ -38,12 +38,6 @@ var _tasks = [
 
 // broccoli-client (frontend) , bootstrap などを処理
 gulp.task("replace-package-dist", function() {
-	gulp.src(["node_modules/pickles2-contents-editor/dist/**/*"])
-		.pipe(gulp.dest( './dist/common/pickles2-contents-editor/dist/' ))
-	;
-	gulp.src(["node_modules/ace-builds/src-noconflict/**/*"])
-		.pipe(gulp.dest( './dist/common/ace-builds/src-noconflict/' ))
-	;
 });
 
 // コピーするだけのファイルを処理
