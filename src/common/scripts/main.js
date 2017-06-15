@@ -3,7 +3,7 @@ window.ejs = require('ejs');
 
 window.main = new (function(){
 	var _this = this;
-	var _it79 = require('iterate79');
+	var it79 = require('iterate79');
 
 	this.progress = new (require('../../common/scripts/main.progress.js')).init(this, $);
 	this.message = require('../../common/scripts/main.message.js');
@@ -14,6 +14,7 @@ window.main = new (function(){
 	}
 
 	var $header, $contents, $footer, $shoulderMenu;
+	var _menu;
 
 	/**
 	 * ログアウトする
@@ -25,12 +26,30 @@ window.main = new (function(){
 			'type': 'POST',
 			'url': '/apis/logout',
 			'success': function(data, dataType){
-				window.location.href = '/';
+				window.location.href = '/logout.html';
 			},
 			'complete': function(xhr, textStatus){
 			}
 		});
 	} // logout()
+
+	/**
+	 * ヘルプページへ遷移する
+	 */
+	this.openHelp = function(){
+		window.open('http://pickles2.pxt.jp/');
+		return;
+	}
+
+	/**
+	 * サブアプリケーション
+	 */
+	this.subapp = function(appName){
+		if(!appName){
+			appName = 'fncs/home/index.html';
+		}
+		window.location.href = '/'+appName;
+	}
 
 	/**
 	 * GETパラメータをパースする
@@ -53,7 +72,7 @@ window.main = new (function(){
 	}
 
 	$(function(){
-		_it79.fnc({}, [
+		it79.fnc({}, [
 			function(it, arg){
 				_this.project.getConfig(function(conf){
 					// console.log(conf);
@@ -72,6 +91,22 @@ window.main = new (function(){
 
 				it.next(arg);
 
+			} ,
+			function(it, arg){
+				// メニュー設定
+				var gmenu = require('../../common/scripts/globalmenu.js');
+				_menu = new gmenu(_this);
+				it.next(arg);
+			} ,
+			function(it, arg){
+				// メニュー設定
+				$('.theme-header__gmenu').html( $('<ul>')
+					.append( $('<li>')
+						.append( '<span>&nbsp;</span>' )
+					)
+				);
+				_menu.drawGlobalMenu($shoulderMenu, window.location.pathname);
+				it.next(arg);
 			} ,
 			function(it, arg){
 				var $ul = $shoulderMenu.find('ul').hide();

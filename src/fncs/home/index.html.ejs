@@ -1,0 +1,27 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>ホーム | <%= conf.app.name %></title>
+<%- include('../../common/includes/head.inc') %>
+		<link rel="stylesheet" href="/common/px2dtGitUi/px2dtGitUi.css" type="text/css" />
+		<link rel="stylesheet" href="index_files/styles/contents.css" type="text/css" />
+	</head>
+	<body>
+<%- include('../../common/includes/header.inc') %>
+		<div class="container">
+			<h1>ホーム</h1>
+			<div class="contents">
+				<ul>
+					<li><a href="../pages/">コンテンツ</a></li>
+				</ul>
+			</div>
+		</div>
+<%- include('../../common/includes/footer.inc') %>
+
+<%- include('../../common/includes/foot.inc') %>
+		<script type="text/javascript" src="/common/px2dtGitUi/px2dtGitUi.js"></script>
+		<script type="text/javascript" src="./index_files/scripts/contents.js"></script>
+		<script>cont.init();</script>
+	</body>
+</html>

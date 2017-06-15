@@ -12487,7 +12487,7 @@ window.ejs = require('ejs');
 
 window.main = new (function(){
 	var _this = this;
-	var _it79 = require('iterate79');
+	var it79 = require('iterate79');
 
 	this.progress = new (require('../../common/scripts/main.progress.js')).init(this, $);
 	this.message = require('../../common/scripts/main.message.js');
@@ -12498,6 +12498,7 @@ window.main = new (function(){
 	}
 
 	var $header, $contents, $footer, $shoulderMenu;
+	var _menu;
 
 	/**
 	 * ログアウトする
@@ -12509,12 +12510,30 @@ window.main = new (function(){
 			'type': 'POST',
 			'url': '/apis/logout',
 			'success': function(data, dataType){
-				window.location.href = '/';
+				window.location.href = '/logout.html';
 			},
 			'complete': function(xhr, textStatus){
 			}
 		});
 	} // logout()
+
+	/**
+	 * ヘルプページへ遷移する
+	 */
+	this.openHelp = function(){
+		window.open('http://pickles2.pxt.jp/');
+		return;
+	}
+
+	/**
+	 * サブアプリケーション
+	 */
+	this.subapp = function(appName){
+		if(!appName){
+			appName = 'fncs/home/index.html';
+		}
+		window.location.href = '/'+appName;
+	}
 
 	/**
 	 * GETパラメータをパースする
@@ -12537,7 +12556,7 @@ window.main = new (function(){
 	}
 
 	$(function(){
-		_it79.fnc({}, [
+		it79.fnc({}, [
 			function(it, arg){
 				_this.project.getConfig(function(conf){
 					// console.log(conf);
@@ -12556,6 +12575,22 @@ window.main = new (function(){
 
 				it.next(arg);
 
+			} ,
+			function(it, arg){
+				// メニュー設定
+				var gmenu = require('../../common/scripts/globalmenu.js');
+				_menu = new gmenu(_this);
+				it.next(arg);
+			} ,
+			function(it, arg){
+				// メニュー設定
+				$('.theme-header__gmenu').html( $('<ul>')
+					.append( $('<li>')
+						.append( '<span>&nbsp;</span>' )
+					)
+				);
+				_menu.drawGlobalMenu($shoulderMenu, window.location.pathname);
+				it.next(arg);
 			} ,
 			function(it, arg){
 				var $ul = $shoulderMenu.find('ul').hide();
@@ -12595,7 +12630,104 @@ window.main = new (function(){
 
 })();
 
-},{"../../common/scripts/main.dialog.js":11,"../../common/scripts/main.message.js":12,"../../common/scripts/main.progress.js":13,"../../common/scripts/main.project.git.js":14,"../../common/scripts/main.project.js":15,"ejs":2,"iterate79":6,"jquery":7}],11:[function(require,module,exports){
+},{"../../common/scripts/globalmenu.js":11,"../../common/scripts/main.dialog.js":12,"../../common/scripts/main.message.js":13,"../../common/scripts/main.progress.js":14,"../../common/scripts/main.project.git.js":15,"../../common/scripts/main.project.js":16,"ejs":2,"iterate79":6,"jquery":7}],11:[function(require,module,exports){
+/**
+ * globamenu.js
+ *
+ * `px.lb` は、多言語対応機能です。
+ * `app/common/language/language.csv` にある言語ファイルから、
+ * ユーザーが選択した言語コードに対応するテキストを取り出します。
+ */
+module.exports = function(main){
+	var _menu = [];
+	_menu.push({
+		"label":'ホーム',
+		"cond":"projectSelected",
+		"area":"mainmenu",
+		"app":"fncs/home/index.html",
+		"click": function(){
+			main.subapp();
+		}
+	});
+	_menu.push({
+		"label":'コンテンツ',
+		"cond":"pxStandby",
+		"area":"mainmenu",
+		"app":"fncs/pages/index.html",
+		"click": function(){
+			main.subapp($(this).data('app'));
+		}
+	});
+	_menu.push({
+		"label":'ヘルプ',
+		"cond":"always",
+		"area":"shoulder",
+		"app":null,
+		"click": function(){
+			main.openHelp();
+		}
+	});
+	_menu.push({
+		"label":'ログアウト',
+		"cond":"always",
+		"area":"shoulder",
+		"app":null,
+		"click": function(){
+			main.logout();
+		}
+	});
+
+	/**
+	 * グローバルメニューの定義を取得
+	 */
+	this.getGlobalMenuDefinition = function(){
+		return _menu;
+	}
+
+	/**
+	 * グローバルメニューを描画
+	 */
+	this.drawGlobalMenu = function($shoulderMenu, _current_app){
+		$shoulderMenu.find('ul').html('');
+
+		_current_app = _current_app.replace(/^\//, '');
+		_current_app = _current_app.replace(/\/$/, '/index.html');
+
+		for( var i in _menu ){
+			if( _menu[i].cond == 'projectSelected' ){
+			}else if( _menu[i].cond == 'composerJsonExists' ){
+			}else if( _menu[i].cond == 'homeDirExists' ){
+			}else if( _menu[i].cond == 'pxStandby' ){
+			}else if( _menu[i].cond != 'always' ){
+			}
+
+			var $tmpMenu = $('<a>')
+				.attr({"href":"javascript:;"})
+				.on('click', _menu[i].click)
+				.text(_menu[i].label)
+				.data('app', _menu[i].app)
+				.addClass( ( _current_app==_menu[i].app ? 'current' : '' ) )
+			;
+
+			switch( _menu[i].area ){
+				case 'shoulder':
+					$shoulderMenu.find('ul').append( $('<li>')
+						.append( $tmpMenu )
+					);
+					break;
+				default:
+					$('.theme-header__gmenu ul').append( $('<li>')
+						.append( $tmpMenu )
+					);
+					break;
+			}
+		}
+		return;
+	}
+
+}
+
+},{}],12:[function(require,module,exports){
 (function(module){
 	var $ = require('jquery');
 	var $dialog;
@@ -12716,7 +12848,7 @@ window.main = new (function(){
 
 })(module);
 
-},{"jquery":7}],12:[function(require,module,exports){
+},{"jquery":7}],13:[function(require,module,exports){
 (function(module){
 	var $ = require('jquery');
 	var $msgBox = $('<div class="theme_ui_px_message">');
@@ -12770,7 +12902,7 @@ window.main = new (function(){
 
 })(module);
 
-},{"jquery":7}],13:[function(require,module,exports){
+},{"jquery":7}],14:[function(require,module,exports){
 /**
  * progress window
  */
@@ -12872,7 +13004,7 @@ module.exports.init = function( px, $ ) {
 	return this;
 };
 
-},{}],14:[function(require,module,exports){
+},{}],15:[function(require,module,exports){
 /**
  * main.project.git
  */
@@ -12989,7 +13121,7 @@ module.exports = function( main ){
 	return this;
 };
 
-},{"jquery":7}],15:[function(require,module,exports){
+},{"jquery":7}],16:[function(require,module,exports){
 /**
  * main.project.js
  */
