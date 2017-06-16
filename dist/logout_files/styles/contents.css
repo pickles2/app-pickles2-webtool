@@ -8,12 +8,6 @@ h1 {
   h1 img {
     max-width: 200px; }
 
-.login-form .login-form__input-item {
-  margin: 1em auto;
-  max-width: 300px; }
-  .login-form .login-form__input-item input {
-    width: 100%; }
-
 .cont_copyright {
   font-size: 13px;
   text-align: center;

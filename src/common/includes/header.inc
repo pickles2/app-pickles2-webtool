@@ -4,7 +4,7 @@
 					<a href="/"><img src="/common/images/logo.svg" alt="<%= conf.app.name %>" /></a>
 				</div>
 				<div class="theme-header__id">
-					<a href="/"></a>
+					<div></div>
 				</div>
 				<div class="theme-header__gmenu"></div>
 				<div class="theme-header__shoulder-menu">

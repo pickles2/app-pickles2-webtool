@@ -77,7 +77,7 @@ window.main = new (function(){
 				_this.project.getConfig(function(conf){
 					// console.log(conf);
 
-					$('header.theme-header .theme-header__id a').text(conf.name);
+					$('header.theme-header .theme-header__id div').text(conf.name);
 					it.next(arg);
 				});
 			} ,
