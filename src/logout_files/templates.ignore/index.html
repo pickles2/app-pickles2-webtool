@@ -4,14 +4,20 @@
 		<meta charset="utf-8">
 		<title><%= conf.app.name %></title>
 <% include ./common/includes/head.inc %>
+		<link rel="stylesheet" href="logout_files/styles/contents.css" type="text/css" />
 	</head>
 	<body>
-		<h1>Pickles 2 Web Tool</h1>
-		<div class="contents">
-			<p>ログアウトしました。</p>
-			<p><button onclick="window.location.href='/';" class="px2-btn">もどる</button></p>
+		<div class="container">
+			<h1><img src="index_files/images/logo_2017.svg" alt="<%= conf.app.name %>" /></h1>
+			<div class="contents">
+				<p>ログアウトしました。</p>
+				<p><a href="/" class="px2-btn">トップページへもどる</a></p>
+			</div>
+			<p class="cont_copyright"><%= conf.app.copyright %></p>
 		</div>
 
+
 <% include ./common/includes/foot.inc %>
+<script type="text/javascript" src="./logout_files/scripts/contents.js"></script>
 	</body>
 </html>

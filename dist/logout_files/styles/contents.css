@@ -1,0 +1,22 @@
+body {
+  text-align: center; }
+
+h1 {
+  font-size: 24px;
+  font-weight: bold;
+  margin: 120px auto 20px auto; }
+  h1 img {
+    max-width: 200px; }
+
+.login-form .login-form__input-item {
+  margin: 1em auto;
+  max-width: 300px; }
+  .login-form .login-form__input-item input {
+    width: 100%; }
+
+.cont_copyright {
+  font-size: 13px;
+  text-align: center;
+  color: #666;
+  text-shadow: 1px 0 1px rgba(0, 0, 0, 0.05);
+  margin: 1em 0; }
