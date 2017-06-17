@@ -51,9 +51,19 @@ window.config = new (function(){
 		<div class="container">
 			<h1>ホーム</h1>
 			<div class="contents">
-				<ul>
-					<li><a href="../pages/">コンテンツ</a></li>
-				</ul>
+
+				<h2>基本的な手順</h2>
+				<div class="row">
+					
+					<div class="col-sm-12">
+						<button class="px2-btn cont_mainmenu" onclick="main.subapp('fncs/pages/index.html');">コンテンツを編集する</button>
+					</div>
+					
+				</div><!-- / .row -->
+				
+
+				<p><button class="px2-btn" onclick="main.logout(); return false;">ログアウト</button></p>
+
 			</div>
 		</div>
 		</div><!-- /.theme-main -->

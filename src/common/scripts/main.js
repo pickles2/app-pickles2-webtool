@@ -37,7 +37,7 @@ window.main = new (function(){
 	 * ヘルプページへ遷移する
 	 */
 	this.openHelp = function(){
-		window.open('http://pickles2.pxt.jp/');
+		window.open('http://pickles2.pxt.jp/manual/');
 		return;
 	}
 
