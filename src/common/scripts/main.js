@@ -3,6 +3,7 @@ window.ejs = require('ejs');
 
 window.main = new (function(){
 	var _this = this;
+	var it79 = require('iterate79');
 
 	this.progress = new (require('../../common/scripts/main.progress.js')).init(this, $);
 	this.message = require('../../common/scripts/main.message.js');
@@ -11,6 +12,9 @@ window.main = new (function(){
 	this.git = function(){
 		return new (require('../../common/scripts/main.project.git.js'))(this);
 	}
+
+	var $header, $contents, $footer, $shoulderMenu;
+	var _menu;
 
 	/**
 	 * ログアウトする
@@ -22,12 +26,30 @@ window.main = new (function(){
 			'type': 'POST',
 			'url': '/apis/logout',
 			'success': function(data, dataType){
-				window.location.href = '/';
+				window.location.href = '/logout.html';
 			},
 			'complete': function(xhr, textStatus){
 			}
 		});
 	} // logout()
+
+	/**
+	 * ヘルプページへ遷移する
+	 */
+	this.openHelp = function(){
+		window.open('http://pickles2.pxt.jp/manual/');
+		return;
+	}
+
+	/**
+	 * サブアプリケーション
+	 */
+	this.subapp = function(appName){
+		if(!appName){
+			appName = 'fncs/home/index.html';
+		}
+		window.location.href = '/'+appName;
+	}
 
 	/**
 	 * GETパラメータをパースする
@@ -50,10 +72,76 @@ window.main = new (function(){
 	}
 
 	$(function(){
-		_this.project.getConfig(function(conf){
-			// console.log(conf);
-			$('header.theme-header .theme-header__ci__project-name').text(conf.name);
-		});
+		it79.fnc({}, [
+			function(it, arg){
+				_this.project.getConfig(function(conf){
+					// console.log(conf);
+
+					$('header.theme-header .theme-header__id div').text(conf.name);
+					it.next(arg);
+				});
+			} ,
+			function(it, arg){
+
+				// DOMスキャン
+				$header   = $('.theme-header');
+				$contents = $('.contents');
+				$footer   = $('.theme-footer');
+				$shoulderMenu = $('.theme-header__shoulder-menu');
+
+				it.next(arg);
+
+			} ,
+			function(it, arg){
+				// メニュー設定
+				var gmenu = require('../../common/scripts/globalmenu.js');
+				_menu = new gmenu(_this);
+				it.next(arg);
+			} ,
+			function(it, arg){
+				// メニュー設定
+				$('.theme-header__gmenu').html( $('<ul>')
+					.append( $('<li>')
+						.append( '<span>&nbsp;</span>' )
+					)
+				);
+				_menu.drawGlobalMenu($shoulderMenu, window.location.pathname);
+				it.next(arg);
+			} ,
+			function(it, arg){
+				var $ul = $shoulderMenu.find('ul').hide();
+				$shoulderMenu
+					.css({
+						'width': 50,
+						'height': $header.height()
+					})
+					.on('click', function(){
+						if( $ul.css('display') == 'block' ){
+							$ul.hide();
+							$shoulderMenu
+								.css({
+									'width':50 ,
+									'height':$header.height()
+								})
+							;
+
+						}else{
+							$ul.show().height( $(window).height()-$header.height() );
+							$shoulderMenu
+								.css({
+									'width':'100%' ,
+									'height':$(window).height()
+								})
+							;
+
+						}
+					}
+				);
+				it.next(arg);
+			}
+		]);
+
+		window.focus();
 	});
 
 })();

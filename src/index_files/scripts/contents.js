@@ -4,7 +4,7 @@ $(window).load(function(){
 
 	if( !$('.login-form').size() ){
 		// ログイン済みの場合
-		window.location.href = '/fncs/pages/';
+		window.location.href = '/fncs/home/';
 	}
 
 	$('.login-form')

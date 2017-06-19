@@ -1,0 +1,91 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>ホーム | Pickles 2 Web Tool</title>
+<!-- config -->
+<script type="text/javascript">
+window.config = new (function(){
+    var rtn = {};
+    rtn.urlPreview = 'https://127.0.0.1:8081';
+    return rtn;
+})();
+</script>
+
+<!-- Required meta tags always come first -->
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+<meta http-equiv="x-ua-compatible" content="ie=edge" />
+
+<!-- Bootstrap 3 CSS -->
+<link rel="stylesheet" href="/resources/bootstrap/css/bootstrap.css" />
+
+<!-- px2style -->
+<link rel="stylesheet" href="/resources/px2style/styles.css" type="text/css" />
+
+<!-- project common -->
+<link rel="stylesheet" href="/common/styles/common.css" type="text/css" />
+
+		<link rel="stylesheet" href="/common/px2dtGitUi/px2dtGitUi.css" type="text/css" />
+		<link rel="stylesheet" href="index_files/styles/contents.css" type="text/css" />
+	</head>
+	<body>
+		<header class="theme-header">
+			<div class="theme-header__inner clearfix">
+				<div class="theme-header__px2logo">
+					<a href="/"><img src="/common/images/logo.svg" alt="Pickles 2 Web Tool" /></a>
+				</div>
+				<div class="theme-header__id">
+					<div></div>
+				</div>
+				<div class="theme-header__gmenu"></div>
+				<div class="theme-header__shoulder-menu">
+					<button>≡</button>
+					<ul>
+						<li><a href="javascript:window.location.href='/logout.html';">Logout</a></li>
+					</ul>
+				</div>
+			</div>
+		</header>
+		<div class="theme-main">
+
+		<div class="container">
+			<h1>ホーム</h1>
+			<div class="contents">
+
+				<h2>基本的な手順</h2>
+				<div class="row">
+					
+					<div class="col-sm-12">
+						<button class="px2-btn cont_mainmenu" onclick="main.subapp('fncs/pages/index.html');">コンテンツを編集する</button>
+					</div>
+					
+				</div><!-- / .row -->
+				
+
+				<p><button class="px2-btn" onclick="main.logout(); return false;">ログアウト</button></p>
+
+			</div>
+		</div>
+		</div><!-- /.theme-main -->
+		<footer class="theme-footer">
+			<p class="theme-footer__copyright">(C) Pickles 2 Project</p>
+		</footer>
+
+
+<!-- Tether -->
+<script src="/common/tether/dist/js/tether.js"></script>
+
+<!-- px2style -->
+<script src="/resources/px2style/scripts.js"></script>
+
+<!-- project common -->
+<script src="/common/scripts/main.js"></script>
+
+<!-- jQuery first, then Bootstrap 3 JS. -->
+<script src="/resources/bootstrap/js/bootstrap.min.js"></script>
+
+		<script type="text/javascript" src="/common/px2dtGitUi/px2dtGitUi.js"></script>
+		<script type="text/javascript" src="./index_files/scripts/contents.js"></script>
+		<script>cont.init();</script>
+	</body>
+</html>
