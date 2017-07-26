@@ -5,6 +5,7 @@
 	},
 	"origin": "https://127.0.0.1:8080",
 	"px2server":{
+		"useExternalPreviewServer": false,
 		"path":"pickles2/.px_execute.php",
 		"origin": "https://127.0.0.1:8081"
 	},
