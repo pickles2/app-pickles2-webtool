@@ -13,7 +13,7 @@ if(!conf.originParsed.port){
 conf.px2server.originParsed = new urlParse(conf.px2server.origin);
 conf.px2server.originParsed.protocol = conf.px2server.originParsed.protocol.replace(':','');
 if(!conf.px2server.originParsed.port){
-	conf.px2server.originParsed.port = (conf.originParsed.protocol=='https' ? 443 : 80);
+	conf.px2server.originParsed.port = (conf.px2server.originParsed.protocol=='https' ? 443 : 80);
 }
 // console.log(conf);
 
@@ -98,64 +98,68 @@ console.log('');
 
 
 
-// ----------------------------------------------------------------------------
-// Pickles2 preview server
-var expressPickles2 = require('express-pickles2');
-var appPx2 = express();
-var serverPx2;
-if( conf.px2server.originParsed.protocol == 'https' ){
-	serverPx2 = require('https').Server(sslOption, appPx2);
+if(conf.px2server.useExternalPreviewServer){
+	console.log('Preview Server: Using External: '+conf.px2server.origin);
 }else{
-	serverPx2 = require('http').Server(appPx2);
-}
-logger.setAccessLogger(appPx2, 'access-preview');
-accessRestrictor.setAccessRestriction(appPx2);
-appPx2.use( require('body-parser')() );
-appPx2.use( mdlWareSession );
-appPx2.use( require('./preprocess/userInfo.js')(px2) );
-
-appPx2.use( '/*', require('./preprocess/loginCheck.js')(px2) );
-
-appPx2.use( '/*', expressPickles2(
-	conf.px2server.path,
-	{
-		// 'liveConfig': function(callback){
-		// 	var pj = px.getCurrentProject();
-		// 	var realpathEntryScript = path.resolve(pj.get('path'), pj.get('entry_script'));
-		// 	callback(
-		// 		realpathEntryScript,
-		// 		{}
-		// 	);
-		// },
-		'processor': function(bin, ext, callback){
-			if( ext == 'html' ){
-				bin += (function(){
-					var scriptSrc = fs.readFileSync(__dirname+'/../node_modules/broccoli-html-editor/client/dist/broccoli-preview-contents.js').toString('utf-8');
-					var fin = '';
-						fin += '<script data-broccoli-receive-message="yes">'+"\n";
-						// fin += 'console.log(window.location);'+"\n";
-						fin += 'window.addEventListener(\'message\',(function() {'+"\n";
-						fin += 'return function f(event) {'+"\n";
-						// fin += 'console.log(event.origin);'+"\n";
-						// fin += 'console.log(event.data);'+"\n";
-						fin += 'if(window.location.hostname!=\''+conf.px2server.originParsed.hostname+'\'){alert(\'Unauthorized access.\');return;}'+"\n";
-						fin += 'if(!event.data.scriptUrl){return;}'+"\n";
-						// fin += 'var s=document.createElement(\'script\');'+"\n";
-						// fin += 'document.querySelector(\'body\').appendChild(s);s.src=event.data.scriptUrl;'+"\n";
-						fin += scriptSrc+';'+"\n";
-						fin += 'window.removeEventListener(\'message\', f, false);'+"\n";
-						fin += '}'+"\n";
-						fin += '})(),false);'+"\n";
-						fin += '</script>'+"\n";
-					return fin;
-				})();
-			}
-			callback(bin);
-			return;
-		}
+	// ----------------------------------------------------------------------------
+	// Pickles2 preview server
+	var expressPickles2 = require('express-pickles2');
+	var appPx2 = express();
+	var serverPx2;
+	if( conf.px2server.originParsed.protocol == 'https' ){
+		serverPx2 = require('https').Server(sslOption, appPx2);
+	}else{
+		serverPx2 = require('http').Server(appPx2);
 	}
-) );
-serverPx2.listen( conf.px2server.originParsed.port, function(){
-	console.log('Preview Server: Standby');
-} );
+	logger.setAccessLogger(appPx2, 'access-preview');
+	accessRestrictor.setAccessRestriction(appPx2);
+	appPx2.use( require('body-parser')() );
+	appPx2.use( mdlWareSession );
+	appPx2.use( require('./preprocess/userInfo.js')(px2) );
+
+	appPx2.use( '/*', require('./preprocess/loginCheck.js')(px2) );
+
+	appPx2.use( '/*', expressPickles2(
+		conf.px2server.path,
+		{
+			// 'liveConfig': function(callback){
+			// 	var pj = px.getCurrentProject();
+			// 	var realpathEntryScript = path.resolve(pj.get('path'), pj.get('entry_script'));
+			// 	callback(
+			// 		realpathEntryScript,
+			// 		{}
+			// 	);
+			// },
+			'processor': function(bin, ext, callback){
+				if( ext == 'html' ){
+					bin += (function(){
+						var scriptSrc = fs.readFileSync(__dirname+'/../node_modules/broccoli-html-editor/client/dist/broccoli-preview-contents.js').toString('utf-8');
+						var fin = '';
+							fin += '<script data-broccoli-receive-message="yes">'+"\n";
+							// fin += 'console.log(window.location);'+"\n";
+							fin += 'window.addEventListener(\'message\',(function() {'+"\n";
+							fin += 'return function f(event) {'+"\n";
+							// fin += 'console.log(event.origin);'+"\n";
+							// fin += 'console.log(event.data);'+"\n";
+							fin += 'if(window.location.hostname!=\''+conf.px2server.originParsed.hostname+'\'){alert(\'Unauthorized access.\');return;}'+"\n";
+							fin += 'if(!event.data.scriptUrl){return;}'+"\n";
+							// fin += 'var s=document.createElement(\'script\');'+"\n";
+							// fin += 'document.querySelector(\'body\').appendChild(s);s.src=event.data.scriptUrl;'+"\n";
+							fin += scriptSrc+';'+"\n";
+							fin += 'window.removeEventListener(\'message\', f, false);'+"\n";
+							fin += '}'+"\n";
+							fin += '})(),false);'+"\n";
+							fin += '</script>'+"\n";
+						return fin;
+					})();
+				}
+				callback(bin);
+				return;
+			}
+		}
+	) );
+	serverPx2.listen( conf.px2server.originParsed.port, function(){
+		console.log('Preview Server: Standby');
+	} );
+}
 console.log('');
