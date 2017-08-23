@@ -38,7 +38,7 @@ class px2git{
 		$this->px2git = new \tomk79\pickles2\git\main(
 			$this->entryScript,
 			array(
-				'bin' => $this->command_git
+				'bin' => @$this->command_git
 			)
 		);
 	}
