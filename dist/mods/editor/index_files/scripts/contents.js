@@ -68,6 +68,7 @@ $(window).load(function(){
 							{
 								'page_path': params.page_path ,
 								'elmCanvas': $canvas.get(0),
+								'lang': 'ja',
 								'preview':{
 									'origin': serverConfig.px2server.origin
 								},
