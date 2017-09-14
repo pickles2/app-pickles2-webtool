@@ -89,6 +89,15 @@ module.exports = function(main){
 					break;
 			}
 		}
+
+		var $tmpMenu = $('<span>')
+			.text(''+main.getLoginUserInfo().name+' さん')
+			.addClass('theme-header__gmenu__login-user')
+		;
+		$('.theme-header__gmenu ul').append( $('<li>')
+			.append( $tmpMenu )
+		);
+
 		return;
 	}
 

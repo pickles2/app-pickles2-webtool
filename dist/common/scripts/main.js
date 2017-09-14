@@ -12521,6 +12521,7 @@ window.main = new (function(){
 	this.git = function(){
 		return new (require('../../common/scripts/main.project.git.js'))(this);
 	}
+	var loginUserInfo;
 
 	var $header, $contents, $footer, $shoulderMenu;
 	var _menu;
@@ -12580,6 +12581,13 @@ window.main = new (function(){
 		return paramsArray;
 	}
 
+	/**
+	 * ログインユーザーの情報を取得する
+	 */
+	this.getLoginUserInfo = function(){
+		return loginUserInfo;
+	}
+
 	$(function(){
 		it79.fnc({}, [
 			function(it, arg){
@@ -12599,6 +12607,21 @@ window.main = new (function(){
 				$shoulderMenu = $('.theme-header__shoulder-menu');
 
 				it.next(arg);
+
+			} ,
+			function(it, arg){
+
+				// ログインユーザー情報取得
+				$.ajax({
+					'type': 'POST',
+					'url': '/apis/getLoginUserInfo',
+					'success': function(data, dataType){
+						loginUserInfo = data;
+					},
+					'complete': function(xhr, textStatus){
+						it.next(arg);
+					}
+				});
 
 			} ,
 			function(it, arg){
@@ -12747,6 +12770,15 @@ module.exports = function(main){
 					break;
 			}
 		}
+
+		var $tmpMenu = $('<span>')
+			.text(''+main.getLoginUserInfo().name+' さん')
+			.addClass('theme-header__gmenu__login-user')
+		;
+		$('.theme-header__gmenu ul').append( $('<li>')
+			.append( $tmpMenu )
+		);
+
 		return;
 	}
 
@@ -12937,7 +12969,11 @@ module.exports.init = function( px, $ ) {
 	// 見えないフォーム `$keycatcher` にフォーカスを当て、キーボード操作を拾って捨てています。
 
 	var htmlProgress = ''
-		+'<progress class="progress progress-striped progress-animated" value="100" max="100"></progress>'+"\n"
+		+'<div class="progress">'
+		+'<div class="progress-bar progress-bar-info progress-bar-striped active" role="progressbar" style="width: 100%;">'
+		+'<span class="sr-only"></span>'
+		+'</div>'
+		+'</div>'+"\n"
 	;
 
 	var _this = this;
