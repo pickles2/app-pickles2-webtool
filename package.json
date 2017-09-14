@@ -9,7 +9,7 @@
     "up": "node ./libs/main.js;",
     "preview": "gulp preview;",
     "dev": "gulp dev;",
-    "submodules-update": "rm -rfv node_modules/ace-builds; rm -rfv node_modules/broccoli-html-editor; rm -rfv node_modules/pickles2-contents-editor; rm -rfv node_modules/px2style; npm install; gulp;",
+    "submodules-update": "npm install file:submodules/ace-builds; npm install file:submodules/broccoli-html-editor; npm install file:submodules/node-pickles2-contents-editor; npm install file:submodules/px2style; gulp;",
     "ssl-key-gen": "openssl genrsa -aes128 -out config/ssl/server.key 2048; openssl req -new -key config/ssl/server.key -sha256 -out config/ssl/server.csr; openssl x509 -in config/ssl/server.csr -days 365 -req -signkey config/ssl/server.key -sha256 -out config/ssl/server.crt;",
     "test": "gulp; mocha --ui tdd ./tests/"
   },
