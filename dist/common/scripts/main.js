@@ -1039,18 +1039,18 @@ module.exports={
   "_args": [
     [
       {
-        "raw": "ejs@2.5.7",
+        "raw": "ejs@^2.5.2",
         "scope": null,
         "escapedName": "ejs",
         "name": "ejs",
-        "rawSpec": "2.5.7",
-        "spec": "2.5.7",
-        "type": "version"
+        "rawSpec": "^2.5.2",
+        "spec": ">=2.5.2 <3.0.0",
+        "type": "range"
       },
       "/mydoc_TomK/Dropbox/localhosts/pickles2projects/pickles2/app-pickles2-webtool"
     ]
   ],
-  "_from": "ejs@2.5.7",
+  "_from": "ejs@>=2.5.2 <3.0.0",
   "_id": "ejs@2.5.7",
   "_inCache": true,
   "_location": "/ejs",
@@ -1066,16 +1066,15 @@ module.exports={
   "_npmVersion": "3.10.8",
   "_phantomChildren": {},
   "_requested": {
-    "raw": "ejs@2.5.7",
+    "raw": "ejs@^2.5.2",
     "scope": null,
     "escapedName": "ejs",
     "name": "ejs",
-    "rawSpec": "2.5.7",
-    "spec": "2.5.7",
-    "type": "version"
+    "rawSpec": "^2.5.2",
+    "spec": ">=2.5.2 <3.0.0",
+    "type": "range"
   },
   "_requiredBy": [
-    "#USER",
     "/",
     "/broccoli-html-editor",
     "/langbank",
@@ -1084,7 +1083,7 @@ module.exports={
   "_resolved": "https://registry.npmjs.org/ejs/-/ejs-2.5.7.tgz",
   "_shasum": "cc872c168880ae3c7189762fd5ffc00896c9518a",
   "_shrinkwrap": null,
-  "_spec": "ejs@2.5.7",
+  "_spec": "ejs@^2.5.2",
   "_where": "/mydoc_TomK/Dropbox/localhosts/pickles2projects/pickles2/app-pickles2-webtool",
   "author": {
     "name": "Matthew Eernisse",
