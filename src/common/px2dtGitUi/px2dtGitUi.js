@@ -71,17 +71,17 @@ window.px2dtGitUi = function(main){
 		function gitCommit(div, options, commitComment, callback){
 			switch( div ){
 				case 'contents':
-					_this.git.commitContents([options.page_path, commitComment], function(){
-						callback();
+					_this.git.commitContents([options.page_path, commitComment], function(rtn, err, XMLHttpRequest, textStatus){
+						callback(rtn, err, XMLHttpRequest, textStatus);
 					});
 					break;
 				case 'sitemaps':
-					_this.git.commitSitemap([commitComment], function(){
-						callback();
+					_this.git.commitSitemap([commitComment], function(rtn, err, XMLHttpRequest, textStatus){
+						callback(rtn, err, XMLHttpRequest, textStatus);
 					});
 					break;
 				default:
-					callback();
+					callback(false, 'unknown div', null, false);
 					break;
 			}
 			return;
@@ -132,8 +132,14 @@ window.px2dtGitUi = function(main){
 							main.progress.start({'blindness': true, 'showProgressBar': true});
 							var commitComment = $commitComment.val();
 							// console.log(commitComment);
-							gitCommit(div, options, commitComment, function(){
-								alert('コミットしました。');
+							gitCommit(div, options, commitComment, function(rtn, err, XMLHttpRequest, textStatus){
+								// console.log('=-=-=-=-=-=-=-=-=-=-=-=-= gitCommit result');
+								// console.log(rtn, err, XMLHttpRequest, textStatus);
+								if( rtn ){
+									alert('コミットしました。');
+								}else{
+									alert('コミットに失敗しました。 もう一度お試しください。');
+								}
 								main.progress.close();
 								main.closeDialog();
 								callback();
