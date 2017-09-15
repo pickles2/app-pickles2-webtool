@@ -6,7 +6,7 @@
 	"origin": "https://127.0.0.1:8080",
 	"px2server":{
 		"useExternalPreviewServer": false,
-		"path":"pickles2/.px_execute.php",
+		"path":"submodules/preset-pickles2-webtool-develop/.px_execute.php",
 		"origin": "https://127.0.0.1:8081"
 	},
 	"sslOption":{
