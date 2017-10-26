@@ -35,6 +35,7 @@ if( conf.originParsed.protocol == 'https' ){
 }else{
 	server = require('http').Server(app);
 }
+var io = require('socket.io')(server);
 console.log('Application Server: port '+conf.originParsed.port);
 console.log('Pickles 2 Preview Server: port '+conf.px2server.originParsed.port);
 console.log('');
@@ -85,6 +86,7 @@ app.use( '/apis/getServerConf', require('./apis/getServerConf.js')(conf) );
 app.use( '/apis/getPageInfo', require('./apis/getPageInfo.js')(conf) );
 app.use( '/apis/checkEditorType', require('./apis/checkEditorType.js')(conf) );
 app.use( '/apis/applock', require('./apis/applock.js')(conf) );
+app.use( '/apis/cmdQueue', require('./apis/cmdQueue.js')(conf, io) );
 
 // 動的なページ生成
 app.use( /^\/(?:index\.html)?/, require('./../src/index.html.js')(px2) );
