@@ -9,7 +9,7 @@
     "up": "node ./libs/main.js;",
     "preview": "gulp preview;",
     "dev": "gulp dev;",
-    "submodules-update": "npm install file:submodules/ace-builds file:submodules/broccoli-html-editor file:submodules/node-pickles2-contents-editor file:submodules/px2style; gulp;",
+    "submodules-update": "npm install file:submodules/ace-builds file:submodules/node-cmd-queue file:submodules/broccoli-html-editor file:submodules/node-pickles2-contents-editor file:submodules/px2style; gulp;",
     "ssl-key-gen": "openssl genrsa -aes128 -out config/ssl/server.key 2048; openssl req -new -key config/ssl/server.key -sha256 -out config/ssl/server.csr; openssl x509 -in config/ssl/server.csr -days 365 -req -signkey config/ssl/server.key -sha256 -out config/ssl/server.crt;",
     "test": "gulp; mocha --ui tdd ./tests/"
   },
@@ -20,6 +20,7 @@
     "body-parser": "^1.15.0",
     "bootstrap": "^3.3.6",
     "broccoli-html-editor": "file:submodules/broccoli-html-editor",
+    "cmd-queue": "file:submodules/node-cmd-queue",
     "config": "^1.19.0",
     "csv": "^0.4.6",
     "ejs": "^2.5.2",

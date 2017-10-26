@@ -55,6 +55,7 @@ app.use( mdlWareSession );
 app.use( '/resources/bootstrap/', express.static( __dirname+'/../node_modules/bootstrap/dist/' ) );
 app.use( '/resources/ace-builds/src-noconflict/', express.static( __dirname+'/../node_modules/ace-builds/src-noconflict/' ) );
 app.use( '/resources/px2style/', express.static( __dirname+'/../node_modules/px2style/dist/' ) );
+app.use( '/resources/cmd-queue/', express.static( __dirname+'/../node_modules/cmd-queue/dist/' ) );
 app.use( '/resources/pickles2-contents-editor/', express.static( __dirname+'/../node_modules/pickles2-contents-editor/dist/' ) );
 app.use( '/resources/broccoli-html-editor/', express.static( __dirname+'/../node_modules/broccoli-html-editor/client/dist/' ) );
 
