@@ -12529,15 +12529,14 @@ window.main = new (function(){
 						data += result;
 					},
 					'complete': function(){
-						var result = JSON.parse(data);
-						done(result);
+						done(data);
 					}
 				});
 			}
 		}
 	);
 	socket.on('cmd-queue-message', function(message){
-		cmdQueue.gpi(message);
+		_this.cmdQueue.gpi(message);
 	});
 
 	this.progress = new (require('../../common/scripts/main.progress.js')).init(this, $);
@@ -13119,27 +13118,48 @@ module.exports = function( main ){
 				};
 
 				// PHPスクリプトを実行する
-				var rtn = '';
-				var err = '';
-				$.ajax({
-					'url': '/apis/px2git/'+apiName,
-					'data': param,
-					'dataType': 'json',
-					"success": function(data, dataType){
-						rtn = data;
-						// console.log(data);
-					} ,
-					"error": function(XMLHttpRequest, textStatus, errorThrown){
-						console.error('AJAX ERROR.');
-						console.error(XMLHttpRequest, textStatus, errorThrown);
-					} ,
-					"complete": function(XMLHttpRequest, textStatus){
-						setTimeout(function(){
-							console.log(rtn, err, XMLHttpRequest, textStatus);
-							callback(rtn, err, XMLHttpRequest, textStatus);
-						},500);
+				var stdout = '';
+				var stderr = '';
+				main.cmdQueue.addQueueItem(
+					['px2git', apiName, JSON.stringify(param)],
+					{
+						'cdName': 'git',
+						'tags': [
+							'project-git'
+						],
+						'accept': function(queueId){
+							// console.log(queueId);
+						},
+						'open': function(message){
+						},
+						'stdout': function(message){
+							for(var idx in message.data){
+								stdout += message.data[idx];
+							}
+						},
+						'stderr': function(message){
+							for(var idx in message.data){
+								stdout += message.data[idx];
+								stderr += message.data[idx];
+								console.error(message.data[idx]);
+							}
+						},
+						'close': function(message){
+							setTimeout(function(){
+								try {
+									stdout = JSON.parse(stdout);
+								} catch (e) {
+									console.error('Failed to parse JSON string.');
+									console.error(stdout);
+									stdout = false;
+								}
+								var code = message.data;
+								callback(stdout, stderr, code);
+							},500);
+							return;
+						}
 					}
-				});
+				);
 				return;
 			}
 		})(apiName).fnc;

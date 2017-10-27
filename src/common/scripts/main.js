@@ -20,15 +20,14 @@ window.main = new (function(){
 						data += result;
 					},
 					'complete': function(){
-						var result = JSON.parse(data);
-						done(result);
+						done(data);
 					}
 				});
 			}
 		}
 	);
 	socket.on('cmd-queue-message', function(message){
-		cmdQueue.gpi(message);
+		_this.cmdQueue.gpi(message);
 	});
 
 	this.progress = new (require('../../common/scripts/main.progress.js')).init(this, $);

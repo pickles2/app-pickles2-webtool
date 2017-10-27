@@ -2,17 +2,34 @@
  * cmdQueue.js
  */
 module.exports = function(conf, io){
+	var px2git = require('./px2git/px2git.js')(conf);
 
 	var CmdQueue = require('cmd-queue');
 	var cmdQueue = new CmdQueue({
 		'cd': {
-			'default': process.cwd()
+			'default': process.cwd(),
+			'git': process.cwd(),
+			'composer': process.cwd()
 		},
 		'allowedCommands': [
 			'git',
 			'php'
 		],
 		'preprocess': function(cmd, callback){
+			if(cmd.command[0] == 'px2git'){
+				// --------------------------------------
+				// gitコマンドの仲介処理
+
+				var msg = JSON.parse(cmd.command[2]);
+				px2git(msg.options, msg.method, function(result){
+					console.log(result);
+					cmd.stdout(JSON.stringify(result));
+					cmd.complete(0);
+					callback(false);
+					return;
+				});
+				return;
+			}
 			callback(cmd);
 			return;
 		},
@@ -24,10 +41,6 @@ module.exports = function(conf, io){
 	});
 
 	return function(req, res, next){
-		// console.log(req);
-		// console.log(req.method);
-		// console.log(req.body);
-		// console.log(req.originalUrl);
 
 		res
 			.status(200)

@@ -67,27 +67,19 @@ module.exports = function(conf){
 	}
 
 
-	return function(req, res, next){
-		// console.log(req.params);
-		// console.log(req.params.method);
-		// console.log(req.param('method'));
-		// console.log(req.param('options'));
-		// console.log(req.userInfo);
-
-		var options = req.param('options');
+	return function(options, method, callback){
 		var commentSuffix =
 			"\n"
 			+'-----------'+"\n"
-			+'committer: ' + req.userInfo.name + ' ('+req.userInfo.id+')' +"\n"
+			// +'committer: ' + req.userInfo.name + ' ('+req.userInfo.id+')' +"\n"
 		;
-		if(req.params.method == 'commit_sitemaps'){
+		if(method == 'commit_sitemaps'){
 			options[0] += commentSuffix;
-		}else if(req.params.method == 'commit_contents'){
+		}else if(method == 'commit_contents'){
 			options[1] += commentSuffix;
 		}
-		// console.log(options);
 
-		switch( req.params.method ){
+		switch( method ){
 			case 'commit_sitemaps':
 			case 'commit_contents':
 			case 'status':
@@ -98,14 +90,11 @@ module.exports = function(conf){
 			case 'log_sitemaps':
 			case 'log_contents':
 			case 'show':
-				var m = new apiGen(req.params.method);
+				var m = new apiGen(method);
 				m(
 					options,
 					function(rtn, err, code){
-						// console.log(JSON.stringify(rtn));
-						res.status(200);
-						res.set('Content-Type', 'text/json')
-						res.send(JSON.stringify(rtn)).end();
+						callback(rtn);
 					}
 				);
 				return;
@@ -113,7 +102,7 @@ module.exports = function(conf){
 			default:
 				break;
 		}
-		next();
+		callback(false);
 		return;
 	};
 };
