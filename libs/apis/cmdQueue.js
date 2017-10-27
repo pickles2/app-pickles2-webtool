@@ -7,9 +7,9 @@ module.exports = function(conf, io){
 	var CmdQueue = require('cmd-queue');
 	var cmdQueue = new CmdQueue({
 		'cd': {
-			'default': process.cwd(),
-			'git': process.cwd(),
-			'composer': process.cwd()
+			'default': require('path').resolve(conf.px2server.path, '../'),
+			'git': require('path').resolve(conf.px2server.path, '../'),
+			'composer': require('path').resolve(conf.px2server.path, '../')
 		},
 		'allowedCommands': [
 			'git',
@@ -21,7 +21,7 @@ module.exports = function(conf, io){
 				// gitコマンドの仲介処理
 
 				var msg = JSON.parse(cmd.command[2]);
-				px2git(msg.options, msg.method, function(result){
+				px2git(msg.options, msg.method, cmd.extra.userInfo, function(result){
 					console.log(result);
 					cmd.stdout(JSON.stringify(result));
 					cmd.complete(0);
@@ -46,6 +46,10 @@ module.exports = function(conf, io){
 			.status(200)
 			.set('Content-Type', 'text/json')
 		;
+
+		// 拡張： ログインユーザーの情報をキューに記憶する
+		req.query.message.extra = req.query.message.extra || {};
+		req.query.message.extra.userInfo = req.userInfo;
 
 		// クライアントから受け取ったメッセージをGPIへ送る
 		cmdQueue.gpi(req.query.message, function(result){

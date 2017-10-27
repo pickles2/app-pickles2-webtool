@@ -67,11 +67,11 @@ module.exports = function(conf){
 	}
 
 
-	return function(options, method, callback){
+	return function(options, method, userInfo, callback){
 		var commentSuffix =
 			"\n"
 			+'-----------'+"\n"
-			// +'committer: ' + req.userInfo.name + ' ('+req.userInfo.id+')' +"\n"
+			+'committer: ' + userInfo.name + ' ('+userInfo.id+')' +"\n"
 		;
 		if(method == 'commit_sitemaps'){
 			options[0] += commentSuffix;
