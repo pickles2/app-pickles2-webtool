@@ -87,6 +87,9 @@ $(window).load(function(){
 									return;
 								},
 								'complete': function(){
+									// progressの表示
+									window.main.progress.start({'blindness': true, 'showProgressBar': true});
+
 									$.ajax({
 										"url": "/apis/applock",
 										"type": 'post',
@@ -95,6 +98,9 @@ $(window).load(function(){
 											"page_path": params.page_path
 										},
 										"success": function(lockResult){
+											// プログレスの表示終了
+											window.main.progress.close();
+											
 											// console.log(lockResult);
 											if( !lockResult.result ){
 												alert('[ERROR] 編集状態の解除に失敗しました。');
