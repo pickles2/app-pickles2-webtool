@@ -54,31 +54,6 @@ module.exports = function(px2){
 				});
 			}); })
 			.then(function(){ return new Promise(function(rlv, rjt){
-				// console.log('checking assignee info ...');
-				navigation_info.user_info = {'name': '---', 'assignee': '---'};
-
-				// console.log(req.method.toLowerCase());
-				if( req.method.toLowerCase() != 'get' ){
-					console.log('method is not GET: '+req.method);
-					rlv();
-					return;
-				}
-				// console.log(navigation_info.page_info.assignee);
-				if( typeof(navigation_info.page_info.assignee) != typeof('') ){
-					console.log('no assignee');
-					rlv();
-					return;
-				}
-
-				px2.getUserInfo(navigation_info.page_info.assignee, function(userInfo){
-					// console.log(userInfo);
-					delete(userInfo.pw);//パスワードは忘れる
-					navigation_info.user_info = userInfo;
-					rlv();
-					return;
-				});
-			}); })
-			.then(function(){ return new Promise(function(rlv, rjt){
 				// console.log('checking editorType...');
 				navigation_info.editorType = '---';
 

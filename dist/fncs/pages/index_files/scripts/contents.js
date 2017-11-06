@@ -1036,43 +1036,21 @@ exports.cache = {
 
 },{}],4:[function(require,module,exports){
 module.exports={
-  "_args": [
-    [
-      {
-        "raw": "ejs@^2.5.2",
-        "scope": null,
-        "escapedName": "ejs",
-        "name": "ejs",
-        "rawSpec": "^2.5.2",
-        "spec": ">=2.5.2 <3.0.0",
-        "type": "range"
-      },
-      "/mydoc_TomK/Dropbox/localhosts/pickles2projects/pickles2/app-pickles2-webtool"
-    ]
-  ],
-  "_from": "ejs@>=2.5.2 <3.0.0",
+  "_from": "ejs@^2.5.2",
   "_id": "ejs@2.5.7",
-  "_inCache": true,
+  "_inBundle": false,
+  "_integrity": "sha1-zIcsFoiArjxxiXYv1f/ACJbJUYo=",
   "_location": "/ejs",
-  "_nodeVersion": "6.9.1",
-  "_npmOperationalInternal": {
-    "host": "s3://npm-registry-packages",
-    "tmp": "tmp/ejs-2.5.7.tgz_1501385411193_0.3807816591579467"
-  },
-  "_npmUser": {
-    "name": "mde",
-    "email": "mde@fleegix.org"
-  },
-  "_npmVersion": "3.10.8",
   "_phantomChildren": {},
   "_requested": {
+    "type": "range",
+    "registry": true,
     "raw": "ejs@^2.5.2",
-    "scope": null,
-    "escapedName": "ejs",
     "name": "ejs",
+    "escapedName": "ejs",
     "rawSpec": "^2.5.2",
-    "spec": ">=2.5.2 <3.0.0",
-    "type": "range"
+    "saveSpec": null,
+    "fetchSpec": "^2.5.2"
   },
   "_requiredBy": [
     "/",
@@ -1082,9 +1060,8 @@ module.exports={
   ],
   "_resolved": "https://registry.npmjs.org/ejs/-/ejs-2.5.7.tgz",
   "_shasum": "cc872c168880ae3c7189762fd5ffc00896c9518a",
-  "_shrinkwrap": null,
   "_spec": "ejs@^2.5.2",
-  "_where": "/mydoc_TomK/Dropbox/localhosts/pickles2projects/pickles2/app-pickles2-webtool",
+  "_where": "/root/www/app-pickles2-webtool",
   "author": {
     "name": "Matthew Eernisse",
     "email": "mde@fleegix.org",
@@ -1093,6 +1070,7 @@ module.exports={
   "bugs": {
     "url": "https://github.com/mde/ejs/issues"
   },
+  "bundleDependencies": false,
   "contributors": [
     {
       "name": "Timothy Gu",
@@ -1101,6 +1079,7 @@ module.exports={
     }
   ],
   "dependencies": {},
+  "deprecated": false,
   "description": "Embedded JavaScript templates",
   "devDependencies": {
     "browserify": "^13.0.1",
@@ -1113,11 +1092,6 @@ module.exports={
     "mocha": "^3.0.2",
     "uglify-js": "^2.6.2"
   },
-  "directories": {},
-  "dist": {
-    "shasum": "cc872c168880ae3c7189762fd5ffc00896c9518a",
-    "tarball": "https://registry.npmjs.org/ejs/-/ejs-2.5.7.tgz"
-  },
   "engines": {
     "node": ">=0.10.0"
   },
@@ -1129,15 +1103,7 @@ module.exports={
   ],
   "license": "Apache-2.0",
   "main": "./lib/ejs.js",
-  "maintainers": [
-    {
-      "name": "mde",
-      "email": "mde@fleegix.org"
-    }
-  ],
   "name": "ejs",
-  "optionalDependencies": {},
-  "readme": "ERROR: No README data found!",
   "repository": {
     "type": "git",
     "url": "git://github.com/mde/ejs.git"
@@ -3035,7 +3001,6 @@ window.cont = new (function(){
 							.append( $('<th>').text('ページID') )
 							.append( $('<th>').text('タイトル') )
 							.append( $('<th>').text('ページのパス') )
-							.append( $('<th>').text('担当者') )
 							// .append( $('<th>').text('編集モード') )
 							.append( $('<th>').text('-') )
 							.append( $('<th>').text('-') )
@@ -3069,8 +3034,7 @@ window.cont = new (function(){
 									!isMatchKeywords(sitemap[path].title_breadcrumb) &&
 									!isMatchKeywords(sitemap[path].title_h1) &&
 									!isMatchKeywords(sitemap[path].title_label) &&
-									!isMatchKeywords(sitemap[path].title_full) &&
-									!isMatchKeywords(sitemap[path].assignee)
+									!isMatchKeywords(sitemap[path].title_full)
 								){
 									console.log('=> skiped.');
 									return;
@@ -3082,7 +3046,6 @@ window.cont = new (function(){
 								return;
 							}
 
-							var $spanAssignee = $('<span>');
 							var $spanEditorType = $('<span>');
 							var $li = $('<tr>');
 							$li
@@ -3125,18 +3088,6 @@ window.cont = new (function(){
 									.append( $('<span>')
 										.text(sitemap[path].path)
 									)
-								)
-								.append( $('<td>')
-									// 担当者
-									.append( $spanAssignee.text((function(pageInfo){
-										// console.log(pageInfo);
-										var rtn = (pageInfo.assignee ? pageInfo.assignee : '---');
-										try {
-											rtn = (_this.userList[pageInfo.assignee].name + ' (' +  pageInfo.assignee + ')' || '---')
-										} catch (e) {
-										}
-										return rtn;
-									})( sitemap[path] )) )
 								)
 								// .append( $('<td>')
 								// 	// 編集モード

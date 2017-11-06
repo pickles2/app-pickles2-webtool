@@ -42,52 +42,6 @@ module.exports = function(conf){
 
 			}); })
 			.then(function(){ return new Promise(function(rlv, rjt){
-				function getUserInfo(id, callback){
-					callback = callback || function(){};
-					var pathCsv = require('path').resolve(__dirname, '../../config/userlist.csv');
-					// console.log(pathCsv);
-					var findInCsv = new (require('find-in-csv'))(
-						pathCsv ,
-						{
-							"require": ['id']
-						}
-					);
-					// console.log(findInCsv);
-
-					findInCsv.get(
-						{'id':id},
-						function(userInfo){
-							// console.log(findInCsv);
-							// console.log(userInfo);
-							callback(userInfo);
-							return;
-						}
-					);
-					return;
-
-				}
-
-				// console.log(req.method.toLowerCase());
-				if( req.method.toLowerCase() != 'get' ){
-					rlv();
-					return;
-				}
-				// console.log(rtn.page_info.assignee);
-				if( typeof(rtn.page_info.assignee) != typeof('') ){
-					rlv();
-					return;
-				}
-
-				getUserInfo(rtn.page_info.assignee, function(userInfo){
-					// console.log(userInfo);
-					delete(userInfo.pw);//パスワードは忘れる
-					rtn.user_info = userInfo;
-					rlv();
-					return;
-				});
-				return;
-			}); })
-			.then(function(){ return new Promise(function(rlv, rjt){
 				// 返却
 				// console.log(rtn);
 				res

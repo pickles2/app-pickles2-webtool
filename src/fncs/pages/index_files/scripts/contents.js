@@ -342,7 +342,6 @@ window.cont = new (function(){
 							.append( $('<th>').text('ページID') )
 							.append( $('<th>').text('タイトル') )
 							.append( $('<th>').text('ページのパス') )
-							.append( $('<th>').text('担当者') )
 							// .append( $('<th>').text('編集モード') )
 							.append( $('<th>').text('-') )
 							.append( $('<th>').text('-') )
@@ -376,8 +375,7 @@ window.cont = new (function(){
 									!isMatchKeywords(sitemap[path].title_breadcrumb) &&
 									!isMatchKeywords(sitemap[path].title_h1) &&
 									!isMatchKeywords(sitemap[path].title_label) &&
-									!isMatchKeywords(sitemap[path].title_full) &&
-									!isMatchKeywords(sitemap[path].assignee)
+									!isMatchKeywords(sitemap[path].title_full)
 								){
 									console.log('=> skiped.');
 									return;
@@ -389,7 +387,6 @@ window.cont = new (function(){
 								return;
 							}
 
-							var $spanAssignee = $('<span>');
 							var $spanEditorType = $('<span>');
 							var $li = $('<tr>');
 							$li
@@ -432,18 +429,6 @@ window.cont = new (function(){
 									.append( $('<span>')
 										.text(sitemap[path].path)
 									)
-								)
-								.append( $('<td>')
-									// 担当者
-									.append( $spanAssignee.text((function(pageInfo){
-										// console.log(pageInfo);
-										var rtn = (pageInfo.assignee ? pageInfo.assignee : '---');
-										try {
-											rtn = (_this.userList[pageInfo.assignee].name + ' (' +  pageInfo.assignee + ')' || '---')
-										} catch (e) {
-										}
-										return rtn;
-									})( sitemap[path] )) )
 								)
 								// .append( $('<td>')
 								// 	// 編集モード
