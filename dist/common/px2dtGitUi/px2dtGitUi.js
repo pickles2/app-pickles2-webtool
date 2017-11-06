@@ -48,6 +48,7 @@ window.px2dtGitUi = function(main){
 		callback = callback || function(){};
 		var $body = $('<div class="px2dt-git-commit">');
 		var $ul = $('<ul class="list-group">');
+		var $commitLabel = $('<p>').text('コミットコメント');
 		var $commitComment = $('<textarea>');
 
 		main.progress.start({'blindness': true, 'showProgressBar': true});
@@ -119,6 +120,7 @@ window.px2dtGitUi = function(main){
 				$ul.append( $li );
 			}
 			$body.append( $ul );
+			$body.append( $commitLabel );
 			$body.append( $commitComment );
 
 			main.dialog({
