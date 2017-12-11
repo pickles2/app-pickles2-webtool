@@ -35,6 +35,7 @@ if( conf.originParsed.protocol == 'https' ){
 }else{
 	server = require('http').Server(app);
 }
+var io = require('socket.io')(server);
 console.log('Application Server: port '+conf.originParsed.port);
 console.log('Pickles 2 Preview Server: port '+conf.px2server.originParsed.port);
 console.log('');
@@ -55,6 +56,7 @@ app.use( mdlWareSession );
 app.use( '/resources/bootstrap/', express.static( __dirname+'/../node_modules/bootstrap/dist/' ) );
 app.use( '/resources/ace-builds/src-noconflict/', express.static( __dirname+'/../node_modules/ace-builds/src-noconflict/' ) );
 app.use( '/resources/px2style/', express.static( __dirname+'/../node_modules/px2style/dist/' ) );
+app.use( '/resources/cmd-queue/', express.static( __dirname+'/../node_modules/cmd-queue/dist/' ) );
 app.use( '/resources/pickles2-contents-editor/', express.static( __dirname+'/../node_modules/pickles2-contents-editor/dist/' ) );
 app.use( '/resources/broccoli-html-editor/', express.static( __dirname+'/../node_modules/broccoli-html-editor/client/dist/' ) );
 
@@ -79,11 +81,11 @@ app.use( '/apis/getUserInfo', require('./apis/getUserInfo.js')(conf) );
 app.use( '/apis/getUserList', require('./apis/getUserList.js')(conf) );
 app.use( '/apis/pickles2ContentsEditorGpi', require('./apis/pickles2ContentsEditorGpi.js')(conf) );
 app.use( '/apis/pxCommand', require('./apis/pxCommand.js')(conf) );
-app.use( '/apis/px2git/:method', require('./apis/px2git/px2git.js')(conf) );
 app.use( '/apis/getServerConf', require('./apis/getServerConf.js')(conf) );
 app.use( '/apis/getPageInfo', require('./apis/getPageInfo.js')(conf) );
 app.use( '/apis/checkEditorType', require('./apis/checkEditorType.js')(conf) );
 app.use( '/apis/applock', require('./apis/applock.js')(conf) );
+app.use( '/apis/cmdQueue', require('./apis/cmdQueue.js')(conf, io) );
 
 // 動的なページ生成
 app.use( /^\/(?:index\.html)?/, require('./../src/index.html.js')(px2) );

@@ -13,3 +13,6 @@ url=https://github.com/tomk79/node-pickles2-contents-editor.git
 [submodule "submodules/preset-pickles2-webtool-develop"]
 	path = submodules/preset-pickles2-webtool-develop
 	url = https://github.com/tomk79/preset-pickles2-webtool-develop.git
+[submodule "submodules/node-cmd-queue"]
+	path = submodules/node-cmd-queue
+	url = https://github.com/tomk79/node-cmd-queue.git

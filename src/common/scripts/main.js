@@ -4,6 +4,31 @@ window.ejs = require('ejs');
 window.main = new (function(){
 	var _this = this;
 	var it79 = require('iterate79');
+	var socket = io();
+	this.cmdQueue = new CmdQueue(
+		{
+			'gpiBridge': function(message, done){
+				// クライアントからサーバーへのメッセージ送信を仲介
+
+				var data = '';
+				$.ajax({
+					'url': '/apis/cmdQueue',
+					'data': {
+						'message': message
+					},
+					'success': function(result){
+						data += result;
+					},
+					'complete': function(){
+						done(data);
+					}
+				});
+			}
+		}
+	);
+	socket.on('cmd-queue-message', function(message){
+		_this.cmdQueue.gpi(message);
+	});
 
 	this.progress = new (require('../../common/scripts/main.progress.js')).init(this, $);
 	this.message = require('../../common/scripts/main.message.js');

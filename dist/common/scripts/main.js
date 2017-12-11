@@ -12507,575 +12507,37 @@ process.chdir = function (dir) {
 };
 
 },{}],10:[function(require,module,exports){
-/**
- * globamenu.js
- *
- * `px.lb` は、多言語対応機能です。
- * `app/common/language/language.csv` にある言語ファイルから、
- * ユーザーが選択した言語コードに対応するテキストを取り出します。
- */
-module.exports = function(main){
-	var _menu = [];
-	_menu.push({
-		"label":'ホーム',
-		"cond":"projectSelected",
-		"area":"mainmenu",
-		"app":"fncs/home/index.html",
-		"click": function(){
-			main.subapp();
-		}
-	});
-	_menu.push({
-		"label":'コンテンツ',
-		"cond":"pxStandby",
-		"area":"mainmenu",
-		"app":"fncs/pages/index.html",
-		"click": function(){
-			main.subapp($(this).data('app'));
-		}
-	});
-	_menu.push({
-		"label":'ヘルプ',
-		"cond":"always",
-		"area":"shoulder",
-		"app":null,
-		"click": function(){
-			main.openHelp();
-		}
-	});
-	_menu.push({
-		"label":'ログアウト',
-		"cond":"always",
-		"area":"shoulder",
-		"app":null,
-		"click": function(){
-			main.logout();
-		}
-	});
-
-	/**
-	 * グローバルメニューの定義を取得
-	 */
-	this.getGlobalMenuDefinition = function(){
-		return _menu;
-	}
-
-	/**
-	 * グローバルメニューを描画
-	 */
-	this.drawGlobalMenu = function($shoulderMenu, _current_app){
-		$shoulderMenu.find('ul').html('');
-
-		_current_app = _current_app.replace(/^\//, '');
-		_current_app = _current_app.replace(/\/$/, '/index.html');
-
-		for( var i in _menu ){
-			if( _menu[i].cond == 'projectSelected' ){
-			}else if( _menu[i].cond == 'composerJsonExists' ){
-			}else if( _menu[i].cond == 'homeDirExists' ){
-			}else if( _menu[i].cond == 'pxStandby' ){
-			}else if( _menu[i].cond != 'always' ){
-			}
-
-			var $tmpMenu = $('<a>')
-				.attr({"href":"javascript:;"})
-				.on('click', _menu[i].click)
-				.text(_menu[i].label)
-				.data('app', _menu[i].app)
-				.addClass( ( _current_app==_menu[i].app ? 'current' : '' ) )
-			;
-
-			switch( _menu[i].area ){
-				case 'shoulder':
-					$shoulderMenu.find('ul').append( $('<li>')
-						.append( $tmpMenu )
-					);
-					break;
-				default:
-					$('.theme-header__gmenu ul').append( $('<li>')
-						.append( $tmpMenu )
-					);
-					break;
-			}
-		}
-
-		var $tmpMenu = $('<span>')
-			.text(''+main.getLoginUserInfo().name+' さん')
-			.addClass('theme-header__gmenu__login-user')
-		;
-		$('.theme-header__gmenu ul').append( $('<li>')
-			.append( $tmpMenu )
-		);
-
-		return;
-	}
-
-}
-
-},{}],11:[function(require,module,exports){
-(function(module){
-	var $ = require('jquery');
-	var $dialog;
-
-	module.exports = function(px){
-
-		/**
-		 * ダイアログを表示する
-		 */
-		px.dialog = function(opt){
-			px.closeDialog();
-
-			opt = opt||{};
-			opt.title = opt.title||'command:';
-			opt.body = opt.body||$('<div>');
-			opt.buttons = opt.buttons||[
-				$('<button class="btn btn-primary">').text('OK').click(function(){
-					px.closeDialog();
-				})
-			];
-
-			for( var i in opt.buttons ){
-				var $btnElm = $(opt.buttons[i]);
-				$btnElm.each(function(){
-					if(!$(this).hasClass('btn')){
-						$(this).addClass('btn').addClass('btn-secondary');
-					}
-				});
-				opt.buttons[i] = $btnElm;
-			}
-
-			var $dialogButtons = $('<div class="dialog-buttons">').append(opt.buttons);
-
-			$dialog = $('<div>')
-				.addClass('contents')
-				.css({
-					'position':'fixed',
-					'left':0, 'top':0,
-					'width': $(window).width(),
-					'height': $(window).height(),
-					'overflow':'hidden',
-					'z-index':10000
-				})
-				.append( $('<div>')
-					.css({
-						'position':'fixed',
-						'left':0, 'top':0,
-						'width':'100%', 'height':'100%',
-						'overflow':'hidden',
-						'background':'#000',
-						'opacity':0.5
-					})
-				)
-				.append( $('<div>')
-					.css({
-						'position':'absolute',
-						'left':0, 'top':0,
-						'padding-top':'4em',
-						'overflow':'auto',
-						'width':"100%",
-						'height':"100%"
-					})
-					.append( $('<div>')
-						.addClass('dialog_box')
-						.css({
-							'width':'80%',
-							'margin':'3em auto'
-						})
-						.append( $('<h1>')
-							.text(opt.title)
-						)
-						.append( $('<div>')
-							.append(opt.body)
-						)
-						.append( $dialogButtons )
-					)
-				)
-			;
-
-			$('body')
-				.append($dialog)
-			;
-			$('body .theme_wrap')
-				// .addClass('filter')
-				// .addClass('filter-blur')//描画がおかしくなるから一旦やめ。
-			;
-			return $dialog;
-		}//dialog()
-
-		/**
-		 * ダイアログを閉じる
-		 */
-		px.closeDialog = function(){
-			if( $dialog ){
-				$dialog.remove();
-				$('body .theme_wrap')
-					.removeClass('filter-blur')
-				;
-			}
-			return $dialog;
-		}//closeDialog()
-	}
-
-
-
-	/**
-	 * イベントリスナー
-	 */
-	$(window).on( 'resize', function(e){
-		if( typeof($dialog) !== typeof( $('<div>') ) ){return;}
-		$dialog
-			.css({
-				'width': $(window).width(),
-				'height': $(window).height()
-			})
-		;
-	} );
-
-})(module);
-
-},{"jquery":7}],12:[function(require,module,exports){
-(function(module){
-	var $ = require('jquery');
-	var $msgBox = $('<div class="theme_ui_px_message">');
-	$(function(){
-		$('body').append($msgBox);
-	});
-
-	module.exports = function( message, opt ) {
-
-		opt = opt || {};
-		opt.complete = opt.complete || function(){};
-		var $newMsg = $('<div>')
-			.text(message)
-			.css({
-				'background': '#ffd',
-				'text-align': 'center',
-				'border': '1px solid #f93',
-				'color': '#f93',
-				'padding': 4,
-				'margin': "10px 40px"
-			})
-			.hide()
-		;
-		$msgBox.append(
-			$newMsg
-				.hide()
-				.fadeIn('slow', function(){
-					setTimeout(function(){
-						$newMsg
-							.animate({
-								"font-size": 0 ,
-								"opacity": 0.5 ,
-								"height": 0 ,
-								'padding': 0,
-								'margin-bottom': 0
-							}, {
-								duration: "slow",
-								easing: "linear",
-								complete: function(){
-									$newMsg.remove();
-									opt.complete();
-								}
-							})
-						;
-					}, 3000);
-				})
-		);
-		return this;
-
-	}
-
-})(module);
-
-},{"jquery":7}],13:[function(require,module,exports){
-/**
- * progress window
- */
-module.exports.init = function( px, $ ) {
-	// この機能は、画面全体をロックしてプログレス画面を表示します。
-	// プログレス画面を表示している間は、キーボードやマウスの操作を受け付けません。
-	// 見えないフォーム `$keycatcher` にフォーカスを当て、キーボード操作を拾って捨てています。
-
-	var htmlProgress = ''
-		+'<div class="progress">'
-		+'<div class="progress-bar progress-bar-info progress-bar-striped active" role="progressbar" style="width: 100%;">'
-		+'<span class="sr-only"></span>'
-		+'</div>'
-		+'</div>'+"\n"
-	;
-
-	var _this = this;
-	var $keycatcher = $('<input>');
-	var $progress = $('<div>')
-		.append( $keycatcher
-			.css({
-				'border':'none',
-				'background':'transparent',
-				'opacity':'0.1'
-			})
-			.bind( 'keydown', function(e){
-				// console.log('keydown');
-				px.message('キーボード操作をキャンセルしました。');
-
-				e.preventDefault();
-				e.stopPropagation();
-				return false;
-			} )
-		)
-		.bind( 'mousedown', function(e){stopKeyboard();} )
-		.bind( 'mouseup', function(e){stopKeyboard();} )
-		.bind( 'click', function(e){stopKeyboard();} )
-		.append( $('<div class="px2dt-progress-bar">')
-			.css({
-				'width': '600px',
-				'max-width': '80%',
-				'margin': 'auto auto'
-			})
-			.append( $('<div>')
-				.html(htmlProgress)
-			)
-			.append( $('<div>')
-				.css({
-					'color':'#fff',
-					'text-align': 'center'
-				})
-				.html('しばらくお待ちください...')
-			)
-		)
-	;
-
-	function stopKeyboard(){
-		$keycatcher.focus();
-	}
-
-	/**
-	 * プログレス画面を表示
-	 */
-	this.start = function( options ){
-		options = (options?options:{});
-		$progress
-			.css({
-				'background': (options.blindness?'rgba(0, 0, 0, 0.5)':'rgba(0, 0, 0, 0)'),
-				'width': $(window).width(),
-				'height': $(window).height(),
-				'position': 'fixed',
-				'top': 0, 'left': 0,
-				'z-index': 15000
-			})
-		;
-		if( options.showProgressBar ){
-			$progress.find('.px2dt-progress-bar').show();
-		}else{
-			$progress.find('.px2dt-progress-bar').hide();
-		}
-		$('body').append( $progress );
-		stopKeyboard();
-		return this;
-	}
-
-	/**
-	 * プログレス画面を閉じる
-	 */
-	this.close = function(){
-		$progress.remove();
-		return this;
-	}
-
-	$(window).resize(function(){
-		$progress
-			.css({
-				'width': $(window).width(),
-				'height': $(window).height()
-			})
-		;
-	});
-
-	return this;
-};
-
-},{}],14:[function(require,module,exports){
-/**
- * main.project.git
- */
-module.exports = function( main ){
-	var _this = this;
-	var $ = require('jquery');
-
-	function apiGen(apiName){
-		return new (function(apiName){
-			this.fnc = function(options, callback){
-				if( arguments.length == 2 ){
-					options = arguments[0];
-					callback = arguments[1];
-				}else{
-					callback = arguments[0];
-				}
-
-				options = options||[];
-				callback = callback||function(){};
-
-				var param = {
-					'method': apiName,
-					// 'entryScript': entryScript,
-					'options': options
-				};
-
-				// PHPスクリプトを実行する
-				var rtn = '';
-				var err = '';
-				$.ajax({
-					'url': '/apis/px2git/'+apiName,
-					'data': param,
-					'dataType': 'json',
-					"success": function(data, dataType){
-						rtn = data;
-						// console.log(data);
-					} ,
-					"error": function(XMLHttpRequest, textStatus, errorThrown){
-						console.error('AJAX ERROR.');
-						console.error(XMLHttpRequest, textStatus, errorThrown);
-					} ,
-					"complete": function(XMLHttpRequest, textStatus){
-						setTimeout(function(){
-							console.log(rtn, err, XMLHttpRequest, textStatus);
-							callback(rtn, err, XMLHttpRequest, textStatus);
-						},500);
-					}
-				});
-				return;
-			}
-		})(apiName).fnc;
-	}
-
-	/**
-	 * サイトマップをコミットする
-	 * @return {[type]} [description]
-	 */
-	this.commitSitemap = new apiGen('commit_sitemaps');
-
-	/**
-	 * ページのコンテンツをコミットする
-	 * @return {[type]} [description]
-	 */
-	this.commitContents = new apiGen('commit_contents');
-
-	/**
-	 * git status
-	 * @return {[type]} [description]
-	 */
-	this.status = new apiGen('status');
-
-	/**
-	 * git status (contents)
-	 * @return {[type]} [description]
-	 */
-	this.statusContents = new apiGen('status_contents');
-
-	/**
-	 * サイトマップをロールバックする
-	 * @return {[type]} [description]
-	 */
-	this.rollbackSitemaps = new apiGen('rollback_sitemaps');
-
-	/**
-	 * ページのコンテンツをロールバックする
-	 * @return {[type]} [description]
-	 */
-	this.rollbackContents = new apiGen('rollback_contents');
-
-	/**
-	 * git log
-	 * @return {[type]} [description]
-	 */
-	this.log = new apiGen('log');
-
-	/**
-	 * サイトマップのコミットログを取得する
-	 * @return {[type]} [description]
-	 */
-	this.logSitemaps = new apiGen('log_sitemaps');
-
-	/**
-	 * コンテンツのコミットログを取得する
-	 * @return {[type]} [description]
-	 */
-	this.logContents = new apiGen('log_contents');
-
-	/**
-	 * git show
-	 * @return {[type]} [description]
-	 */
-	this.show = new apiGen('show');
-
-	return this;
-};
-
-},{"jquery":7}],15:[function(require,module,exports){
-/**
- * main.project.js
- */
-module.exports = function( main ){
-	var _this = this;
-	var $ = require('jquery');
-
-	/**
-	 * プロジェクトのコンフィグ情報を取得する
-	 */
-	this.getConfig = function(callback){
-		callback = callback || function(){};
-		$.ajax({
-			'type': 'POST',
-			'url': '/apis/getProjectConf',
-			'success': function(data, dataType){
-				callback( data );
-			},
-			'complete': function(xhr, textStatus){
-			}
-		});
-	}
-
-	/**
-	 * PXコマンドを実行する
-	 */
-	this.pxCommand = function(page_path, command, params, callback){
-		callback = callback || function(){};
-
-		var strParam = '';
-		var aryParams = [];
-		for(var key in params){
-			aryParams.push( encodeURIComponent(key)+'='+encodeURIComponent(params[key]) );
-		}
-		strParam = aryParams.join('&');
-
-		var rtn = false;
-		$.ajax({
-			'type': 'POST',
-			'url': '/apis/pxCommand',
-			'data': {
-				'page_path': page_path,
-				'PX': command,
-				'params': strParam
-			},
-			"success": function(data, dataType){
-				// console.log(data);
-				rtn = data;
-			},
-			"complete": function(XMLHttpRequest, textStatus){
-				callback(rtn);
-			}
-		});
-	}
-
-	return this;
-};
-
-},{"jquery":7}],16:[function(require,module,exports){
 window.jQuery = window.$ = require('jquery');
 window.ejs = require('ejs');
 
 window.main = new (function(){
 	var _this = this;
 	var it79 = require('iterate79');
+	var socket = io();
+	this.cmdQueue = new CmdQueue(
+		{
+			'gpiBridge': function(message, done){
+				// クライアントからサーバーへのメッセージ送信を仲介
+
+				var data = '';
+				$.ajax({
+					'url': '/apis/cmdQueue',
+					'data': {
+						'message': message
+					},
+					'success': function(result){
+						data += result;
+					},
+					'complete': function(){
+						done(data);
+					}
+				});
+			}
+		}
+	);
+	socket.on('cmd-queue-message', function(message){
+		_this.cmdQueue.gpi(message);
+	});
 
 	this.progress = new (require('../../common/scripts/main.progress.js')).init(this, $);
 	this.message = require('../../common/scripts/main.message.js');
@@ -13241,4 +12703,588 @@ window.main = new (function(){
 
 })();
 
-},{"../../common/scripts/globalmenu.js":10,"../../common/scripts/main.dialog.js":11,"../../common/scripts/main.message.js":12,"../../common/scripts/main.progress.js":13,"../../common/scripts/main.project.git.js":14,"../../common/scripts/main.project.js":15,"ejs":2,"iterate79":6,"jquery":7}]},{},[16])
+},{"../../common/scripts/globalmenu.js":11,"../../common/scripts/main.dialog.js":12,"../../common/scripts/main.message.js":13,"../../common/scripts/main.progress.js":14,"../../common/scripts/main.project.git.js":15,"../../common/scripts/main.project.js":16,"ejs":2,"iterate79":6,"jquery":7}],11:[function(require,module,exports){
+/**
+ * globamenu.js
+ *
+ * `px.lb` は、多言語対応機能です。
+ * `app/common/language/language.csv` にある言語ファイルから、
+ * ユーザーが選択した言語コードに対応するテキストを取り出します。
+ */
+module.exports = function(main){
+	var _menu = [];
+	_menu.push({
+		"label":'ホーム',
+		"cond":"projectSelected",
+		"area":"mainmenu",
+		"app":"fncs/home/index.html",
+		"click": function(){
+			main.subapp();
+		}
+	});
+	_menu.push({
+		"label":'コンテンツ',
+		"cond":"pxStandby",
+		"area":"mainmenu",
+		"app":"fncs/pages/index.html",
+		"click": function(){
+			main.subapp($(this).data('app'));
+		}
+	});
+	_menu.push({
+		"label":'ヘルプ',
+		"cond":"always",
+		"area":"shoulder",
+		"app":null,
+		"click": function(){
+			main.openHelp();
+		}
+	});
+	_menu.push({
+		"label":'ログアウト',
+		"cond":"always",
+		"area":"shoulder",
+		"app":null,
+		"click": function(){
+			main.logout();
+		}
+	});
+
+	/**
+	 * グローバルメニューの定義を取得
+	 */
+	this.getGlobalMenuDefinition = function(){
+		return _menu;
+	}
+
+	/**
+	 * グローバルメニューを描画
+	 */
+	this.drawGlobalMenu = function($shoulderMenu, _current_app){
+		$shoulderMenu.find('ul').html('');
+
+		_current_app = _current_app.replace(/^\//, '');
+		_current_app = _current_app.replace(/\/$/, '/index.html');
+
+		for( var i in _menu ){
+			if( _menu[i].cond == 'projectSelected' ){
+			}else if( _menu[i].cond == 'composerJsonExists' ){
+			}else if( _menu[i].cond == 'homeDirExists' ){
+			}else if( _menu[i].cond == 'pxStandby' ){
+			}else if( _menu[i].cond != 'always' ){
+			}
+
+			var $tmpMenu = $('<a>')
+				.attr({"href":"javascript:;"})
+				.on('click', _menu[i].click)
+				.text(_menu[i].label)
+				.data('app', _menu[i].app)
+				.addClass( ( _current_app==_menu[i].app ? 'current' : '' ) )
+			;
+
+			switch( _menu[i].area ){
+				case 'shoulder':
+					$shoulderMenu.find('ul').append( $('<li>')
+						.append( $tmpMenu )
+					);
+					break;
+				default:
+					$('.theme-header__gmenu ul').append( $('<li>')
+						.append( $tmpMenu )
+					);
+					break;
+			}
+		}
+
+		var $tmpMenu = $('<span>')
+			.text(''+main.getLoginUserInfo().name+' さん')
+			.addClass('theme-header__gmenu__login-user')
+		;
+		$('.theme-header__gmenu ul').append( $('<li>')
+			.append( $tmpMenu )
+		);
+
+		return;
+	}
+
+}
+
+},{}],12:[function(require,module,exports){
+(function(module){
+	var $ = require('jquery');
+	var $dialog;
+
+	module.exports = function(px){
+
+		/**
+		 * ダイアログを表示する
+		 */
+		px.dialog = function(opt){
+			px.closeDialog();
+
+			opt = opt||{};
+			opt.title = opt.title||'command:';
+			opt.body = opt.body||$('<div>');
+			opt.buttons = opt.buttons||[
+				$('<button class="btn btn-primary">').text('OK').click(function(){
+					px.closeDialog();
+				})
+			];
+
+			for( var i in opt.buttons ){
+				var $btnElm = $(opt.buttons[i]);
+				$btnElm.each(function(){
+					if(!$(this).hasClass('btn')){
+						$(this).addClass('btn').addClass('btn-secondary');
+					}
+				});
+				opt.buttons[i] = $btnElm;
+			}
+
+			var $dialogButtons = $('<div class="dialog-buttons">').append(opt.buttons);
+
+			$dialog = $('<div>')
+				.addClass('contents')
+				.css({
+					'position':'fixed',
+					'left':0, 'top':0,
+					'width': $(window).width(),
+					'height': $(window).height(),
+					'overflow':'hidden',
+					'z-index':10000
+				})
+				.append( $('<div>')
+					.css({
+						'position':'fixed',
+						'left':0, 'top':0,
+						'width':'100%', 'height':'100%',
+						'overflow':'hidden',
+						'background':'#000',
+						'opacity':0.5
+					})
+				)
+				.append( $('<div>')
+					.css({
+						'position':'absolute',
+						'left':0, 'top':0,
+						'padding-top':'4em',
+						'overflow':'auto',
+						'width':"100%",
+						'height':"100%"
+					})
+					.append( $('<div>')
+						.addClass('dialog_box')
+						.css({
+							'width':'80%',
+							'margin':'3em auto'
+						})
+						.append( $('<h1>')
+							.text(opt.title)
+						)
+						.append( $('<div>')
+							.append(opt.body)
+						)
+						.append( $dialogButtons )
+					)
+				)
+			;
+
+			$('body')
+				.append($dialog)
+			;
+			$('body .theme_wrap')
+				// .addClass('filter')
+				// .addClass('filter-blur')//描画がおかしくなるから一旦やめ。
+			;
+			return $dialog;
+		}//dialog()
+
+		/**
+		 * ダイアログを閉じる
+		 */
+		px.closeDialog = function(){
+			if( $dialog ){
+				$dialog.remove();
+				$('body .theme_wrap')
+					.removeClass('filter-blur')
+				;
+			}
+			return $dialog;
+		}//closeDialog()
+	}
+
+
+
+	/**
+	 * イベントリスナー
+	 */
+	$(window).on( 'resize', function(e){
+		if( typeof($dialog) !== typeof( $('<div>') ) ){return;}
+		$dialog
+			.css({
+				'width': $(window).width(),
+				'height': $(window).height()
+			})
+		;
+	} );
+
+})(module);
+
+},{"jquery":7}],13:[function(require,module,exports){
+(function(module){
+	var $ = require('jquery');
+	var $msgBox = $('<div class="theme_ui_px_message">');
+	$(function(){
+		$('body').append($msgBox);
+	});
+
+	module.exports = function( message, opt ) {
+
+		opt = opt || {};
+		opt.complete = opt.complete || function(){};
+		var $newMsg = $('<div>')
+			.text(message)
+			.css({
+				'background': '#ffd',
+				'text-align': 'center',
+				'border': '1px solid #f93',
+				'color': '#f93',
+				'padding': 4,
+				'margin': "10px 40px"
+			})
+			.hide()
+		;
+		$msgBox.append(
+			$newMsg
+				.hide()
+				.fadeIn('slow', function(){
+					setTimeout(function(){
+						$newMsg
+							.animate({
+								"font-size": 0 ,
+								"opacity": 0.5 ,
+								"height": 0 ,
+								'padding': 0,
+								'margin-bottom': 0
+							}, {
+								duration: "slow",
+								easing: "linear",
+								complete: function(){
+									$newMsg.remove();
+									opt.complete();
+								}
+							})
+						;
+					}, 3000);
+				})
+		);
+		return this;
+
+	}
+
+})(module);
+
+},{"jquery":7}],14:[function(require,module,exports){
+/**
+ * progress window
+ */
+module.exports.init = function( px, $ ) {
+	// この機能は、画面全体をロックしてプログレス画面を表示します。
+	// プログレス画面を表示している間は、キーボードやマウスの操作を受け付けません。
+	// 見えないフォーム `$keycatcher` にフォーカスを当て、キーボード操作を拾って捨てています。
+
+	var htmlProgress = ''
+		+'<div class="progress">'
+		+'<div class="progress-bar progress-bar-info progress-bar-striped active" role="progressbar" style="width: 100%;">'
+		+'<span class="sr-only"></span>'
+		+'</div>'
+		+'</div>'+"\n"
+	;
+
+	var _this = this;
+	var $keycatcher = $('<input>');
+	var $progress = $('<div>')
+		.append( $keycatcher
+			.css({
+				'border':'none',
+				'background':'transparent',
+				'opacity':'0.1'
+			})
+			.bind( 'keydown', function(e){
+				// console.log('keydown');
+				px.message('キーボード操作をキャンセルしました。');
+
+				e.preventDefault();
+				e.stopPropagation();
+				return false;
+			} )
+		)
+		.bind( 'mousedown', function(e){stopKeyboard();} )
+		.bind( 'mouseup', function(e){stopKeyboard();} )
+		.bind( 'click', function(e){stopKeyboard();} )
+		.append( $('<div class="px2dt-progress-bar">')
+			.css({
+				'width': '600px',
+				'max-width': '80%',
+				'margin': 'auto auto'
+			})
+			.append( $('<div>')
+				.html(htmlProgress)
+			)
+			.append( $('<div>')
+				.css({
+					'color':'#fff',
+					'text-align': 'center'
+				})
+				.html('しばらくお待ちください...')
+			)
+		)
+	;
+
+	function stopKeyboard(){
+		$keycatcher.focus();
+	}
+
+	/**
+	 * プログレス画面を表示
+	 */
+	this.start = function( options ){
+		options = (options?options:{});
+		$progress
+			.css({
+				'background': (options.blindness?'rgba(0, 0, 0, 0.5)':'rgba(0, 0, 0, 0)'),
+				'width': $(window).width(),
+				'height': $(window).height(),
+				'position': 'fixed',
+				'top': 0, 'left': 0,
+				'z-index': 15000
+			})
+		;
+		if( options.showProgressBar ){
+			$progress.find('.px2dt-progress-bar').show();
+		}else{
+			$progress.find('.px2dt-progress-bar').hide();
+		}
+		$('body').append( $progress );
+		stopKeyboard();
+		return this;
+	}
+
+	/**
+	 * プログレス画面を閉じる
+	 */
+	this.close = function(){
+		$progress.remove();
+		return this;
+	}
+
+	$(window).resize(function(){
+		$progress
+			.css({
+				'width': $(window).width(),
+				'height': $(window).height()
+			})
+		;
+	});
+
+	return this;
+};
+
+},{}],15:[function(require,module,exports){
+/**
+ * main.project.git
+ */
+module.exports = function( main ){
+	var _this = this;
+	var $ = require('jquery');
+
+	function apiGen(apiName){
+		return new (function(apiName){
+			this.fnc = function(options, callback){
+				if( arguments.length == 2 ){
+					options = arguments[0];
+					callback = arguments[1];
+				}else{
+					callback = arguments[0];
+				}
+
+				options = options||[];
+				callback = callback||function(){};
+
+				var param = {
+					'method': apiName,
+					// 'entryScript': entryScript,
+					'options': options
+				};
+
+				// PHPスクリプトを実行する
+				var stdout = '';
+				var stderr = '';
+				main.cmdQueue.addQueueItem(
+					['px2git', apiName, JSON.stringify(param)],
+					{
+						'cdName': 'git',
+						'tags': [
+							'project-git'
+						],
+						'accept': function(queueId){
+							// console.log(queueId);
+						},
+						'open': function(message){
+						},
+						'stdout': function(message){
+							for(var idx in message.data){
+								stdout += message.data[idx];
+							}
+						},
+						'stderr': function(message){
+							for(var idx in message.data){
+								stdout += message.data[idx];
+								stderr += message.data[idx];
+								console.error(message.data[idx]);
+							}
+						},
+						'close': function(message){
+							setTimeout(function(){
+								try {
+									stdout = JSON.parse(stdout);
+								} catch (e) {
+									console.error('Failed to parse JSON string.');
+									console.error(stdout);
+									stdout = false;
+								}
+								var code = message.data;
+								callback(stdout, stderr, code);
+							},500);
+							return;
+						}
+					}
+				);
+				return;
+			}
+		})(apiName).fnc;
+	}
+
+	/**
+	 * サイトマップをコミットする
+	 * @return {[type]} [description]
+	 */
+	this.commitSitemap = new apiGen('commit_sitemaps');
+
+	/**
+	 * ページのコンテンツをコミットする
+	 * @return {[type]} [description]
+	 */
+	this.commitContents = new apiGen('commit_contents');
+
+	/**
+	 * git status
+	 * @return {[type]} [description]
+	 */
+	this.status = new apiGen('status');
+
+	/**
+	 * git status (contents)
+	 * @return {[type]} [description]
+	 */
+	this.statusContents = new apiGen('status_contents');
+
+	/**
+	 * サイトマップをロールバックする
+	 * @return {[type]} [description]
+	 */
+	this.rollbackSitemaps = new apiGen('rollback_sitemaps');
+
+	/**
+	 * ページのコンテンツをロールバックする
+	 * @return {[type]} [description]
+	 */
+	this.rollbackContents = new apiGen('rollback_contents');
+
+	/**
+	 * git log
+	 * @return {[type]} [description]
+	 */
+	this.log = new apiGen('log');
+
+	/**
+	 * サイトマップのコミットログを取得する
+	 * @return {[type]} [description]
+	 */
+	this.logSitemaps = new apiGen('log_sitemaps');
+
+	/**
+	 * コンテンツのコミットログを取得する
+	 * @return {[type]} [description]
+	 */
+	this.logContents = new apiGen('log_contents');
+
+	/**
+	 * git show
+	 * @return {[type]} [description]
+	 */
+	this.show = new apiGen('show');
+
+	return this;
+};
+
+},{"jquery":7}],16:[function(require,module,exports){
+/**
+ * main.project.js
+ */
+module.exports = function( main ){
+	var _this = this;
+	var $ = require('jquery');
+
+	/**
+	 * プロジェクトのコンフィグ情報を取得する
+	 */
+	this.getConfig = function(callback){
+		callback = callback || function(){};
+		$.ajax({
+			'type': 'POST',
+			'url': '/apis/getProjectConf',
+			'success': function(data, dataType){
+				callback( data );
+			},
+			'complete': function(xhr, textStatus){
+			}
+		});
+	}
+
+	/**
+	 * PXコマンドを実行する
+	 */
+	this.pxCommand = function(page_path, command, params, callback){
+		callback = callback || function(){};
+
+		var strParam = '';
+		var aryParams = [];
+		for(var key in params){
+			aryParams.push( encodeURIComponent(key)+'='+encodeURIComponent(params[key]) );
+		}
+		strParam = aryParams.join('&');
+
+		var rtn = false;
+		$.ajax({
+			'type': 'POST',
+			'url': '/apis/pxCommand',
+			'data': {
+				'page_path': page_path,
+				'PX': command,
+				'params': strParam
+			},
+			"success": function(data, dataType){
+				// console.log(data);
+				rtn = data;
+			},
+			"complete": function(XMLHttpRequest, textStatus){
+				callback(rtn);
+			}
+		});
+	}
+
+	return this;
+};
+
+},{"jquery":7}]},{},[10])
