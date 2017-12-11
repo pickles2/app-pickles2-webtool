@@ -124,16 +124,36 @@ exports.resolveInclude = function(name, filename, isDir) {
  * @param  {Options} options compilation options
  * @return {String}
  */
-function getIncludePath(path, options){
+function getIncludePath(path, options) {
   var includePath;
+  var filePath;
+  var views = options.views;
+
+  // Abs path
   if (path.charAt(0) == '/') {
     includePath = exports.resolveInclude(path.replace(/^\/*/,''), options.root || '/', true);
   }
+  // Relative paths
   else {
-    if (!options.filename) {
-      throw new Error('`include` use relative path requires the \'filename\' option.');
+    // Look relative to a passed filename first
+    if (options.filename) {
+      filePath = exports.resolveInclude(path, options.filename);
+      if (fs.existsSync(filePath)) {
+        includePath = filePath;
+      }
     }
-    includePath = exports.resolveInclude(path, options.filename);
+    // Then look in any views directories
+    if (!includePath) {
+      if (Array.isArray(views) && views.some(function (v) {
+        filePath = exports.resolveInclude(path, v, true);
+        return fs.existsSync(filePath);
+      })) {
+        includePath = filePath;
+      }
+    }
+    if (!includePath) {
+      throw new Error('Could not find include include file.');
+    }
   }
   return includePath;
 }
@@ -393,8 +413,13 @@ exports.renderFile = function () {
     // in the data, copy them to options
     if (arguments.length === 3) {
       // Express 4
-      if (data.settings && data.settings['view options']) {
-        utils.shallowCopyFromList(opts, data.settings['view options'], _OPTS_EXPRESS);
+      if (data.settings) {
+        if (data.settings['view options']) {
+          utils.shallowCopyFromList(opts, data.settings['view options'], _OPTS_EXPRESS);
+        }
+        if (data.settings.views) {
+          opts.views = data.settings.views;
+        }
       }
       // Express 3 and lower
       else {
@@ -445,6 +470,7 @@ function Template(text, opts) {
   options.rmWhitespace = opts.rmWhitespace;
   options.root = opts.root;
   options.localsName = opts.localsName || exports.localsName || _DEFAULT_LOCALS_NAME;
+  options.views = opts.views;
 
   if (options.strict) {
     options._with = false;
@@ -508,10 +534,6 @@ Template.prototype = {
       src = this.source;
     }
 
-    if (opts.debug) {
-      console.log(src);
-    }
-
     if (opts.client) {
       src = 'escapeFn = escapeFn || ' + escapeFn.toString() + ';' + '\n' + src;
       if (opts.compileDebug) {
@@ -521,6 +543,9 @@ Template.prototype = {
 
     if (opts.strict) {
       src = '"use strict";\n' + src;
+    }
+    if (opts.debug) {
+      console.log(src);
     }
 
     try {
@@ -614,7 +639,7 @@ Template.prototype = {
                   + '      try {' + '\n'
                   + includeObj.source
                   + '      } catch (e) {' + '\n'
-                  + '        rethrow(e, __lines, __filename, __line);' + '\n'
+                  + '        rethrow(e, __lines, __filename, __line, escapeFn);' + '\n'
                   + '      }' + '\n'
                   + '    ; }).call(this)' + '\n';
             }else{
@@ -660,42 +685,42 @@ Template.prototype = {
     return arr;
   },
 
+  _addOutput: function (line) {
+    if (this.truncate) {
+      // Only replace single leading linebreak in the line after
+      // -%> tag -- this is the single, trailing linebreak
+      // after the tag that the truncation mode replaces
+      // Handle Win / Unix / old Mac linebreaks -- do the \r\n
+      // combo first in the regex-or
+      line = line.replace(/^(?:\r\n|\r|\n)/, '');
+      this.truncate = false;
+    }
+    else if (this.opts.rmWhitespace) {
+      // rmWhitespace has already removed trailing spaces, just need
+      // to remove linebreaks
+      line = line.replace(/^\n/, '');
+    }
+    if (!line) {
+      return line;
+    }
+
+    // Preserve literal slashes
+    line = line.replace(/\\/g, '\\\\');
+
+    // Convert linebreaks
+    line = line.replace(/\n/g, '\\n');
+    line = line.replace(/\r/g, '\\r');
+
+    // Escape double-quotes
+    // - this will be the delimiter during execution
+    line = line.replace(/"/g, '\\"');
+    this.source += '    ; __append("' + line + '")' + '\n';
+  },
+
   scanLine: function (line) {
     var self = this;
     var d = this.opts.delimiter;
     var newLineCount = 0;
-
-    function _addOutput() {
-      if (self.truncate) {
-        // Only replace single leading linebreak in the line after
-        // -%> tag -- this is the single, trailing linebreak
-        // after the tag that the truncation mode replaces
-        // Handle Win / Unix / old Mac linebreaks -- do the \r\n
-        // combo first in the regex-or
-        line = line.replace(/^(?:\r\n|\r|\n)/, '');
-        self.truncate = false;
-      }
-      else if (self.opts.rmWhitespace) {
-        // rmWhitespace has already removed trailing spaces, just need
-        // to remove linebreaks
-        line = line.replace(/^\n/, '');
-      }
-      if (!line) {
-        return;
-      }
-
-      // Preserve literal slashes
-      line = line.replace(/\\/g, '\\\\');
-
-      // Convert linebreaks
-      line = line.replace(/\n/g, '\\n');
-      line = line.replace(/\r/g, '\\r');
-
-      // Escape double-quotes
-      // - this will be the delimiter during execution
-      line = line.replace(/"/g, '\\"');
-      self.source += '    ; __append("' + line + '")' + '\n';
-    }
 
     newLineCount = (line.split('\n').length - 1);
 
@@ -725,7 +750,7 @@ Template.prototype = {
     case '-' + d + '>':
     case '_' + d + '>':
       if (this.mode == Template.modes.LITERAL) {
-        _addOutput();
+        this._addOutput(line);
       }
 
       this.mode = null;
@@ -761,13 +786,13 @@ Template.prototype = {
           break;
             // Literal <%% mode, append as raw output
         case Template.modes.LITERAL:
-          _addOutput();
+          this._addOutput(line);
           break;
         }
       }
         // In string mode, just add the output
       else {
-        _addOutput();
+        this._addOutput(line);
       }
     }
 
@@ -1011,43 +1036,21 @@ exports.cache = {
 
 },{}],4:[function(require,module,exports){
 module.exports={
-  "_args": [
-    [
-      {
-        "raw": "ejs@^2.5.2",
-        "scope": null,
-        "escapedName": "ejs",
-        "name": "ejs",
-        "rawSpec": "^2.5.2",
-        "spec": ">=2.5.2 <3.0.0",
-        "type": "range"
-      },
-      "/mydoc_TomK/Dropbox/localhosts/pickles2projects/pickles2/app-pickles2-webtool"
-    ]
-  ],
-  "_from": "ejs@>=2.5.2 <3.0.0",
-  "_id": "ejs@2.5.6",
-  "_inCache": true,
+  "_from": "ejs@^2.5.2",
+  "_id": "ejs@2.5.7",
+  "_inBundle": false,
+  "_integrity": "sha1-zIcsFoiArjxxiXYv1f/ACJbJUYo=",
   "_location": "/ejs",
-  "_nodeVersion": "6.9.1",
-  "_npmOperationalInternal": {
-    "host": "packages-12-west.internal.npmjs.com",
-    "tmp": "tmp/ejs-2.5.6.tgz_1487277787176_0.4875628533773124"
-  },
-  "_npmUser": {
-    "name": "mde",
-    "email": "mde@fleegix.org"
-  },
-  "_npmVersion": "3.10.8",
   "_phantomChildren": {},
   "_requested": {
+    "type": "range",
+    "registry": true,
     "raw": "ejs@^2.5.2",
-    "scope": null,
-    "escapedName": "ejs",
     "name": "ejs",
+    "escapedName": "ejs",
     "rawSpec": "^2.5.2",
-    "spec": ">=2.5.2 <3.0.0",
-    "type": "range"
+    "saveSpec": null,
+    "fetchSpec": "^2.5.2"
   },
   "_requiredBy": [
     "/",
@@ -1055,11 +1058,10 @@ module.exports={
     "/langbank",
     "/pickles2-contents-editor"
   ],
-  "_resolved": "https://registry.npmjs.org/ejs/-/ejs-2.5.6.tgz",
-  "_shasum": "479636bfa3fe3b1debd52087f0acb204b4f19c88",
-  "_shrinkwrap": null,
+  "_resolved": "https://registry.npmjs.org/ejs/-/ejs-2.5.7.tgz",
+  "_shasum": "cc872c168880ae3c7189762fd5ffc00896c9518a",
   "_spec": "ejs@^2.5.2",
-  "_where": "/mydoc_TomK/Dropbox/localhosts/pickles2projects/pickles2/app-pickles2-webtool",
+  "_where": "/root/www/app-pickles2-webtool",
   "author": {
     "name": "Matthew Eernisse",
     "email": "mde@fleegix.org",
@@ -1068,6 +1070,7 @@ module.exports={
   "bugs": {
     "url": "https://github.com/mde/ejs/issues"
   },
+  "bundleDependencies": false,
   "contributors": [
     {
       "name": "Timothy Gu",
@@ -1076,6 +1079,7 @@ module.exports={
     }
   ],
   "dependencies": {},
+  "deprecated": false,
   "description": "Embedded JavaScript templates",
   "devDependencies": {
     "browserify": "^13.0.1",
@@ -1088,11 +1092,6 @@ module.exports={
     "mocha": "^3.0.2",
     "uglify-js": "^2.6.2"
   },
-  "directories": {},
-  "dist": {
-    "shasum": "479636bfa3fe3b1debd52087f0acb204b4f19c88",
-    "tarball": "https://registry.npmjs.org/ejs/-/ejs-2.5.6.tgz"
-  },
   "engines": {
     "node": ">=0.10.0"
   },
@@ -1104,15 +1103,7 @@ module.exports={
   ],
   "license": "Apache-2.0",
   "main": "./lib/ejs.js",
-  "maintainers": [
-    {
-      "name": "mde",
-      "email": "mde@fleegix.org"
-    }
-  ],
   "name": "ejs",
-  "optionalDependencies": {},
-  "readme": "ERROR: No README data found!",
   "repository": {
     "type": "git",
     "url": "git://github.com/mde/ejs.git"
@@ -1122,9 +1113,9 @@ module.exports={
     "devdoc": "jake doc[dev]",
     "doc": "jake doc",
     "lint": "eslint \"**/*.js\" Jakefile",
-    "test": "mocha"
+    "test": "jake test"
   },
-  "version": "2.5.6"
+  "version": "2.5.7"
 }
 
 },{}],5:[function(require,module,exports){
@@ -3010,7 +3001,6 @@ window.cont = new (function(){
 							.append( $('<th>').text('ページID') )
 							.append( $('<th>').text('タイトル') )
 							.append( $('<th>').text('ページのパス') )
-							.append( $('<th>').text('担当者') )
 							// .append( $('<th>').text('編集モード') )
 							.append( $('<th>').text('-') )
 							.append( $('<th>').text('-') )
@@ -3044,8 +3034,7 @@ window.cont = new (function(){
 									!isMatchKeywords(sitemap[path].title_breadcrumb) &&
 									!isMatchKeywords(sitemap[path].title_h1) &&
 									!isMatchKeywords(sitemap[path].title_label) &&
-									!isMatchKeywords(sitemap[path].title_full) &&
-									!isMatchKeywords(sitemap[path].assignee)
+									!isMatchKeywords(sitemap[path].title_full)
 								){
 									console.log('=> skiped.');
 									return;
@@ -3057,7 +3046,6 @@ window.cont = new (function(){
 								return;
 							}
 
-							var $spanAssignee = $('<span>');
 							var $spanEditorType = $('<span>');
 							var $li = $('<tr>');
 							$li
@@ -3100,18 +3088,6 @@ window.cont = new (function(){
 									.append( $('<span>')
 										.text(sitemap[path].path)
 									)
-								)
-								.append( $('<td>')
-									// 担当者
-									.append( $spanAssignee.text((function(pageInfo){
-										// console.log(pageInfo);
-										var rtn = (pageInfo.assignee ? pageInfo.assignee : '---');
-										try {
-											rtn = (_this.userList[pageInfo.assignee].name + ' (' +  pageInfo.assignee + ')' || '---')
-										} catch (e) {
-										}
-										return rtn;
-									})( sitemap[path] )) )
 								)
 								// .append( $('<td>')
 								// 	// 編集モード

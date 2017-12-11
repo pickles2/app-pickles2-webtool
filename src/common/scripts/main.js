@@ -12,6 +12,7 @@ window.main = new (function(){
 	this.git = function(){
 		return new (require('../../common/scripts/main.project.git.js'))(this);
 	}
+	var loginUserInfo;
 
 	var $header, $contents, $footer, $shoulderMenu;
 	var _menu;
@@ -71,6 +72,13 @@ window.main = new (function(){
 		return paramsArray;
 	}
 
+	/**
+	 * ログインユーザーの情報を取得する
+	 */
+	this.getLoginUserInfo = function(){
+		return loginUserInfo;
+	}
+
 	$(function(){
 		it79.fnc({}, [
 			function(it, arg){
@@ -90,6 +98,21 @@ window.main = new (function(){
 				$shoulderMenu = $('.theme-header__shoulder-menu');
 
 				it.next(arg);
+
+			} ,
+			function(it, arg){
+
+				// ログインユーザー情報取得
+				$.ajax({
+					'type': 'POST',
+					'url': '/apis/getLoginUserInfo',
+					'success': function(data, dataType){
+						loginUserInfo = data;
+					},
+					'complete': function(xhr, textStatus){
+						it.next(arg);
+					}
+				});
 
 			} ,
 			function(it, arg){

@@ -8,7 +8,11 @@ module.exports.init = function( px, $ ) {
 	// 見えないフォーム `$keycatcher` にフォーカスを当て、キーボード操作を拾って捨てています。
 
 	var htmlProgress = ''
-		+'<progress class="progress progress-striped progress-animated" value="100" max="100"></progress>'+"\n"
+		+'<div class="progress">'
+		+'<div class="progress-bar progress-bar-info progress-bar-striped active" role="progressbar" style="width: 100%;">'
+		+'<span class="sr-only"></span>'
+		+'</div>'
+		+'</div>'+"\n"
 	;
 
 	var _this = this;

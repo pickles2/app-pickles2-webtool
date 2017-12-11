@@ -124,16 +124,36 @@ exports.resolveInclude = function(name, filename, isDir) {
  * @param  {Options} options compilation options
  * @return {String}
  */
-function getIncludePath(path, options){
+function getIncludePath(path, options) {
   var includePath;
+  var filePath;
+  var views = options.views;
+
+  // Abs path
   if (path.charAt(0) == '/') {
     includePath = exports.resolveInclude(path.replace(/^\/*/,''), options.root || '/', true);
   }
+  // Relative paths
   else {
-    if (!options.filename) {
-      throw new Error('`include` use relative path requires the \'filename\' option.');
+    // Look relative to a passed filename first
+    if (options.filename) {
+      filePath = exports.resolveInclude(path, options.filename);
+      if (fs.existsSync(filePath)) {
+        includePath = filePath;
+      }
     }
-    includePath = exports.resolveInclude(path, options.filename);
+    // Then look in any views directories
+    if (!includePath) {
+      if (Array.isArray(views) && views.some(function (v) {
+        filePath = exports.resolveInclude(path, v, true);
+        return fs.existsSync(filePath);
+      })) {
+        includePath = filePath;
+      }
+    }
+    if (!includePath) {
+      throw new Error('Could not find include include file.');
+    }
   }
   return includePath;
 }
@@ -393,8 +413,13 @@ exports.renderFile = function () {
     // in the data, copy them to options
     if (arguments.length === 3) {
       // Express 4
-      if (data.settings && data.settings['view options']) {
-        utils.shallowCopyFromList(opts, data.settings['view options'], _OPTS_EXPRESS);
+      if (data.settings) {
+        if (data.settings['view options']) {
+          utils.shallowCopyFromList(opts, data.settings['view options'], _OPTS_EXPRESS);
+        }
+        if (data.settings.views) {
+          opts.views = data.settings.views;
+        }
       }
       // Express 3 and lower
       else {
@@ -445,6 +470,7 @@ function Template(text, opts) {
   options.rmWhitespace = opts.rmWhitespace;
   options.root = opts.root;
   options.localsName = opts.localsName || exports.localsName || _DEFAULT_LOCALS_NAME;
+  options.views = opts.views;
 
   if (options.strict) {
     options._with = false;
@@ -508,10 +534,6 @@ Template.prototype = {
       src = this.source;
     }
 
-    if (opts.debug) {
-      console.log(src);
-    }
-
     if (opts.client) {
       src = 'escapeFn = escapeFn || ' + escapeFn.toString() + ';' + '\n' + src;
       if (opts.compileDebug) {
@@ -521,6 +543,9 @@ Template.prototype = {
 
     if (opts.strict) {
       src = '"use strict";\n' + src;
+    }
+    if (opts.debug) {
+      console.log(src);
     }
 
     try {
@@ -614,7 +639,7 @@ Template.prototype = {
                   + '      try {' + '\n'
                   + includeObj.source
                   + '      } catch (e) {' + '\n'
-                  + '        rethrow(e, __lines, __filename, __line);' + '\n'
+                  + '        rethrow(e, __lines, __filename, __line, escapeFn);' + '\n'
                   + '      }' + '\n'
                   + '    ; }).call(this)' + '\n';
             }else{
@@ -660,42 +685,42 @@ Template.prototype = {
     return arr;
   },
 
+  _addOutput: function (line) {
+    if (this.truncate) {
+      // Only replace single leading linebreak in the line after
+      // -%> tag -- this is the single, trailing linebreak
+      // after the tag that the truncation mode replaces
+      // Handle Win / Unix / old Mac linebreaks -- do the \r\n
+      // combo first in the regex-or
+      line = line.replace(/^(?:\r\n|\r|\n)/, '');
+      this.truncate = false;
+    }
+    else if (this.opts.rmWhitespace) {
+      // rmWhitespace has already removed trailing spaces, just need
+      // to remove linebreaks
+      line = line.replace(/^\n/, '');
+    }
+    if (!line) {
+      return line;
+    }
+
+    // Preserve literal slashes
+    line = line.replace(/\\/g, '\\\\');
+
+    // Convert linebreaks
+    line = line.replace(/\n/g, '\\n');
+    line = line.replace(/\r/g, '\\r');
+
+    // Escape double-quotes
+    // - this will be the delimiter during execution
+    line = line.replace(/"/g, '\\"');
+    this.source += '    ; __append("' + line + '")' + '\n';
+  },
+
   scanLine: function (line) {
     var self = this;
     var d = this.opts.delimiter;
     var newLineCount = 0;
-
-    function _addOutput() {
-      if (self.truncate) {
-        // Only replace single leading linebreak in the line after
-        // -%> tag -- this is the single, trailing linebreak
-        // after the tag that the truncation mode replaces
-        // Handle Win / Unix / old Mac linebreaks -- do the \r\n
-        // combo first in the regex-or
-        line = line.replace(/^(?:\r\n|\r|\n)/, '');
-        self.truncate = false;
-      }
-      else if (self.opts.rmWhitespace) {
-        // rmWhitespace has already removed trailing spaces, just need
-        // to remove linebreaks
-        line = line.replace(/^\n/, '');
-      }
-      if (!line) {
-        return;
-      }
-
-      // Preserve literal slashes
-      line = line.replace(/\\/g, '\\\\');
-
-      // Convert linebreaks
-      line = line.replace(/\n/g, '\\n');
-      line = line.replace(/\r/g, '\\r');
-
-      // Escape double-quotes
-      // - this will be the delimiter during execution
-      line = line.replace(/"/g, '\\"');
-      self.source += '    ; __append("' + line + '")' + '\n';
-    }
 
     newLineCount = (line.split('\n').length - 1);
 
@@ -725,7 +750,7 @@ Template.prototype = {
     case '-' + d + '>':
     case '_' + d + '>':
       if (this.mode == Template.modes.LITERAL) {
-        _addOutput();
+        this._addOutput(line);
       }
 
       this.mode = null;
@@ -761,13 +786,13 @@ Template.prototype = {
           break;
             // Literal <%% mode, append as raw output
         case Template.modes.LITERAL:
-          _addOutput();
+          this._addOutput(line);
           break;
         }
       }
         // In string mode, just add the output
       else {
-        _addOutput();
+        this._addOutput(line);
       }
     }
 
@@ -1026,13 +1051,13 @@ module.exports={
     ]
   ],
   "_from": "ejs@>=2.5.2 <3.0.0",
-  "_id": "ejs@2.5.6",
+  "_id": "ejs@2.5.7",
   "_inCache": true,
   "_location": "/ejs",
   "_nodeVersion": "6.9.1",
   "_npmOperationalInternal": {
-    "host": "packages-12-west.internal.npmjs.com",
-    "tmp": "tmp/ejs-2.5.6.tgz_1487277787176_0.4875628533773124"
+    "host": "s3://npm-registry-packages",
+    "tmp": "tmp/ejs-2.5.7.tgz_1501385411193_0.3807816591579467"
   },
   "_npmUser": {
     "name": "mde",
@@ -1055,8 +1080,8 @@ module.exports={
     "/langbank",
     "/pickles2-contents-editor"
   ],
-  "_resolved": "https://registry.npmjs.org/ejs/-/ejs-2.5.6.tgz",
-  "_shasum": "479636bfa3fe3b1debd52087f0acb204b4f19c88",
+  "_resolved": "https://registry.npmjs.org/ejs/-/ejs-2.5.7.tgz",
+  "_shasum": "cc872c168880ae3c7189762fd5ffc00896c9518a",
   "_shrinkwrap": null,
   "_spec": "ejs@^2.5.2",
   "_where": "/mydoc_TomK/Dropbox/localhosts/pickles2projects/pickles2/app-pickles2-webtool",
@@ -1090,8 +1115,8 @@ module.exports={
   },
   "directories": {},
   "dist": {
-    "shasum": "479636bfa3fe3b1debd52087f0acb204b4f19c88",
-    "tarball": "https://registry.npmjs.org/ejs/-/ejs-2.5.6.tgz"
+    "shasum": "cc872c168880ae3c7189762fd5ffc00896c9518a",
+    "tarball": "https://registry.npmjs.org/ejs/-/ejs-2.5.7.tgz"
   },
   "engines": {
     "node": ">=0.10.0"
@@ -1122,9 +1147,9 @@ module.exports={
     "devdoc": "jake doc[dev]",
     "doc": "jake doc",
     "lint": "eslint \"**/*.js\" Jakefile",
-    "test": "mocha"
+    "test": "jake test"
   },
-  "version": "2.5.6"
+  "version": "2.5.7"
 }
 
 },{}],5:[function(require,module,exports){
@@ -12482,155 +12507,6 @@ process.chdir = function (dir) {
 };
 
 },{}],10:[function(require,module,exports){
-window.jQuery = window.$ = require('jquery');
-window.ejs = require('ejs');
-
-window.main = new (function(){
-	var _this = this;
-	var it79 = require('iterate79');
-
-	this.progress = new (require('../../common/scripts/main.progress.js')).init(this, $);
-	this.message = require('../../common/scripts/main.message.js');
-	require('../../common/scripts/main.dialog.js')(this);
-	this.project = new (require('../../common/scripts/main.project.js'))(this);
-	this.git = function(){
-		return new (require('../../common/scripts/main.project.git.js'))(this);
-	}
-
-	var $header, $contents, $footer, $shoulderMenu;
-	var _menu;
-
-	/**
-	 * ログアウトする
-	 */
-	this.logout = function(){
-		var $this = $(this);
-
-		$.ajax({
-			'type': 'POST',
-			'url': '/apis/logout',
-			'success': function(data, dataType){
-				window.location.href = '/logout.html';
-			},
-			'complete': function(xhr, textStatus){
-			}
-		});
-	} // logout()
-
-	/**
-	 * ヘルプページへ遷移する
-	 */
-	this.openHelp = function(){
-		window.open('http://pickles2.pxt.jp/manual/');
-		return;
-	}
-
-	/**
-	 * サブアプリケーション
-	 */
-	this.subapp = function(appName){
-		if(!appName){
-			appName = 'fncs/home/index.html';
-		}
-		window.location.href = '/'+appName;
-	}
-
-	/**
-	 * GETパラメータをパースする
-	 */
-	this.parseUriParam = function(url){
-		var paramsArray = [];
-		parameters = url.split("?");
-		if( parameters.length > 1 ) {
-			var params = parameters[1].split("&");
-			for ( var i = 0; i < params.length; i++ ) {
-				var paramItem = params[i].split("=");
-				for( var i2 in paramItem ){
-					paramItem[i2] = decodeURIComponent( paramItem[i2] );
-				}
-				paramsArray.push( paramItem[0] );
-				paramsArray[paramItem[0]] = paramItem[1];
-			}
-		}
-		return paramsArray;
-	}
-
-	$(function(){
-		it79.fnc({}, [
-			function(it, arg){
-				_this.project.getConfig(function(conf){
-					// console.log(conf);
-
-					$('header.theme-header .theme-header__id div').text(conf.name);
-					it.next(arg);
-				});
-			} ,
-			function(it, arg){
-
-				// DOMスキャン
-				$header   = $('.theme-header');
-				$contents = $('.contents');
-				$footer   = $('.theme-footer');
-				$shoulderMenu = $('.theme-header__shoulder-menu');
-
-				it.next(arg);
-
-			} ,
-			function(it, arg){
-				// メニュー設定
-				var gmenu = require('../../common/scripts/globalmenu.js');
-				_menu = new gmenu(_this);
-				it.next(arg);
-			} ,
-			function(it, arg){
-				// メニュー設定
-				$('.theme-header__gmenu').html( $('<ul>')
-					.append( $('<li>')
-						.append( '<span>&nbsp;</span>' )
-					)
-				);
-				_menu.drawGlobalMenu($shoulderMenu, window.location.pathname);
-				it.next(arg);
-			} ,
-			function(it, arg){
-				var $ul = $shoulderMenu.find('ul').hide();
-				$shoulderMenu
-					.css({
-						'width': 50,
-						'height': $header.height()
-					})
-					.on('click', function(){
-						if( $ul.css('display') == 'block' ){
-							$ul.hide();
-							$shoulderMenu
-								.css({
-									'width':50 ,
-									'height':$header.height()
-								})
-							;
-
-						}else{
-							$ul.show().height( $(window).height()-$header.height() );
-							$shoulderMenu
-								.css({
-									'width':'100%' ,
-									'height':$(window).height()
-								})
-							;
-
-						}
-					}
-				);
-				it.next(arg);
-			}
-		]);
-
-		window.focus();
-	});
-
-})();
-
-},{"../../common/scripts/globalmenu.js":11,"../../common/scripts/main.dialog.js":12,"../../common/scripts/main.message.js":13,"../../common/scripts/main.progress.js":14,"../../common/scripts/main.project.git.js":15,"../../common/scripts/main.project.js":16,"ejs":2,"iterate79":6,"jquery":7}],11:[function(require,module,exports){
 /**
  * globamenu.js
  *
@@ -12722,12 +12598,21 @@ module.exports = function(main){
 					break;
 			}
 		}
+
+		var $tmpMenu = $('<span>')
+			.text(''+main.getLoginUserInfo().name+' さん')
+			.addClass('theme-header__gmenu__login-user')
+		;
+		$('.theme-header__gmenu ul').append( $('<li>')
+			.append( $tmpMenu )
+		);
+
 		return;
 	}
 
 }
 
-},{}],12:[function(require,module,exports){
+},{}],11:[function(require,module,exports){
 (function(module){
 	var $ = require('jquery');
 	var $dialog;
@@ -12848,7 +12733,7 @@ module.exports = function(main){
 
 })(module);
 
-},{"jquery":7}],13:[function(require,module,exports){
+},{"jquery":7}],12:[function(require,module,exports){
 (function(module){
 	var $ = require('jquery');
 	var $msgBox = $('<div class="theme_ui_px_message">');
@@ -12902,7 +12787,7 @@ module.exports = function(main){
 
 })(module);
 
-},{"jquery":7}],14:[function(require,module,exports){
+},{"jquery":7}],13:[function(require,module,exports){
 /**
  * progress window
  */
@@ -12912,7 +12797,11 @@ module.exports.init = function( px, $ ) {
 	// 見えないフォーム `$keycatcher` にフォーカスを当て、キーボード操作を拾って捨てています。
 
 	var htmlProgress = ''
-		+'<progress class="progress progress-striped progress-animated" value="100" max="100"></progress>'+"\n"
+		+'<div class="progress">'
+		+'<div class="progress-bar progress-bar-info progress-bar-striped active" role="progressbar" style="width: 100%;">'
+		+'<span class="sr-only"></span>'
+		+'</div>'
+		+'</div>'+"\n"
 	;
 
 	var _this = this;
@@ -13004,7 +12893,7 @@ module.exports.init = function( px, $ ) {
 	return this;
 };
 
-},{}],15:[function(require,module,exports){
+},{}],14:[function(require,module,exports){
 /**
  * main.project.git
  */
@@ -13121,7 +13010,7 @@ module.exports = function( main ){
 	return this;
 };
 
-},{"jquery":7}],16:[function(require,module,exports){
+},{"jquery":7}],15:[function(require,module,exports){
 /**
  * main.project.js
  */
@@ -13180,4 +13069,176 @@ module.exports = function( main ){
 	return this;
 };
 
-},{"jquery":7}]},{},[10])
+},{"jquery":7}],16:[function(require,module,exports){
+window.jQuery = window.$ = require('jquery');
+window.ejs = require('ejs');
+
+window.main = new (function(){
+	var _this = this;
+	var it79 = require('iterate79');
+
+	this.progress = new (require('../../common/scripts/main.progress.js')).init(this, $);
+	this.message = require('../../common/scripts/main.message.js');
+	require('../../common/scripts/main.dialog.js')(this);
+	this.project = new (require('../../common/scripts/main.project.js'))(this);
+	this.git = function(){
+		return new (require('../../common/scripts/main.project.git.js'))(this);
+	}
+	var loginUserInfo;
+
+	var $header, $contents, $footer, $shoulderMenu;
+	var _menu;
+
+	/**
+	 * ログアウトする
+	 */
+	this.logout = function(){
+		var $this = $(this);
+
+		$.ajax({
+			'type': 'POST',
+			'url': '/apis/logout',
+			'success': function(data, dataType){
+				window.location.href = '/logout.html';
+			},
+			'complete': function(xhr, textStatus){
+			}
+		});
+	} // logout()
+
+	/**
+	 * ヘルプページへ遷移する
+	 */
+	this.openHelp = function(){
+		window.open('http://pickles2.pxt.jp/manual/');
+		return;
+	}
+
+	/**
+	 * サブアプリケーション
+	 */
+	this.subapp = function(appName){
+		if(!appName){
+			appName = 'fncs/home/index.html';
+		}
+		window.location.href = '/'+appName;
+	}
+
+	/**
+	 * GETパラメータをパースする
+	 */
+	this.parseUriParam = function(url){
+		var paramsArray = [];
+		parameters = url.split("?");
+		if( parameters.length > 1 ) {
+			var params = parameters[1].split("&");
+			for ( var i = 0; i < params.length; i++ ) {
+				var paramItem = params[i].split("=");
+				for( var i2 in paramItem ){
+					paramItem[i2] = decodeURIComponent( paramItem[i2] );
+				}
+				paramsArray.push( paramItem[0] );
+				paramsArray[paramItem[0]] = paramItem[1];
+			}
+		}
+		return paramsArray;
+	}
+
+	/**
+	 * ログインユーザーの情報を取得する
+	 */
+	this.getLoginUserInfo = function(){
+		return loginUserInfo;
+	}
+
+	$(function(){
+		it79.fnc({}, [
+			function(it, arg){
+				_this.project.getConfig(function(conf){
+					// console.log(conf);
+
+					$('header.theme-header .theme-header__id div').text(conf.name);
+					it.next(arg);
+				});
+			} ,
+			function(it, arg){
+
+				// DOMスキャン
+				$header   = $('.theme-header');
+				$contents = $('.contents');
+				$footer   = $('.theme-footer');
+				$shoulderMenu = $('.theme-header__shoulder-menu');
+
+				it.next(arg);
+
+			} ,
+			function(it, arg){
+
+				// ログインユーザー情報取得
+				$.ajax({
+					'type': 'POST',
+					'url': '/apis/getLoginUserInfo',
+					'success': function(data, dataType){
+						loginUserInfo = data;
+					},
+					'complete': function(xhr, textStatus){
+						it.next(arg);
+					}
+				});
+
+			} ,
+			function(it, arg){
+				// メニュー設定
+				var gmenu = require('../../common/scripts/globalmenu.js');
+				_menu = new gmenu(_this);
+				it.next(arg);
+			} ,
+			function(it, arg){
+				// メニュー設定
+				$('.theme-header__gmenu').html( $('<ul>')
+					.append( $('<li>')
+						.append( '<span>&nbsp;</span>' )
+					)
+				);
+				_menu.drawGlobalMenu($shoulderMenu, window.location.pathname);
+				it.next(arg);
+			} ,
+			function(it, arg){
+				var $ul = $shoulderMenu.find('ul').hide();
+				$shoulderMenu
+					.css({
+						'width': 50,
+						'height': $header.height()
+					})
+					.on('click', function(){
+						if( $ul.css('display') == 'block' ){
+							$ul.hide();
+							$shoulderMenu
+								.css({
+									'width':50 ,
+									'height':$header.height()
+								})
+							;
+
+						}else{
+							$ul.show().height( $(window).height()-$header.height() );
+							$shoulderMenu
+								.css({
+									'width':'100%' ,
+									'height':$(window).height()
+								})
+							;
+
+						}
+					}
+				);
+				it.next(arg);
+			}
+		]);
+
+		window.focus();
+	});
+
+})();
+
+},{"../../common/scripts/globalmenu.js":10,"../../common/scripts/main.dialog.js":11,"../../common/scripts/main.message.js":12,"../../common/scripts/main.progress.js":13,"../../common/scripts/main.project.git.js":14,"../../common/scripts/main.project.js":15,"ejs":2,"iterate79":6,"jquery":7}]},{},[16])

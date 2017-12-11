@@ -176,6 +176,10 @@ h2, h3, h4, h5, h6 {
         .theme-header__gmenu ul li span {
           padding-left: 0;
           padding-right: 0; }
+        .theme-header__gmenu ul li .theme-header__gmenu__login-user {
+          color: #666; }
+          .theme-header__gmenu ul li .theme-header__gmenu__login-user:hover {
+            color: #666; }
 
 .theme-main {
   background-color: #fff;

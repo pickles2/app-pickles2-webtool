@@ -10,3 +10,6 @@ url=https://github.com/tomk79/node-pickles2-contents-editor.git
 [submodule "submodules/broccoli-html-editor"]
 	path = submodules/broccoli-html-editor
 	url = https://github.com/broccoli-html-editor/broccoli-html-editor.git
+[submodule "submodules/preset-pickles2-webtool-develop"]
+	path = submodules/preset-pickles2-webtool-develop
+	url = https://github.com/tomk79/preset-pickles2-webtool-develop.git

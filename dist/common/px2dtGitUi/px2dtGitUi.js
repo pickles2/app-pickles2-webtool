@@ -48,6 +48,7 @@ window.px2dtGitUi = function(main){
 		callback = callback || function(){};
 		var $body = $('<div class="px2dt-git-commit">');
 		var $ul = $('<ul class="list-group">');
+		var $commitLabel = $('<p>').text('コミットコメント');
 		var $commitComment = $('<textarea>');
 
 		main.progress.start({'blindness': true, 'showProgressBar': true});
@@ -72,17 +73,17 @@ window.px2dtGitUi = function(main){
 		function gitCommit(div, options, commitComment, callback){
 			switch( div ){
 				case 'contents':
-					_this.git.commitContents([options.page_path, commitComment], function(){
-						callback();
+					_this.git.commitContents([options.page_path, commitComment], function(rtn, err, XMLHttpRequest, textStatus){
+						callback(rtn, err, XMLHttpRequest, textStatus);
 					});
 					break;
 				case 'sitemaps':
-					_this.git.commitSitemap([commitComment], function(){
-						callback();
+					_this.git.commitSitemap([commitComment], function(rtn, err, XMLHttpRequest, textStatus){
+						callback(rtn, err, XMLHttpRequest, textStatus);
 					});
 					break;
 				default:
-					callback();
+					callback(false, 'unknown div', null, false);
 					break;
 			}
 			return;
@@ -119,6 +120,7 @@ window.px2dtGitUi = function(main){
 				$ul.append( $li );
 			}
 			$body.append( $ul );
+			$body.append( $commitLabel );
 			$body.append( $commitComment );
 
 			main.dialog({
@@ -133,8 +135,14 @@ window.px2dtGitUi = function(main){
 							main.progress.start({'blindness': true, 'showProgressBar': true});
 							var commitComment = $commitComment.val();
 							// console.log(commitComment);
-							gitCommit(div, options, commitComment, function(){
-								alert('コミットしました。');
+							gitCommit(div, options, commitComment, function(rtn, err, XMLHttpRequest, textStatus){
+								// console.log('=-=-=-=-=-=-=-=-=-=-=-=-= gitCommit result');
+								// console.log(rtn, err, XMLHttpRequest, textStatus);
+								if( rtn ){
+									alert('コミットしました。');
+								}else{
+									alert('コミットに失敗しました。 もう一度お試しください。');
+								}
 								main.progress.close();
 								main.closeDialog();
 								callback();
@@ -236,15 +244,15 @@ window.px2dtGitUi = function(main){
 							if( $detail.is(':visible') ){
 								$detail.html( '<div class="px2-loading"></div>' );
 								_this.git.show([hash], function(res){
-									if( res.length > 2000 ){
+									if( res.plain.length > 2000 ){
 										// 内容が多すぎると固まるので、途中までで切る。
-										res = res.substr(0, 2000-3) + '...';
+										res.plain = res.plain.substr(0, 2000-3) + '...';
 									}
 									// console.log(res);
 									$detail
 										.html( '' )
 										.append( $('<pre>')
-											.text(res)
+											.text(res.plain)
 											.css({
 												'max-height': 300,
 												'overflow': 'auto'

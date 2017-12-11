@@ -198,6 +198,12 @@ h2, h3, h4, h5, h6{
 					padding-left: 0;
 					padding-right: 0;
 				}
+				.theme-header__gmenu__login-user{
+					color: #666;
+					&:hover{
+						color: #666;
+					}
+				}
 			}
 		}
 	} // gmenu
