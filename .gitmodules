@@ -16,3 +16,6 @@ url=https://github.com/tomk79/node-pickles2-contents-editor.git
 [submodule "submodules/node-cmd-queue"]
 	path = submodules/node-cmd-queue
 	url = https://github.com/tomk79/node-cmd-queue.git
+[submodule "submodules/node-express-pickles2"]
+	path = submodules/node-express-pickles2
+	url = https://github.com/pickles2/node-express-pickles2.git
