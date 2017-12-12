@@ -121,6 +121,30 @@ if(conf.px2server.useExternalPreviewServer){
 
 	appPx2.use( '/*', require('./preprocess/loginCheck.js')(px2) );
 
+	/**
+	 * broccoli-html-editor が要求するコードを取得
+	 */
+	function getBroccoliScript(){
+		var scriptSrc = fs.readFileSync(__dirname+'/../node_modules/broccoli-html-editor/client/dist/broccoli-preview-contents.js').toString('utf-8');
+		var fin = '';
+			fin += '<script data-broccoli-receive-message="yes">'+"\n";
+			// fin += 'console.log(window.location);'+"\n";
+			fin += 'window.addEventListener(\'message\',(function() {'+"\n";
+			fin += 'return function f(event) {'+"\n";
+			// fin += 'console.log(event.origin);'+"\n";
+			// fin += 'console.log(event.data);'+"\n";
+			fin += 'if(window.location.hostname!=\''+conf.px2server.originParsed.hostname+'\'){alert(\'Unauthorized access.\');return;}'+"\n";
+			fin += 'if(!event.data.scriptUrl){return;}'+"\n";
+			// fin += 'var s=document.createElement(\'script\');'+"\n";
+			// fin += 'document.querySelector(\'body\').appendChild(s);s.src=event.data.scriptUrl;'+"\n";
+			fin += scriptSrc+';'+"\n";
+			fin += 'window.removeEventListener(\'message\', f, false);'+"\n";
+			fin += '}'+"\n";
+			fin += '})(),false);'+"\n";
+			fin += '</script>'+"\n";
+		return fin;
+	}
+
 	appPx2.use( '/*', expressPickles2(
 		conf.px2server.path,
 		{
@@ -132,30 +156,38 @@ if(conf.px2server.useExternalPreviewServer){
 			// 		{}
 			// 	);
 			// },
-			'processor': function(bin, ext, callback){
+			'processor': function(html, ext, callback, response){
 				if( ext == 'html' ){
-					bin += (function(){
-						var scriptSrc = fs.readFileSync(__dirname+'/../node_modules/broccoli-html-editor/client/dist/broccoli-preview-contents.js').toString('utf-8');
-						var fin = '';
-							fin += '<script data-broccoli-receive-message="yes">'+"\n";
-							// fin += 'console.log(window.location);'+"\n";
-							fin += 'window.addEventListener(\'message\',(function() {'+"\n";
-							fin += 'return function f(event) {'+"\n";
-							// fin += 'console.log(event.origin);'+"\n";
-							// fin += 'console.log(event.data);'+"\n";
-							fin += 'if(window.location.hostname!=\''+conf.px2server.originParsed.hostname+'\'){alert(\'Unauthorized access.\');return;}'+"\n";
-							fin += 'if(!event.data.scriptUrl){return;}'+"\n";
-							// fin += 'var s=document.createElement(\'script\');'+"\n";
-							// fin += 'document.querySelector(\'body\').appendChild(s);s.src=event.data.scriptUrl;'+"\n";
-							fin += scriptSrc+';'+"\n";
-							fin += 'window.removeEventListener(\'message\', f, false);'+"\n";
-							fin += '}'+"\n";
-							fin += '})(),false);'+"\n";
-							fin += '</script>'+"\n";
-						return fin;
-					})();
+					if( html.match('<script data-broccoli-receive-message="yes">') ){
+						// すでに挿入済みの場合はスキップする。
+						// `external_preview_server_origin` が導入された際に、
+						// px2-px2dthelper にこのタグを挿入する機能が追加された。
+						// ただしこれはオプションなので、適用される場合とされない場合がある。
+						// なのでここでは、有無をチェックし、挿入されていない場合にのみ、挿入する。
+					}else{
+						html += getBroccoliScript();
+
+						var errorHtml = '';
+						if( response.status != 200 ){
+							errorHtml += '<ul style="background-color: #fee; border: 3px solid #f33; padding: 10px; margin: 0.5em; border-radius: 5px;">';
+							errorHtml += '<li style="color: #f00; list-style-type: none;">STATUS: '+response.status+' '+response.message+'</li>';
+							errorHtml += '</ul>';
+						}
+						if( response.errors.length ){
+							errorHtml += '<ul style="background-color: #fee; border: 3px solid #f33; padding: 10px; margin: 0.5em; border-radius: 5px;">';
+							for( var idx in response.errors ){
+								errorHtml += '<li style="color: #f00; list-style-type: none;">'+response.errors[idx]+'</li>';
+							}
+							errorHtml += '</ul>';
+						}
+						if( errorHtml.length ){
+							html += '<div style="position: fixed; top: 10px; left: 5%; width: 90%; font-size: 14px; opacity: 0.8; z-index: 2147483000;" onclick="this.style.display=\'none\';">';
+							html += errorHtml;
+							html += '</div>';
+						}
+					}
 				}
-				callback(bin);
+				callback(html);
 				return;
 			}
 		}
