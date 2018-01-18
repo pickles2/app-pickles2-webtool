@@ -143,23 +143,78 @@ window.cont = new (function(){
 						openEditor( $(this).attr('data-page-path') );
 						return false;
 
-					}else if( method == 'commit' ){
-						// コミットボタン
-						px2dtGitUi.commit(
-							'contents',
-							{'page_path': $this.attr('data-page-path')},
-							function(){
-								// alert('complete');
-							}
-						);
-						return false;
+					// }else if( method == 'commit' ){
+					// 	// コミットボタン
+					// 	px2dtGitUi.commit(
+					// 		'contents',
+					// 		{'page_path': $this.attr('data-page-path')},
+					// 		function(){
+					// 			// alert('complete');
+					// 		}
+					// 	);
+					// 	return false;
 
 					}else if( method == 'log' ){
 						// ログボタン
 						px2dtGitUi.log(
 							'contents',
 							{'page_path': $this.attr('data-page-path')},
-							function(){
+							function(ret){
+								switch (ret) {
+									case 'rollbacked':
+										px2dtGitUi.commit(
+											'contents',
+											{'page_path': $this.attr('data-page-path')},
+											function(ret){
+												switch (ret) {
+													case 'commited':
+														$.ajax({
+															"url": "/apis/applock",
+															"type": 'post',
+															'data': {
+																"method": 'unlock',
+																"page_path": $this.attr('data-page-path')
+															},
+															"success": function(lockResult){
+																// console.log(lockResult);
+																if( !lockResult.result ){
+																	alert('[ERROR] 編集状態の解除に失敗しました。');
+																	return;
+																}
+															}
+														});
+														break;
+													case 'unchanged':
+														// あり得ないはず
+														break;
+													case 'cancel':
+														// 画面は閉じない
+														break;
+													case 'error':
+														// 画面は閉じない
+														break;
+													default:
+														// 画面は閉じない
+														break;
+												}
+												// alert('complete');
+											}
+										);
+										
+										break;
+									case 'log':
+										
+										break;
+									case 'cancel':
+										
+										break;
+									case 'error':
+										
+										break;
+									default:
+										
+										break;
+								}
 								// alert('complete');
 							}
 						);
@@ -343,7 +398,7 @@ window.cont = new (function(){
 							.append( $('<th>').text('タイトル') )
 							.append( $('<th>').text('ページのパス') )
 							// .append( $('<th>').text('編集モード') )
-							.append( $('<th>').text('-') )
+							// .append( $('<th>').text('-') )
 							.append( $('<th>').text('-') )
 							.append( $('<th>').text('プレビュー') )
 						)
@@ -446,22 +501,22 @@ window.cont = new (function(){
 								// 		return (editorTypeId[editorType] ? src : '---');
 								// 	})( sitemap[path].editorType )) )
 								// )
-								.append( $('<td>')
-									// コミットボタン
-									.append( $('<a>')
-										.attr({'href':'javascript:;'})
-										.on('click', function(){
-											px2dtGitUi.commit(
-												'contents',
-												{'page_path': path},
-												function(){
-													// alert('complete');
-												}
-											);
-										})
-										.text('コミット')
-									)
-								)
+								// .append( $('<td>')
+								// 	// コミットボタン
+								// 	.append( $('<a>')
+								// 		.attr({'href':'javascript:;'})
+								// 		.on('click', function(){
+								// 			px2dtGitUi.commit(
+								// 				'contents',
+								// 				{'page_path': path},
+								// 				function(){
+								// 					// alert('complete');
+								// 				}
+								// 			);
+								// 		})
+								// 		.text('コミット')
+								// 	)
+								// )
 								.append( $('<td>')
 									// ログボタン
 									.append( $('<a>')

@@ -47,8 +47,8 @@ window.px2dtGitUi = function(main){
 		callback = callback || function(){};
 		var $body = $('<div class="px2dt-git-commit">');
 		var $ul = $('<ul class="list-group">');
-		var $commitLabel = $('<p>').text('コミットコメント');
-		var $commitComment = $('<textarea>');
+		var $commitLabel = $('<p>').text('コミットコメント（※バージョン管理するためのコメントです。ページ内には反映されません）');
+		var $commitComment = $('<textarea>').val(options.comment);
 
 		main.progress.start({'blindness': true, 'showProgressBar': true});
 
@@ -93,7 +93,7 @@ window.px2dtGitUi = function(main){
 			if( result === false ){
 				alert('ERROR: '+err);
 				main.progress.close();
-				callback();
+				callback('error');
 				return;
 			}
 			$body.html('');
@@ -105,9 +105,10 @@ window.px2dtGitUi = function(main){
 				list = result.div[div];
 			}
 			if( !list.length ){
-				alert('コミットできる変更がありません。');
+				// alert('コミットできる変更がありません。');
 				main.progress.close();
-				callback();
+				main.closeDialog();
+				callback('unchanged');
 				return;
 			}
 			for( var idx in list ){
@@ -133,18 +134,21 @@ window.px2dtGitUi = function(main){
 						.click(function(){
 							main.progress.start({'blindness': true, 'showProgressBar': true});
 							var commitComment = $commitComment.val();
+							var cbRet;
 							// console.log(commitComment);
 							gitCommit(div, options, commitComment, function(rtn, err, XMLHttpRequest, textStatus){
 								// console.log('=-=-=-=-=-=-=-=-=-=-=-=-= gitCommit result');
 								// console.log(rtn, err, XMLHttpRequest, textStatus);
 								if( rtn ){
 									alert('コミットしました。');
+									cbRet = 'commited';
 								}else{
 									alert('コミットに失敗しました。 もう一度お試しください。');
+									cbRet = 'error';
 								}
 								main.progress.close();
 								main.closeDialog();
-								callback();
+								callback(cbRet);
 							});
 						}),
 					$('<button>')
@@ -152,6 +156,7 @@ window.px2dtGitUi = function(main){
 						.addClass('px2-btn px2-btn-secondary')
 						.click(function(){
 							main.closeDialog();
+							callback('cancel');
 						})
 				]
 			});
@@ -215,7 +220,7 @@ window.px2dtGitUi = function(main){
 			if( result === false ){
 				alert('ERROR: '+err);
 				main.progress.close();
-				callback();
+				callback('error');
 				return;
 			}
 
@@ -262,7 +267,9 @@ window.px2dtGitUi = function(main){
 											.addClass('px2-btn--primary')
 											.text('このバージョンまでロールバックする')
 											.click(function(){
+												var cbRet;
 												if( !confirm('この操作は現在の ' + divDb[div].label + ' の変更を破棄します。よろしいですか？') ){
+													callback('cancel');
 													return;
 												}
 												main.progress.start({
@@ -272,13 +279,17 @@ window.px2dtGitUi = function(main){
 												getGitRollback(div, options, hash, function(result, err, code){
 													if( result ){
 														alert('ロールバックを完了しました。');
+														cbRet = 'rollbacked';
 													}else{
 														alert('[ERROR] ロールバックは失敗しました。');
 														alert(err);
 														console.error('ERROR: ' + err);
+														cbRet = 'error';
 													}
 													main.progress.close();
+													main.closeDialog();
 												});
+												callback(cbRet);
 												return;
 											})
 										)
@@ -304,7 +315,7 @@ window.px2dtGitUi = function(main){
 						.addClass('px2-btn px2-btn--primary')
 						.click(function(){
 							main.closeDialog();
-							callback();
+							callback('log');
 						})
 				]
 			});
