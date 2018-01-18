@@ -220,7 +220,7 @@ $(window).load(function(){
 
 	$(window).on('beforeunload', function(){
     	// chromeでは表示されない
-    	return "変更した内容がバージョン管理に反映されませんがよろしいですか？";
+    	return "編集中の変更は記録されませんがよろしいですか？";
 	});
 
 	$(function(){
