@@ -2801,18 +2801,6 @@ window.cont = new (function(){
 						// 編集ボタン
 						openEditor( $(this).attr('data-page-path') );
 						return false;
-
-					// }else if( method == 'commit' ){
-					// 	// コミットボタン
-					// 	px2dtGitUi.commit(
-					// 		'contents',
-					// 		{'page_path': $this.attr('data-page-path')},
-					// 		function(){
-					// 			// alert('complete');
-					// 		}
-					// 	);
-					// 	return false;
-
 					}else if( method == 'log' ){
 						// ログボタン
 						px2dtGitUi.log(
@@ -2822,8 +2810,8 @@ window.cont = new (function(){
 								switch (ret) {
 									case 'rollbacked':
 										px2dtGitUi.commit(
-											'contents',
-											{'page_path': $this.attr('data-page-path')},
+											'rollback',
+											{'page_path': $this.attr('data-page-path'), 'comment':'ロールバック：'},
 											function(ret){
 												switch (ret) {
 													case 'commited':
@@ -2844,39 +2832,30 @@ window.cont = new (function(){
 														});
 														break;
 													case 'unchanged':
-														// あり得ないはず
 														break;
 													case 'cancel':
-														// 画面は閉じない
 														break;
 													case 'error':
-														// 画面は閉じない
 														break;
 													default:
-														// 画面は閉じない
 														break;
 												}
-												// alert('complete');
 											}
 										);
-										
 										break;
 									case 'log':
-										
 										break;
 									case 'cancel':
-										
 										break;
 									case 'error':
-										
 										break;
 									default:
-										
 										break;
 								}
 								// alert('complete');
 							}
 						);
+						
 						return false;
 
 					}else if( method == 'preview' ){
@@ -3019,7 +2998,6 @@ window.cont = new (function(){
 				);
 
 				callback();
-				return;
 			}
 		);
 		return;
@@ -3189,7 +3167,7 @@ window.cont = new (function(){
 												}
 											);
 										})
-										.text('ログ')
+										.text('編集履歴')
 									)
 								)
 								.append( $('<td>')

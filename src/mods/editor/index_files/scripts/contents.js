@@ -111,8 +111,7 @@ $(window).load(function(){
 																alert('[ERROR] 編集状態の解除に失敗しました。');
 																return;
 															}
-
-															// alert('完了しました。');
+															
 															$(window).off('beforeunload');
 															window.close();
 														}

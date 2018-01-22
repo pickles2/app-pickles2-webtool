@@ -8,6 +8,9 @@ window.px2dtGitUi = function(main){
 		},
 		'contents':{
 			'label':'コンテンツ'
+		},
+		'rollback':{
+			'label':'ロールバックの内容'
 		}
 	};
 
@@ -56,6 +59,7 @@ window.px2dtGitUi = function(main){
 		function getGitStatus(div, options, callback){
 			switch( div ){
 				case 'contents':
+				case 'rollback':
 					_this.git.statusContents([options.page_path], function(result, err, code){
 						callback(result, err, code);
 					});
@@ -72,6 +76,7 @@ window.px2dtGitUi = function(main){
 		function gitCommit(div, options, commitComment, callback){
 			switch( div ){
 				case 'contents':
+				case 'rollback':
 					_this.git.commitContents([options.page_path, commitComment], function(rtn, err, XMLHttpRequest, textStatus){
 						callback(rtn, err, XMLHttpRequest, textStatus);
 					});
@@ -99,7 +104,7 @@ window.px2dtGitUi = function(main){
 			$body.html('');
 			$body.append( $('<p>').text('branch: ').append( $('<code>').text( result.branch ) ) );
 			var list = [];
-			if( div == 'contents' ){
+			if( div == 'contents' || div == 'rollback' ){
 				list = result.changes;
 			}else{
 				list = result.div[div];
@@ -140,7 +145,11 @@ window.px2dtGitUi = function(main){
 								// console.log('=-=-=-=-=-=-=-=-=-=-=-=-= gitCommit result');
 								// console.log(rtn, err, XMLHttpRequest, textStatus);
 								if( rtn ){
-									alert('コミットしました。');
+									if( div == 'rollback' ){
+										alert('ロールバックを完了しました。');
+									} else {
+										alert('コミットしました。');	
+									}
 									cbRet = 'commited';
 								}else{
 									alert('コミットに失敗しました。 もう一度お試しください。');
@@ -278,7 +287,7 @@ window.px2dtGitUi = function(main){
 												});
 												getGitRollback(div, options, hash, function(result, err, code){
 													if( result ){
-														alert('ロールバックを完了しました。');
+														// alert('ロールバックを完了しました。');
 														cbRet = 'rollbacked';
 													}else{
 														alert('[ERROR] ロールバックは失敗しました。');
@@ -288,8 +297,8 @@ window.px2dtGitUi = function(main){
 													}
 													main.progress.close();
 													main.closeDialog();
+													callback(cbRet);
 												});
-												callback(cbRet);
 												return;
 											})
 										)
