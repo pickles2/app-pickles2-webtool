@@ -26,6 +26,15 @@ module.exports = function(main){
 		}
 	});
 	_menu.push({
+		"label":'git',
+		"cond":"always",
+		"area":"shoulder",
+		"app":"fncs/git/index.html",
+		"click": function(){
+			main.subapp($(this).data('app'));
+		}
+	});
+	_menu.push({
 		"label":'ヘルプ',
 		"cond":"always",
 		"area":"shoulder",
