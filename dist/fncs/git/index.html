@@ -25,6 +25,7 @@ window.config = new (function(){
 <!-- project common -->
 <link rel="stylesheet" href="/common/styles/common.css" type="text/css" />
 
+		<link rel="stylesheet" href="/common/px2dtGitUi/px2dtGitUi.css" type="text/css" />
 		<link rel="stylesheet" href="index_files/styles/contents.css" type="text/css" />
 	</head>
 	<body>
@@ -50,8 +51,8 @@ window.config = new (function(){
 		<div class="container">
 			<h1>git</h1>
 			<div class="contents">
-
-				
+				<button class="btn px2-btn btn-show-status" style="width: 100%;">ステータスを表示する</button>
+				<div class="cont-git-status"></div>
 			</div>
 		</div>
 		</div><!-- /.theme-main -->
@@ -78,6 +79,7 @@ window.config = new (function(){
 <!-- Bootstrap 3 JS. -->
 <script src="/resources/bootstrap/js/bootstrap.min.js"></script>
 
+		<script type="text/javascript" src="/common/px2dtGitUi/px2dtGitUi.js"></script>
 		<script type="text/javascript" src="./index_files/scripts/contents.js"></script>
 		<script>cont.init();</script>
 	</body>

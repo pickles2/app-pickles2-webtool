@@ -337,6 +337,70 @@ window.px2dtGitUi = function(main){
 		return this;
 	} // log()
 
+	/**
+	 * ステータスを表示する
+	 */
+	this.status = function( div, options, callback ){
+		callback = callback || function(){};
+
+		var $ul = $('<ul class="list-group">');
+		main.progress.start({'blindness': true, 'showProgressBar': true});
+
+		function getGitStatus(div, options, callback){
+			switch( div ){
+				case 'contents':
+					_this.git.status(function(result, err, code){
+						callback(result, err, code);
+					});
+					break;
+				default:
+					_this.git.status(function(result, err, code){
+						callback(result, err, code);
+					});
+					break;
+			}
+			return;
+		}
+
+		getGitStatus(div, options, function(result, err, code){
+			// console.log(result, err, code);
+			if( result === false ){
+				alert('ERROR: '+err);
+				main.progress.close();
+				return;
+			}
+			
+			var list = [];
+			if( div == 'contents' ){
+				list = result.changes;
+			}else{
+				list = result.div[div];
+			}
+
+			if( !list.length ){
+				// 変更なし
+				alert('変更がありません。');
+				main.progress.close();
+				callback();
+				return;
+			}
+			for( var idx in list ){
+				var fileStatus = fileStatusJudge(list[idx]);
+				var $li = $('<li class="list-group-item">')
+					.text( '['+fileStatus+'] '+list[idx].file )
+					.addClass('px2dt-git-commit__stats-'+fileStatus)
+				;
+				$ul.append( $li );
+			}
+			callback($ul);
+
+			main.progress.close();
+
+		});
+		
+		return this;
+	} // log()
+
 }
 
 },{}]},{},[1])

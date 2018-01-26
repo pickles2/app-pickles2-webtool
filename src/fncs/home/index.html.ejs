@@ -39,12 +39,15 @@
 					<li><a href="javascript:main.openInTextEditor( contApp.pj.get('path') );" class="px2-link px2-link--burette">外部テキストエディタで開く</a></li>
 					<li><a href="javascript:main.openInTerminal( contApp.pj.get('path') );" class="px2-link px2-link--burette">コマンドラインで開く</a></li>
 				</ul>
+				%>
 				<ul class="px2-horizontal-list px2-horizontal-list--right">
+					<%#
 					<li><a href="javascript:main.subapp('fncs/config/index.html');" class="px2-link px2-link--burette">config.php を編集する</a></li>
 					<li><a href="javascript:main.subapp('fncs/composer/index.html');" class="px2-link px2-link--burette">composer を操作する</a></li>
+					%>
+					<li><a href="javascript:main.subapp('fncs/git/index.html');" class="px2-link px2-link--burette">git</a></li>
 				</ul>
-				%>
-
+				
 				<p><button class="px2-btn" onclick="main.logout(); return false;">ログアウト</button></p>
 
 			</div>
