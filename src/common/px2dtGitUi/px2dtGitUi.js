@@ -2,6 +2,7 @@ window.px2dtGitUi = function(main){
 	var _this = this;
 	this.main = main;
 	this.git = main.git();
+	var it79 = require('iterate79');
 	var divDb = {
 		'sitemaps':{
 			'label':'サイトマップ'
@@ -383,14 +384,69 @@ window.px2dtGitUi = function(main){
 				callback();
 				return;
 			}
-			for( var idx in list ){
-				var fileStatus = fileStatusJudge(list[idx]);
-				var $li = $('<li class="list-group-item">')
-					.text( '['+fileStatus+'] '+list[idx].file )
-					.addClass('px2dt-git-commit__stats-'+fileStatus)
-				;
-				$ul.append( $li );
-			}
+
+			var statusList = [];
+			$.get(
+				'/apis/getSitemap',
+				{},
+				function(sitemap){
+
+					for( var idx in list ){
+						var fileName;
+
+						if ( list[idx].file.match(".html") ) {
+							fileName = "/"+list[idx].file;
+						} else {
+							fileName = list[idx].file.match(/.*_files/);
+							fileName = "/"+fileName[0].replace(/_files$/, ".html");
+						}
+
+						var fileStatus = fileStatusJudge(list[idx]);
+						if ( !statusList[fileName] ) {
+							statusList[fileName] = {
+									title: sitemap[fileName].title,
+									list: ['['+fileStatus+'] '+list[idx].file],
+									status: [fileStatus]
+								};
+						} else {
+							statusList[fileName].list.push('['+fileStatus+'] '+list[idx].file);
+							statusList[fileName].status.push(fileStatus);
+						}
+					}
+					
+					it79.ary(
+						statusList,
+						function(it2, file_info, path){
+
+							(function($ul, statusList, path){
+								
+								var $li = $('<li class="list-group-item">');
+								$li.text(statusList[path].title);
+
+								var $inner_ul = $('<ul>');
+								for ( var idx in statusList[path].list ) {
+									var $inner_li = $('<li>')
+										.text(statusList[path].list[idx])
+										.addClass('px2dt-git-commit__stats-'+statusList[path].status[idx]);
+									;
+									$inner_ul.append($inner_li);
+								}
+								$li.append($inner_ul);
+								$ul.append($li);
+
+							})($ul, statusList, path);
+							
+							it2.next();
+						},
+						function(){
+							it1.next();
+						}
+					);
+
+					// console.log(statusList);
+				}
+			);
+			
 			callback($ul);
 
 			main.progress.close();
@@ -398,6 +454,6 @@ window.px2dtGitUi = function(main){
 		});
 		
 		return this;
-	} // log()
+	} // status()
 
 }
