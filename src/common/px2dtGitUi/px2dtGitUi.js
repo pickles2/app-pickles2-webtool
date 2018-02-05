@@ -390,6 +390,7 @@ window.px2dtGitUi = function(main){
 				'/apis/getSitemap',
 				{},
 				function(sitemap){
+					// console.log(sitemap);
 
 					for( var idx in list ){
 						var fileName;
@@ -397,17 +398,36 @@ window.px2dtGitUi = function(main){
 						if ( list[idx].file.match(".html") ) {
 							fileName = "/"+list[idx].file;
 						} else {
+							// console.log(list[idx].file);
+							main.project.pxCommand(
+								'/'+list[idx].file,
+								'path_files',
+								{
+									// 'path_resource': "/test/data.json"
+								},
+								function(result){
+									// console.log(result);
+								}
+							);
+
 							fileName = list[idx].file.match(/.*_files/);
 							fileName = "/"+fileName[0].replace(/_files$/, ".html");
 						}
 
 						var fileStatus = fileStatusJudge(list[idx]);
 						if ( !statusList[fileName] ) {
-							statusList[fileName] = {
-									title: sitemap[fileName].title,
-									list: ['['+fileStatus+'] '+list[idx].file],
-									status: [fileStatus]
-								};
+
+							$.each(sitemap, function(i, el){
+								var path = ( el.content ? el.content : el.path );
+								if (path == "/"+list[idx].file) {
+									statusList[fileName] = {
+										title: sitemap[fileName].title,
+										list: ['['+fileStatus+'] '+list[idx].file],
+										status: [fileStatus]
+									};
+								}
+							});
+							
 						} else {
 							statusList[fileName].list.push('['+fileStatus+'] '+list[idx].file);
 							statusList[fileName].status.push(fileStatus);
