@@ -390,88 +390,111 @@ window.px2dtGitUi = function(main){
 				'/apis/getSitemap',
 				{},
 				function(sitemap){
-					// console.log(sitemap);
+					
+					/* ファイルリストを「.htmlファイル」とそれ以外に分ける */
+					var htmlFiles = $.grep(list,
+						function(elem, index){
+							// .htmlのファイルのみ
+							return (elem.file.indexOf('.html') != -1);
+						}
+					);
+					var resFiles = $.grep(list,
+						function(elem, index){
+							// .htmlのファイル以外
+							return (elem.file.indexOf('.html') != -1);
+						}, true
+					);
 
-					for( var idx in list ){
-						var fileName;
+					it79.fnc({},[
+						function(it1, arg){
+							
+							$.each(htmlFiles, function(i, el){
+								main.project.pxCommand(
+									'/'+el.file,
+									'api.get.path_files',
+									{
+										// 'path_resource': "/test/data.json"
+									},
+									function(result){
+										var fileName = "/"+el.file;
+										var fileStatus = fileStatusJudge(el);
 
-						if ( list[idx].file.match(".html") ) {
-							fileName = "/"+list[idx].file;
-						} else {
-							// console.log(list[idx].file);
-							main.project.pxCommand(
-								'/'+list[idx].file,
-								'path_files',
-								{
-									// 'path_resource': "/test/data.json"
+										$.each(sitemap, function(i2, el2){
+											var path = ( el2.content ? el2.content : el2.path );
+											if (path == fileName) {
+												statusList[fileName] = {
+													title: sitemap[fileName].title,
+													path_files: result,
+													list: ['['+fileStatus+'] '+el.file],
+													status: [fileStatus]
+												};
+											}
+										});
+
+										if (i >= htmlFiles.length - 1) {
+											it1.next(arg);
+										}
+									}
+								);
+							});
+							
+							return;
+						},
+						function(it1, arg){
+							
+							for (var i in resFiles) {
+								var fileStatus = fileStatusJudge(resFiles[i]);
+								for (path in statusList) {
+									var path_file = statusList[path].path_files.slice(1, statusList[path].path_files.length);
+									var len = path_file.length;
+									var file = resFiles[i].file.slice(0, len);
+									if (file == path_file) {
+										statusList[path].list.push('['+fileStatus+'] '+resFiles[i].file);
+										statusList[path].status.push(fileStatus);
+									}
+								}
+							}
+
+							it79.ary(
+								statusList,
+								function(it2, file_info, path){
+
+									(function($ul, statusList, path){
+
+										var $li = $('<li class="list-group-item">');
+										$li.text(statusList[path].title);
+
+										var $inner_ul = $('<ul>');
+										for ( var idx in statusList[path].list ) {
+											var $inner_li = $('<li>')
+												.text(statusList[path].list[idx])
+												.addClass('px2dt-git-commit__stats-'+statusList[path].status[idx]);
+											;
+											$inner_ul.append($inner_li);
+										}
+										$li.append($inner_ul);
+										$ul.append($li);
+
+									})($ul, statusList, path);
+									
+									it2.next();
 								},
-								function(result){
-									// console.log(result);
+								function(){
+									it1.next();
 								}
 							);
 
-							fileName = list[idx].file.match(/.*_files/);
-							fileName = "/"+fileName[0].replace(/_files$/, ".html");
-						}
-
-						var fileStatus = fileStatusJudge(list[idx]);
-						if ( !statusList[fileName] ) {
-
-							$.each(sitemap, function(i, el){
-								var path = ( el.content ? el.content : el.path );
-								if (path == "/"+list[idx].file) {
-									statusList[fileName] = {
-										title: sitemap[fileName].title,
-										list: ['['+fileStatus+'] '+list[idx].file],
-										status: [fileStatus]
-									};
-								}
-							});
-							
-						} else {
-							statusList[fileName].list.push('['+fileStatus+'] '+list[idx].file);
-							statusList[fileName].status.push(fileStatus);
-						}
-					}
-					
-					it79.ary(
-						statusList,
-						function(it2, file_info, path){
-
-							(function($ul, statusList, path){
-								
-								var $li = $('<li class="list-group-item">');
-								$li.text(statusList[path].title);
-
-								var $inner_ul = $('<ul>');
-								for ( var idx in statusList[path].list ) {
-									var $inner_li = $('<li>')
-										.text(statusList[path].list[idx])
-										.addClass('px2dt-git-commit__stats-'+statusList[path].status[idx]);
-									;
-									$inner_ul.append($inner_li);
-								}
-								$li.append($inner_ul);
-								$ul.append($li);
-
-							})($ul, statusList, path);
-							
-							it2.next();
+							return;
 						},
-						function(){
-							it1.next();
+						function(it1, arg){
+							callback($ul);
+							main.progress.close();
 						}
-					);
-
-					// console.log(statusList);
+					]);
 				}
 			);
-			
-			callback($ul);
-
-			main.progress.close();
-
 		});
+
 		
 		return this;
 	} // status()
