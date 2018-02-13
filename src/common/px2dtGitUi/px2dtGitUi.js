@@ -2,12 +2,16 @@ window.px2dtGitUi = function(main){
 	var _this = this;
 	this.main = main;
 	this.git = main.git();
+	var it79 = require('iterate79');
 	var divDb = {
 		'sitemaps':{
 			'label':'サイトマップ'
 		},
 		'contents':{
 			'label':'コンテンツ'
+		},
+		'rollback':{
+			'label':'ロールバックの内容'
 		}
 	};
 
@@ -47,8 +51,8 @@ window.px2dtGitUi = function(main){
 		callback = callback || function(){};
 		var $body = $('<div class="px2dt-git-commit">');
 		var $ul = $('<ul class="list-group">');
-		var $commitLabel = $('<p>').text('コミットコメント');
-		var $commitComment = $('<textarea>');
+		var $commitLabel = $('<p>').text('コミットコメント（※バージョン管理するためのコメントです。ページ内には反映されません）');
+		var $commitComment = $('<textarea>').val(options.comment);
 
 		main.progress.start({'blindness': true, 'showProgressBar': true});
 
@@ -56,6 +60,7 @@ window.px2dtGitUi = function(main){
 		function getGitStatus(div, options, callback){
 			switch( div ){
 				case 'contents':
+				case 'rollback':
 					_this.git.statusContents([options.page_path], function(result, err, code){
 						callback(result, err, code);
 					});
@@ -72,6 +77,7 @@ window.px2dtGitUi = function(main){
 		function gitCommit(div, options, commitComment, callback){
 			switch( div ){
 				case 'contents':
+				case 'rollback':
 					_this.git.commitContents([options.page_path, commitComment], function(rtn, err, XMLHttpRequest, textStatus){
 						callback(rtn, err, XMLHttpRequest, textStatus);
 					});
@@ -93,21 +99,22 @@ window.px2dtGitUi = function(main){
 			if( result === false ){
 				alert('ERROR: '+err);
 				main.progress.close();
-				callback();
+				callback('error');
 				return;
 			}
 			$body.html('');
 			$body.append( $('<p>').text('branch: ').append( $('<code>').text( result.branch ) ) );
 			var list = [];
-			if( div == 'contents' ){
+			if( div == 'contents' || div == 'rollback' ){
 				list = result.changes;
 			}else{
 				list = result.div[div];
 			}
 			if( !list.length ){
-				alert('コミットできる変更がありません。');
+				// alert('コミットできる変更がありません。');
 				main.progress.close();
-				callback();
+				main.closeDialog();
+				callback('unchanged');
 				return;
 			}
 			for( var idx in list ){
@@ -133,18 +140,25 @@ window.px2dtGitUi = function(main){
 						.click(function(){
 							main.progress.start({'blindness': true, 'showProgressBar': true});
 							var commitComment = $commitComment.val();
+							var cbRet;
 							// console.log(commitComment);
 							gitCommit(div, options, commitComment, function(rtn, err, XMLHttpRequest, textStatus){
 								// console.log('=-=-=-=-=-=-=-=-=-=-=-=-= gitCommit result');
 								// console.log(rtn, err, XMLHttpRequest, textStatus);
 								if( rtn ){
-									alert('コミットしました。');
+									if( div == 'rollback' ){
+										alert('ロールバックを完了しました。');
+									} else {
+										alert('コミットしました。');	
+									}
+									cbRet = 'commited';
 								}else{
 									alert('コミットに失敗しました。 もう一度お試しください。');
+									cbRet = 'error';
 								}
 								main.progress.close();
 								main.closeDialog();
-								callback();
+								callback(cbRet);
 							});
 						}),
 					$('<button>')
@@ -152,6 +166,7 @@ window.px2dtGitUi = function(main){
 						.addClass('px2-btn px2-btn-secondary')
 						.click(function(){
 							main.closeDialog();
+							callback('cancel');
 						})
 				]
 			});
@@ -215,7 +230,7 @@ window.px2dtGitUi = function(main){
 			if( result === false ){
 				alert('ERROR: '+err);
 				main.progress.close();
-				callback();
+				callback('error');
 				return;
 			}
 
@@ -262,7 +277,9 @@ window.px2dtGitUi = function(main){
 											.addClass('px2-btn--primary')
 											.text('このバージョンまでロールバックする')
 											.click(function(){
+												var cbRet;
 												if( !confirm('この操作は現在の ' + divDb[div].label + ' の変更を破棄します。よろしいですか？') ){
+													callback('cancel');
 													return;
 												}
 												main.progress.start({
@@ -271,13 +288,17 @@ window.px2dtGitUi = function(main){
 												});
 												getGitRollback(div, options, hash, function(result, err, code){
 													if( result ){
-														alert('ロールバックを完了しました。');
+														// alert('ロールバックを完了しました。');
+														cbRet = 'rollbacked';
 													}else{
 														alert('[ERROR] ロールバックは失敗しました。');
 														alert(err);
 														console.error('ERROR: ' + err);
+														cbRet = 'error';
 													}
 													main.progress.close();
+													main.closeDialog();
+													callback(cbRet);
 												});
 												return;
 											})
@@ -304,7 +325,7 @@ window.px2dtGitUi = function(main){
 						.addClass('px2-btn px2-btn--primary')
 						.click(function(){
 							main.closeDialog();
-							callback();
+							callback('log');
 						})
 				]
 			});
@@ -315,5 +336,167 @@ window.px2dtGitUi = function(main){
 
 		return this;
 	} // log()
+
+	/**
+	 * ステータスを表示する
+	 */
+	this.status = function( div, options, callback ){
+		callback = callback || function(){};
+
+		var $ul = $('<ul class="list-group">');
+		main.progress.start({'blindness': true, 'showProgressBar': true});
+
+		function getGitStatus(div, options, callback){
+			switch( div ){
+				case 'contents':
+					_this.git.status(function(result, err, code){
+						callback(result, err, code);
+					});
+					break;
+				default:
+					_this.git.status(function(result, err, code){
+						callback(result, err, code);
+					});
+					break;
+			}
+			return;
+		}
+
+		getGitStatus(div, options, function(result, err, code){
+			// console.log(result, err, code);
+			if( result === false ){
+				alert('ERROR: '+err);
+				main.progress.close();
+				return;
+			}
+			
+			var list = [];
+			if( div == 'contents' ){
+				list = result.changes;
+			}else{
+				list = result.div[div];
+			}
+
+			if( !list.length ){
+				// 変更なし
+				alert('変更がありません。');
+				main.progress.close();
+				callback();
+				return;
+			}
+
+			var statusList = [];
+			$.get(
+				'/apis/getSitemap',
+				{},
+				function(sitemap){
+					
+					/* ファイルリストを「.htmlファイル」とそれ以外に分ける */
+					var htmlFiles = $.grep(list,
+						function(elem, index){
+							// .htmlのファイルのみ
+							return (elem.file.indexOf('.html') != -1);
+						}
+					);
+					var resFiles = $.grep(list,
+						function(elem, index){
+							// .htmlのファイル以外
+							return (elem.file.indexOf('.html') != -1);
+						}, true
+					);
+
+					it79.fnc({},[
+						function(it1, arg){
+							
+							$.each(htmlFiles, function(i, el){
+								main.project.pxCommand(
+									'/'+el.file,
+									'api.get.path_files',
+									{
+										// 'path_resource': "/test/data.json"
+									},
+									function(result){
+										var fileName = "/"+el.file;
+										var fileStatus = fileStatusJudge(el);
+
+										$.each(sitemap, function(i2, el2){
+											var path = ( el2.content ? el2.content : el2.path );
+											if (path == fileName) {
+												statusList[fileName] = {
+													title: sitemap[fileName].title,
+													path_files: result,
+													list: ['['+fileStatus+'] '+el.file],
+													status: [fileStatus]
+												};
+											}
+										});
+
+										if (i >= htmlFiles.length - 1) {
+											it1.next(arg);
+										}
+									}
+								);
+							});
+							
+							return;
+						},
+						function(it1, arg){
+							
+							for (var i in resFiles) {
+								var fileStatus = fileStatusJudge(resFiles[i]);
+								for (path in statusList) {
+									var path_file = statusList[path].path_files.slice(1, statusList[path].path_files.length);
+									var len = path_file.length;
+									var file = resFiles[i].file.slice(0, len);
+									if (file == path_file) {
+										statusList[path].list.push('['+fileStatus+'] '+resFiles[i].file);
+										statusList[path].status.push(fileStatus);
+									}
+								}
+							}
+
+							it79.ary(
+								statusList,
+								function(it2, file_info, path){
+
+									(function($ul, statusList, path){
+
+										var $li = $('<li class="list-group-item">');
+										$li.text(statusList[path].title);
+
+										var $inner_ul = $('<ul>');
+										for ( var idx in statusList[path].list ) {
+											var $inner_li = $('<li>')
+												.text(statusList[path].list[idx])
+												.addClass('px2dt-git-commit__stats-'+statusList[path].status[idx]);
+											;
+											$inner_ul.append($inner_li);
+										}
+										$li.append($inner_ul);
+										$ul.append($li);
+
+									})($ul, statusList, path);
+									
+									it2.next();
+								},
+								function(){
+									it1.next();
+								}
+							);
+
+							return;
+						},
+						function(it1, arg){
+							callback($ul);
+							main.progress.close();
+						}
+					]);
+				}
+			);
+		});
+
+		
+		return this;
+	} // status()
 
 }

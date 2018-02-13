@@ -5,6 +5,7 @@ $(window).load(function(){
 
 	var $canvas = $('#canvas');
 	var serverConfig;
+	var px2dtGitUi = new window.px2dtGitUi(window.main);
 	var $msgBox = $('<div class="theme_ui_px_message">');
 	$msgBox
 		.css({
@@ -90,27 +91,52 @@ $(window).load(function(){
 									// progressの表示
 									window.main.progress.start({'blindness': true, 'showProgressBar': true});
 
-									$.ajax({
-										"url": "/apis/applock",
-										"type": 'post',
-										'data': {
-											"method": 'unlock',
-											"page_path": params.page_path
-										},
-										"success": function(lockResult){
+									// コミット
+									px2dtGitUi.commit(
+										'contents',
+										{'page_path': params.page_path, 'comment':'新しいコミット：'},
+										function(ret){
+											switch (ret) {
+												case 'commited':
+													$.ajax({
+														"url": "/apis/applock",
+														"type": 'post',
+														'data': {
+															"method": 'unlock',
+															"page_path": params.page_path
+														},
+														"success": function(lockResult){
+															// console.log(lockResult);
+															if( !lockResult.result ){
+																alert('[ERROR] 編集状態の解除に失敗しました。');
+																return;
+															}
+															
+															$(window).off('beforeunload');
+															window.close();
+														}
+													});
+													break;
+												case 'unchanged':
+													$(window).off('beforeunload');
+													window.close();
+													break;
+												case 'cancel':
+													$(window).off('beforeunload');
+													window.close();
+													break;
+												case 'error':
+													// 画面は閉じない
+													break;
+												default:
+													// 画面は閉じない
+													break;
+											}
+
 											// プログレスの表示終了
 											window.main.progress.close();
-											
-											// console.log(lockResult);
-											if( !lockResult.result ){
-												alert('[ERROR] 編集状態の解除に失敗しました。');
-												return;
-											}
-											alert('完了しました。');
-											window.close();
-
 										}
-									});
+									);
 								},
 								'onClickContentsLink': function( uri, data ){
 									// alert('編集: ' + uri);
@@ -190,8 +216,12 @@ $(window).load(function(){
 		return this;
 	}
 
+	$(window).on('beforeunload', function(){
+    	// chromeでは表示されない
+    	return "編集中の変更は記録されませんがよろしいですか？";
+	});
+
 	$(function(){
 		$('body').append($msgBox);
 	});
-
 });

@@ -2,7 +2,7 @@
 <html>
 	<head>
 		<meta charset="utf-8">
-		<title>コンテンツ編集 | Pickles 2 Web Tool</title>
+		<title>git | Pickles 2 Web Tool</title>
 <!-- config -->
 <script type="text/javascript">
 window.config = new (function(){
@@ -25,22 +25,41 @@ window.config = new (function(){
 <!-- project common -->
 <link rel="stylesheet" href="/common/styles/common.css" type="text/css" />
 
-		<link rel="stylesheet" href="/common/styles/common.css" type="text/css" />
+		<link rel="stylesheet" href="/common/px2dtGitUi/px2dtGitUi.css" type="text/css" />
 		<link rel="stylesheet" href="index_files/styles/contents.css" type="text/css" />
-
-		<!-- Keypress -->
-		<script src="/common/dmauro-Keypress/keypress.js"></script>
-
-		<!-- broccoli-html-editor -->
-		<link rel="stylesheet" href="/resources/broccoli-html-editor/broccoli.css" />
-
-		<!-- Pickles 2 Contents Editor -->
-		<link rel="stylesheet" href="/resources/pickles2-contents-editor/pickles2-contents-editor.css" />
 	</head>
 	<body>
-		<div id="canvas">
-			<p>...</p>
+		<header class="theme-header">
+			<div class="theme-header__inner clearfix">
+				<div class="theme-header__px2logo">
+					<a href="/"><img src="/common/images/logo.svg" alt="Pickles 2 Web Tool" /></a>
+				</div>
+				<div class="theme-header__id">
+					<div></div>
+				</div>
+				<div class="theme-header__gmenu"></div>
+				<div class="theme-header__shoulder-menu">
+					<button>≡</button>
+					<ul>
+						<li><a href="javascript:window.location.href='/logout.html';">Logout</a></li>
+					</ul>
+				</div>
+			</div>
+		</header>
+		<div class="theme-main">
+
+		<div class="container">
+			<h1>git</h1>
+			<div class="contents">
+				<button class="btn px2-btn btn-show-status" style="width: 100%;">ステータスを表示する</button>
+				<div class="cont-git-status"></div>
+			</div>
 		</div>
+		</div><!-- /.theme-main -->
+		<footer class="theme-footer">
+			<p class="theme-footer__copyright">(C) Pickles 2 Project</p>
+		</footer>
+
 
 <!-- Socket.io -->
 <script src="/socket.io/socket.io.js"></script>
@@ -60,17 +79,8 @@ window.config = new (function(){
 <!-- Bootstrap 3 JS. -->
 <script src="/resources/bootstrap/js/bootstrap.min.js"></script>
 
-		<!-- Ace Editor -->
-		<script src="/resources/ace-builds/src-noconflict/ace.js"></script>
-
-		<!-- broccoli-html-editor -->
-		<script src="/resources/broccoli-html-editor/broccoli.js"></script>
-
-		<!-- Pickles 2 Contents Editor -->
-		<script src="/resources/pickles2-contents-editor/pickles2-contents-editor.js"></script>
-
-		<script type="text/javascript" src="/common/scripts/main.js"></script>
 		<script type="text/javascript" src="/common/px2dtGitUi/px2dtGitUi.js"></script>
 		<script type="text/javascript" src="./index_files/scripts/contents.js"></script>
+		<script>cont.init();</script>
 	</body>
 </html>
