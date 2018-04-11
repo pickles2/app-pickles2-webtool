@@ -24,15 +24,7 @@ module.exports = function(px2){
 
 		new Promise(function(rlv){rlv();})
 			.then(function(){ return new Promise(function(rlv, rjt){
-				// エイリアスやダイナミックパスを実際のパスに置き換えるため、
-				// 一度 `$px->href()` を通す。
-				px2proj.href(page_path, function(_page_path){
-					page_path = _page_path;
-					rlv();
-				});
-			}); })
-			.then(function(){ return new Promise(function(rlv, rjt){
-				px2proj.query(page_path+'?PX=px2dthelper.get.all&filter=false', {
+				px2proj.query('/?PX=px2dthelper.get.all&path='+encodeURIComponent(page_path)+'&filter=false', {
 					"output": "json",
 					"userAgent": "Mozilla/5.0",
 					"success": function(data){
@@ -46,7 +38,7 @@ module.exports = function(px2){
 						} catch (e) {
 							navigation_info = false;
 						}
-						// console.log(navigation_info);
+						// console.log(pjInfo.path_type);
 
 						rlv();
 						return;
@@ -60,18 +52,23 @@ module.exports = function(px2){
 				var realpathDataDir = pjInfo.realpath_data_dir;
 				try {
 					var rtn = '.not_exists';
-					if( navigation_info.page_info === null ){
-						callback('.page_not_exists');
-						return;
-					}
-					if( utils79.is_file( pjInfo.realpath_docroot + pjInfo.path_controot + navigation_info.page_info.content ) ){
-						rtn = 'html';
-						if( utils79.is_file( realpathDataDir + '/data.json' ) ){
-							rtn = 'html.gui';
+					
+					if( pjInfo.path_type === 'alias' ) {
+						rtn = 'alias';
+					} else {
+						if( navigation_info.page_info === null ){
+							callback('.page_not_exists');
+							return;
 						}
+						if( utils79.is_file( pjInfo.realpath_docroot + pjInfo.path_controot + navigation_info.page_info.content ) ){
+							rtn = 'html';
+							if( utils79.is_file( realpathDataDir + '/data.json' ) ){
+								rtn = 'html.gui';
+							}
 
-					}else if( utils79.is_file( pjInfo.realpath_docroot + pjInfo.path_controot + navigation_info.page_info.content + '.md' ) ){
-						rtn = 'md';
+						}else if( utils79.is_file( pjInfo.realpath_docroot + pjInfo.path_controot + navigation_info.page_info.content + '.md' ) ){
+							rtn = 'md';
+						}
 					}
 
 					navigation_info.editorType = rtn;

@@ -33,7 +33,7 @@ window.config = new (function(){
 				<div class="cont_breadcrumb">
 					<ul>
 						<% for(var idx in navigationInfo.breadcrumb_info ){ %>
-							<li><a href="javascript:;" data-method="goto" data-page-path="<%= navigationInfo.breadcrumb_info[idx].path %>"><%= navigationInfo.breadcrumb_info[idx].title_breadcrumb %></a></li>
+							<li><a href="javascript:;" data-method="goto" data-id="<%= navigationInfo.breadcrumb_info[idx].id %>" data-page-path="<%= navigationInfo.breadcrumb_info[idx].path %>"><%= navigationInfo.breadcrumb_info[idx].title_breadcrumb %></a></li>
 						<% }%>
 						<li><span><%= navigationInfo.page_info.title_breadcrumb %></span></li>
 					</ul>
@@ -41,9 +41,9 @@ window.config = new (function(){
 				<div class="row">
 					<div class="col-sm-9">
 						<div class="btn-group">
-							<button class="btn px2-btn px2-btn--primary" data-method="edit" data-page-path="<%= navigationInfo.page_info.path %>">ページを編集</button>
-							<button class="btn px2-btn" data-method="log" data-page-path="<%= navigationInfo.page_info.path %>">編集履歴</button>
-							<button class="btn px2-btn" data-method="preview" data-page-path="<%= navigationInfo.page_info.path %>">ブラウザでプレビュー</button>
+							<button class="btn px2-btn px2-btn--primary btn--edit" data-method="edit" data-page-path="<%= navigationInfo.page_info.path %>">ページを編集</button>
+							<button class="btn px2-btn btn--log" data-method="log" data-page-path="<%= navigationInfo.page_info.path %>">編集履歴</button>
+							<button class="btn px2-btn btn--preview" data-method="preview" data-page-path="<%= navigationInfo.page_info.path %>">ブラウザでプレビュー</button>
 							<button class="btn px2-btn dropdown-toggle" type="button" data-toggle="dropdown">
 								<span class="caret"></span>
 								<span class="sr-only">Toggle Dropdown</span>
@@ -60,6 +60,7 @@ window.config = new (function(){
 									'txt' : 'txt',
 									'jade' : 'jade',
 									'html.gui' : 'html-gui',
+									'alias' : 'alias',
 									'.not_exists' : 'not-exists',
 									'.page_not_exists' : 'page-not-exists'
 								};
@@ -83,17 +84,17 @@ window.config = new (function(){
 					</div>
 					<div class="col-sm-3">
 						<% if( navigationInfo.parent_info ){ %>
-							<p><a href="javascript:;" data-method="goto" data-page-path="<%= navigationInfo.parent_info.path %>">↑ <%= navigationInfo.parent_info.title %></a></p>
+							<p><a href="javascript:;" data-method="goto" data-id="<%= navigationInfo.parent_info.id %>" data-page-path="<%= navigationInfo.parent_info.path %>">↑ <%= navigationInfo.parent_info.title %></a></p>
 						<% } %>
 						<% if( navigationInfo.bros_info.length ){ %>
 							<div class="cont_navigation-info"><ul>
 								<% for( var idx in navigationInfo.bros_info ){ %>
 									<li>
-										<a href="javascript:;" data-method="goto" data-page-path="<%= navigationInfo.bros_info[idx].path %>"<%- (navigationInfo.bros_info[idx].id == navigationInfo.page_info.id ? ' class="current"' : '') %>><%= navigationInfo.bros_info[idx].title %></a>
+										<a href="javascript:;" data-method="goto" data-id="<%= navigationInfo.bros_info[idx].id %>" data-page-path="<%= navigationInfo.bros_info[idx].path %>"<%- (navigationInfo.bros_info[idx].id == navigationInfo.page_info.id ? ' class="current"' : '') %>><%= navigationInfo.bros_info[idx].title %></a>
 										<% if( navigationInfo.bros_info[idx].id == navigationInfo.page_info.id && navigationInfo.children_info.length ){ %>
 											<ul>
 												<% for( var idx2 in navigationInfo.children_info ){ %>
-													<li><a href="javascript:;" data-method="goto" data-page-path="<%= navigationInfo.children_info[idx2].path %>"><%= navigationInfo.children_info[idx2].title %></a></li>
+													<li><a href="javascript:;" data-method="goto" data-id="<%= navigationInfo.children_info[idx2].id %>" data-page-path="<%= navigationInfo.children_info[idx2].path %>"><%= navigationInfo.children_info[idx2].title %></a></li>
 												<% } %>
 											</ul>
 										<% } %>
