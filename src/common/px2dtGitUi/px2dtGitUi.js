@@ -369,7 +369,7 @@ window.px2dtGitUi = function(main){
 				main.progress.close();
 				return;
 			}
-			
+
 			var list = [];
 			if( div == 'contents' ){
 				list = result.changes;
@@ -407,6 +407,10 @@ window.px2dtGitUi = function(main){
 
 					it79.fnc({},[
 						function(it1, arg){
+							if(!htmlFiles.length){
+								it1.next(arg);
+								return;
+							}
 							
 							$.each(htmlFiles, function(i, el){
 								main.project.pxCommand(
@@ -441,7 +445,7 @@ window.px2dtGitUi = function(main){
 							return;
 						},
 						function(it1, arg){
-							
+
 							for (var i in resFiles) {
 								var fileStatus = fileStatusJudge(resFiles[i]);
 								for (path in statusList) {

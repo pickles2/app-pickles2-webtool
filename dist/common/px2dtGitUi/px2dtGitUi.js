@@ -1656,9 +1656,8 @@ window.px2dtGitUi = function(main){
 
 		var $ul = $('<ul class="list-group">');
 		main.progress.start({'blindness': true, 'showProgressBar': true});
-		var statusList = [];
 
-		function getGitStatusList(div, options, callback){
+		function getGitStatus(div, options, callback){
 			switch( div ){
 				case 'contents':
 					_this.git.status(function(result, err, code){
@@ -1674,14 +1673,14 @@ window.px2dtGitUi = function(main){
 			return;
 		}
 
-		getGitStatusList(div, options, function(result, err, code){
+		getGitStatus(div, options, function(result, err, code){
 			// console.log(result, err, code);
 			if( result === false ){
 				alert('ERROR: '+err);
 				main.progress.close();
 				return;
 			}
-			
+
 			var list = [];
 			if( div == 'contents' ){
 				list = result.changes;
@@ -1697,6 +1696,7 @@ window.px2dtGitUi = function(main){
 				return;
 			}
 
+			var statusList = [];
 			$.get(
 				'/apis/getSitemap',
 				{},
@@ -1718,6 +1718,10 @@ window.px2dtGitUi = function(main){
 
 					it79.fnc({},[
 						function(it1, arg){
+							if(!htmlFiles.length){
+								it1.next(arg);
+								return;
+							}
 							
 							$.each(htmlFiles, function(i, el){
 								main.project.pxCommand(
