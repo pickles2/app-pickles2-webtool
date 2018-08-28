@@ -97,6 +97,16 @@ exports.fileLoader = fs.readFileSync;
 exports.localsName = _DEFAULT_LOCALS_NAME;
 
 /**
+ * Promise implementation -- defaults to the native implementation if available
+ * This is mostly just for testability
+ *
+ * @type {Function}
+ * @public
+ */
+
+exports.promiseImpl = (new Function('return this;'))().Promise;
+
+/**
  * Get the path to the included file from the parent file path and the
  * specified path.
  *
@@ -152,7 +162,8 @@ function getIncludePath(path, options) {
       }
     }
     if (!includePath) {
-      throw new Error('Could not find include include file.');
+      throw new Error('Could not find the include file "' +
+          options.escapeFunction(path) + '"');
     }
   }
   return includePath;
@@ -222,13 +233,32 @@ function handleCache(options, template) {
 
 function tryHandleCache(options, data, cb) {
   var result;
-  try {
-    result = handleCache(options)(data);
+  if (!cb) {
+    if (typeof exports.promiseImpl == 'function') {
+      return new exports.promiseImpl(function (resolve, reject) {
+        try {
+          result = handleCache(options)(data);
+          resolve(result);
+        }
+        catch (err) {
+          reject(err);
+        }
+      });
+    }
+    else {
+      throw new Error('Please provide a callback function');
+    }
   }
-  catch (err) {
-    return cb(err);
+  else {
+    try {
+      result = handleCache(options)(data);
+    }
+    catch (err) {
+      return cb(err);
+    }
+
+    cb(null, result);
   }
-  return cb(null, result);
 }
 
 /**
@@ -401,24 +431,34 @@ exports.render = function (template, d, o) {
  */
 
 exports.renderFile = function () {
-  var filename = arguments[0];
-  var cb = arguments[arguments.length - 1];
+  var args = Array.prototype.slice.call(arguments);
+  var filename = args.shift();
+  var cb;
   var opts = {filename: filename};
   var data;
 
-  if (arguments.length > 2) {
-    data = arguments[1];
-
-    // No options object -- if there are optiony names
-    // in the data, copy them to options
-    if (arguments.length === 3) {
+  // Do we have a callback?
+  if (typeof arguments[arguments.length - 1] == 'function') {
+    cb = args.pop();
+  }
+  // Do we have data/opts?
+  if (args.length) {
+    // Should always have data obj
+    data = args.shift();
+    // Normal passed opts (data obj + opts obj)
+    if (args.length) {
+      // Use shallowCopy so we don't pollute passed in opts obj with new vals
+      utils.shallowCopy(opts, args.pop());
+    }
+    // Special casing for Express (opts-in-data)
+    else {
       // Express 4
       if (data.settings) {
-        if (data.settings['view options']) {
-          utils.shallowCopyFromList(opts, data.settings['view options'], _OPTS_EXPRESS);
-        }
         if (data.settings.views) {
           opts.views = data.settings.views;
+        }
+        if (data.settings['view cache']) {
+          opts.cache = true;
         }
       }
       // Express 3 and lower
@@ -426,11 +466,6 @@ exports.renderFile = function () {
         utils.shallowCopyFromList(opts, data, _OPTS_EXPRESS);
       }
     }
-    else {
-      // Use shallowCopy so we don't pollute passed in opts obj with new vals
-      utils.shallowCopy(opts, arguments[2]);
-    }
-
     opts.filename = filename;
   }
   else {
@@ -521,14 +556,14 @@ Template.prototype = {
 
     if (opts.compileDebug) {
       src = 'var __line = 1' + '\n'
-          + '  , __lines = ' + JSON.stringify(this.templateText) + '\n'
-          + '  , __filename = ' + (opts.filename ?
-                JSON.stringify(opts.filename) : 'undefined') + ';' + '\n'
-          + 'try {' + '\n'
-          + this.source
-          + '} catch (e) {' + '\n'
-          + '  rethrow(e, __lines, __filename, __line, escapeFn);' + '\n'
-          + '}' + '\n';
+        + '  , __lines = ' + JSON.stringify(this.templateText) + '\n'
+        + '  , __filename = ' + (opts.filename ?
+        JSON.stringify(opts.filename) : 'undefined') + ';' + '\n'
+        + 'try {' + '\n'
+        + this.source
+        + '} catch (e) {' + '\n'
+        + '  rethrow(e, __lines, __filename, __line, escapeFn);' + '\n'
+        + '}' + '\n';
     }
     else {
       src = this.source;
@@ -648,7 +683,7 @@ Template.prototype = {
             }
             self.source += includeSrc;
             self.dependencies.push(exports.resolveInclude(include[1],
-                includeOpts.filename));
+              includeOpts.filename));
             return;
           }
         }
@@ -757,9 +792,9 @@ Template.prototype = {
       this.truncate = line.indexOf('-') === 0 || line.indexOf('_') === 0;
       break;
     default:
-        // In script mode, depends on type of tag
+      // In script mode, depends on type of tag
       if (this.mode) {
-          // If '//' is found without a line break, add a line break.
+        // If '//' is found without a line break, add a line break.
         switch (this.mode) {
         case Template.modes.EVAL:
         case Template.modes.ESCAPED:
@@ -769,28 +804,28 @@ Template.prototype = {
           }
         }
         switch (this.mode) {
-            // Just executing code
+        // Just executing code
         case Template.modes.EVAL:
           this.source += '    ; ' + line + '\n';
           break;
-            // Exec, esc, and output
+          // Exec, esc, and output
         case Template.modes.ESCAPED:
           this.source += '    ; __append(escapeFn(' + stripSemi(line) + '))' + '\n';
           break;
-            // Exec and output
+          // Exec and output
         case Template.modes.RAW:
           this.source += '    ; __append(' + stripSemi(line) + ')' + '\n';
           break;
         case Template.modes.COMMENT:
-              // Do nothing
+          // Do nothing
           break;
-            // Literal <%% mode, append as raw output
+          // Literal <%% mode, append as raw output
         case Template.modes.LITERAL:
           this._addOutput(line);
           break;
         }
       }
-        // In string mode, just add the output
+      // In string mode, just add the output
       else {
         this._addOutput(line);
       }
@@ -922,7 +957,7 @@ var _ENCODE_HTML_RULES = {
   '"': '&#34;',
   "'": '&#39;'
 };
-var _MATCH_HTML = /[&<>\'"]/g;
+var _MATCH_HTML = /[&<>'"]/g;
 
 function encode_char(c) {
   return _ENCODE_HTML_RULES[c] || c;
@@ -966,7 +1001,7 @@ exports.escapeXML = function (markup) {
   return markup == undefined
     ? ''
     : String(markup)
-        .replace(_MATCH_HTML, encode_char);
+      .replace(_MATCH_HTML, encode_char);
 };
 exports.escapeXML.toString = function () {
   return Function.prototype.toString.call(this) + ';\n' + escapeFuncStr;
@@ -1037,9 +1072,9 @@ exports.cache = {
 },{}],4:[function(require,module,exports){
 module.exports={
   "_from": "ejs@^2.5.2",
-  "_id": "ejs@2.5.7",
+  "_id": "ejs@2.5.8",
   "_inBundle": false,
-  "_integrity": "sha1-zIcsFoiArjxxiXYv1f/ACJbJUYo=",
+  "_integrity": "sha512-QIDZL54fyV8MDcAsO91BMH1ft2qGGaHIJsJIA/+t+7uvXol1dm413fPcUgUb4k8F/9457rx4/KFE4XfDifrQxQ==",
   "_location": "/ejs",
   "_phantomChildren": {},
   "_requested": {
@@ -1058,8 +1093,8 @@ module.exports={
     "/langbank",
     "/pickles2-contents-editor"
   ],
-  "_resolved": "https://registry.npmjs.org/ejs/-/ejs-2.5.7.tgz",
-  "_shasum": "cc872c168880ae3c7189762fd5ffc00896c9518a",
+  "_resolved": "https://registry.npmjs.org/ejs/-/ejs-2.5.8.tgz",
+  "_shasum": "2ab6954619f225e6193b7ac5f7c39c48fefe4380",
   "_spec": "ejs@^2.5.2",
   "_where": "/root/www/app-pickles2-webtool",
   "author": {
@@ -1083,7 +1118,7 @@ module.exports={
   "description": "Embedded JavaScript templates",
   "devDependencies": {
     "browserify": "^13.0.1",
-    "eslint": "^3.0.0",
+    "eslint": "^4.14.0",
     "git-directory-deploy": "^1.5.1",
     "istanbul": "~0.4.3",
     "jake": "^8.0.0",
@@ -1115,7 +1150,7 @@ module.exports={
     "lint": "eslint \"**/*.js\" Jakefile",
     "test": "jake test"
   },
-  "version": "2.5.7"
+  "version": "2.5.8"
 }
 
 },{}],5:[function(require,module,exports){
@@ -2667,6 +2702,7 @@ window.cont = new (function(){
 	var timerFilter;
 	var keyword = '';
 	var current_page = '';
+	var current_page_id = '';
 	_this.sitemap = false;
 	_this.userList = false;
 
@@ -2780,11 +2816,12 @@ window.cont = new (function(){
 		// console.log('/apis/getNavigationInfo?page_path='+encodeURIComponent(current_page));
 
 		$.get(
-			'/apis/getNavigationInfo?page_path='+encodeURIComponent(current_page),
+			'/apis/getNavigationInfo?page_path='+encodeURIComponent(current_page_id),
 			{},
 			function(navigationInfo){
 				// console.log(navigationInfo);
 				current_page = navigationInfo.page_info.path;
+				current_page_id = navigationInfo.page_info.id;
 
 				var templateSrc = document.getElementById('template-treeview').innerHTML;
 				var data = {
@@ -2866,136 +2903,149 @@ window.cont = new (function(){
 					}else if( method == 'goto' ){
 						keyword = '';
 						current_page = $this.attr('data-page-path');
+						current_page_id = $this.attr('data-id');
 						_this.redrawPageList();
 						return false;
 					}
 				});
 
 				var $dropdownMenu = $('.cont_page-dropdown-menu');
-				$dropdownMenu.append($('<li>')
-					.append($('<a>')
-						.text('他のページから複製して取り込む')
-						.attr({
-							'data-path': current_page ,
-							'href':'javascript:;'
-						})
-						.on('click', function(e){
-							$cont.find('.dropdown-toggle').click();
-							if( !confirm('現状のコンテンツを破棄し、他のページを複製して取り込みます。よろしいですか？') ){
-								return false;
-							}
 
-							var $this = $(this);
-							var $body = $('<div>')
-								.append( $('#template-copy-from-other-page').html() )
-							;
-							var $input = $body.find('input');
-							var $list = $body.find('.cont_sample_list')
-								.css({
-									'overflow': 'auto',
-									'height': 200,
-									'background-color': '#f9f9f9',
-									'border': '1px solid #bbb',
-									'padding': 10,
-									'margin': '10px auto',
-									'border-radius': 5
-								})
-							;
-							$input.on('change', function(){
-								var val = $input.val();
-								$list.html('<div class="px2-loading"></div>');
-								main.project.pxCommand(
-									'/',
-									'px2dthelper.search_sitemap',
-									{
-										'keyword': val
-									},
-									function(page_list){
-										var $ul = $('<ul>')
-										for(var i in page_list){
-											var $li = $('<li>')
-											$li.append( $('<a>')
-												.text(page_list[i].path)
-												.attr({
-													'href': 'javascript:;',
-													'data-path': page_list[i].path
-												})
-												.on('click', function(e){
-													var path = $(this).attr('data-path');
-													$input.val(path);
-												})
-											);
-											$ul.append($li);
+				if (navigationInfo.editorType === 'alias') {
+					// 現状ではalias時はドロップダウンメニューなし
+				} else {
+
+					$dropdownMenu.append($('<li>')
+						.append($('<a>')
+							.text('他のページから複製して取り込む')
+							.attr({
+								'data-path': current_page ,
+								'href':'javascript:;'
+							})
+							.on('click', function(e){
+								$cont.find('.dropdown-toggle').click();
+								if( !confirm('現状のコンテンツを破棄し、他のページを複製して取り込みます。よろしいですか？') ){
+									return false;
+								}
+
+								var $this = $(this);
+								var $body = $('<div>')
+									.append( $('#template-copy-from-other-page').html() )
+								;
+								var $input = $body.find('input');
+								var $list = $body.find('.cont_sample_list')
+									.css({
+										'overflow': 'auto',
+										'height': 200,
+										'background-color': '#f9f9f9',
+										'border': '1px solid #bbb',
+										'padding': 10,
+										'margin': '10px auto',
+										'border-radius': 5
+									})
+								;
+								$input.on('change', function(){
+									var val = $input.val();
+									$list.html('<div class="px2-loading"></div>');
+									main.project.pxCommand(
+										'/',
+										'px2dthelper.search_sitemap',
+										{
+											'keyword': val
+										},
+										function(page_list){
+											var $ul = $('<ul>')
+											for(var i in page_list){
+												var $li = $('<li>')
+												$li.append( $('<a>')
+													.text(page_list[i].path)
+													.attr({
+														'href': 'javascript:;',
+														'data-path': page_list[i].path
+													})
+													.on('click', function(e){
+														var path = $(this).attr('data-path');
+														$input.val(path);
+													})
+												);
+												$ul.append($li);
+											}
+											$list.html('').append($ul);
 										}
-										$list.html('').append($ul);
+									);
+								});
+
+								px2style.modal(
+									{
+										'title': '他のページから複製',
+										'body': $body,
+										'buttons': [
+											$('<button>')
+												.text('OK')
+												.addClass('px2-btn')
+												.addClass('px2-btn--primary')
+												.on('click', function(){
+													var page_path = $input.val();
+													console.log(page_path);
+
+													main.project.pxCommand(
+														page_path,
+														'px2dthelper.get.all',
+														{},
+														function(pageAllInfo){
+															var pageinfo = pageAllInfo.page_info;
+															// console.log(pageAllInfo);
+															if( !pageinfo ){
+																alert('存在しないページです。');
+																return false;
+															}
+															// console.log($this.attr('data-path'));
+															// console.log(pageinfo.path);
+															main.project.pxCommand(
+																'/',
+																'px2dthelper.copy_content',
+																{
+																	'from': pageinfo.path,
+																	'to': $this.attr('data-path')
+																},
+																function(result){
+																	console.log(result);
+
+																	if( !result[0] ){
+																		alert('コンテンツの複製に失敗しました。'+result[1]);
+																		return;
+																	}
+																	_this.redrawPageList( function(){
+																		px2style.closeModal();
+																	} );
+																}
+															);
+														}
+													);
+
+												}),
+											$('<button>')
+												.text('Cancel')
+												.addClass('px2-btn')
+												.on('click', function(){
+													px2style.closeModal();
+												})
+										]
+									},
+									function(){
+										console.log('done.');
 									}
 								);
-							});
+							})
+						)
+					);
+				}
 
-							px2style.modal(
-								{
-									'title': '他のページから複製',
-									'body': $body,
-									'buttons': [
-										$('<button>')
-											.text('OK')
-											.addClass('px2-btn')
-											.addClass('px2-btn--primary')
-											.on('click', function(){
-												var page_path = $input.val();
-												console.log(page_path);
-
-												main.project.pxCommand(
-													page_path,
-													'px2dthelper.get.all',
-													{},
-													function(pageAllInfo){
-														var pageinfo = pageAllInfo.page_info;
-														// console.log(pageAllInfo);
-														if( !pageinfo ){
-															alert('存在しないページです。');
-															return false;
-														}
-														// console.log($this.attr('data-path'));
-														// console.log(pageinfo.path);
-														main.project.pxCommand(
-															'/',
-															'px2dthelper.copy_content',
-															{
-																'from': pageinfo.path,
-																'to': $this.attr('data-path')
-															},
-															function(result){
-																console.log(result);
-
-																if( !result[0] ){
-																	alert('コンテンツの複製に失敗しました。'+result[1]);
-																	return;
-																}
-																_this.redrawPageList( function(){
-																	px2style.closeModal();
-																} );
-															}
-														);
-													}
-												);
-
-											}),
-										$('<button>')
-											.text('Cancel')
-											.addClass('px2-btn')
-											.on('click', function(){
-												px2style.closeModal();
-											})
-									]
-								},
-								function(){
-									console.log('done.');
-								}
-							);
-						})
-					)
-				);
+				if (navigationInfo.editorType === 'alias') {
+					$cont.find('button.btn--edit').eq(0).attr({'disabled':'disabled'});
+					$cont.find('button.btn--log').eq(0).attr({'disabled':'disabled'});
+					$cont.find('button.btn--preview').eq(0).attr({'disabled':'disabled'});
+				}
 
 				callback();
 			}
@@ -3007,6 +3057,7 @@ window.cont = new (function(){
 	 * キーワードが指定されていたら、検索結果を表示する。
 	 */
 	function drawPageListSearch(callback){
+		
 		var listMaxCount = 100;
 		it79.fnc({},[
 			function(it1, arg){
@@ -3104,11 +3155,13 @@ window.cont = new (function(){
 										.text(sitemap[path].title)
 										.attr({
 											'href': 'javascript:;',
-											'data-page-path': path
+											'data-page-path': path,
+											'data-id': sitemap[path].id
 										})
 										.on('click', function(){
 											keyword = '';
 											current_page = $(this).attr('data-page-path');
+											current_page_id = $(this).attr('data-id');
 											_this.redrawPageList();
 											return false;
 											// openEditor( $(this).attr('data-page-path') );

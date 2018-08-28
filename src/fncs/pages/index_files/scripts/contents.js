@@ -8,6 +8,7 @@ window.cont = new (function(){
 	var timerFilter;
 	var keyword = '';
 	var current_page = '';
+	var current_page_id = '';
 	_this.sitemap = false;
 	_this.userList = false;
 
@@ -121,11 +122,12 @@ window.cont = new (function(){
 		// console.log('/apis/getNavigationInfo?page_path='+encodeURIComponent(current_page));
 
 		$.get(
-			'/apis/getNavigationInfo?page_path='+encodeURIComponent(current_page),
+			'/apis/getNavigationInfo?page_path='+encodeURIComponent(current_page_id),
 			{},
 			function(navigationInfo){
 				// console.log(navigationInfo);
 				current_page = navigationInfo.page_info.path;
+				current_page_id = navigationInfo.page_info.id;
 
 				var templateSrc = document.getElementById('template-treeview').innerHTML;
 				var data = {
@@ -207,136 +209,149 @@ window.cont = new (function(){
 					}else if( method == 'goto' ){
 						keyword = '';
 						current_page = $this.attr('data-page-path');
+						current_page_id = $this.attr('data-id');
 						_this.redrawPageList();
 						return false;
 					}
 				});
 
 				var $dropdownMenu = $('.cont_page-dropdown-menu');
-				$dropdownMenu.append($('<li>')
-					.append($('<a>')
-						.text('他のページから複製して取り込む')
-						.attr({
-							'data-path': current_page ,
-							'href':'javascript:;'
-						})
-						.on('click', function(e){
-							$cont.find('.dropdown-toggle').click();
-							if( !confirm('現状のコンテンツを破棄し、他のページを複製して取り込みます。よろしいですか？') ){
-								return false;
-							}
 
-							var $this = $(this);
-							var $body = $('<div>')
-								.append( $('#template-copy-from-other-page').html() )
-							;
-							var $input = $body.find('input');
-							var $list = $body.find('.cont_sample_list')
-								.css({
-									'overflow': 'auto',
-									'height': 200,
-									'background-color': '#f9f9f9',
-									'border': '1px solid #bbb',
-									'padding': 10,
-									'margin': '10px auto',
-									'border-radius': 5
-								})
-							;
-							$input.on('change', function(){
-								var val = $input.val();
-								$list.html('<div class="px2-loading"></div>');
-								main.project.pxCommand(
-									'/',
-									'px2dthelper.search_sitemap',
-									{
-										'keyword': val
-									},
-									function(page_list){
-										var $ul = $('<ul>')
-										for(var i in page_list){
-											var $li = $('<li>')
-											$li.append( $('<a>')
-												.text(page_list[i].path)
-												.attr({
-													'href': 'javascript:;',
-													'data-path': page_list[i].path
-												})
-												.on('click', function(e){
-													var path = $(this).attr('data-path');
-													$input.val(path);
-												})
-											);
-											$ul.append($li);
+				if (navigationInfo.editorType === 'alias') {
+					// 現状ではalias時はドロップダウンメニューなし
+				} else {
+
+					$dropdownMenu.append($('<li>')
+						.append($('<a>')
+							.text('他のページから複製して取り込む')
+							.attr({
+								'data-path': current_page ,
+								'href':'javascript:;'
+							})
+							.on('click', function(e){
+								$cont.find('.dropdown-toggle').click();
+								if( !confirm('現状のコンテンツを破棄し、他のページを複製して取り込みます。よろしいですか？') ){
+									return false;
+								}
+
+								var $this = $(this);
+								var $body = $('<div>')
+									.append( $('#template-copy-from-other-page').html() )
+								;
+								var $input = $body.find('input');
+								var $list = $body.find('.cont_sample_list')
+									.css({
+										'overflow': 'auto',
+										'height': 200,
+										'background-color': '#f9f9f9',
+										'border': '1px solid #bbb',
+										'padding': 10,
+										'margin': '10px auto',
+										'border-radius': 5
+									})
+								;
+								$input.on('change', function(){
+									var val = $input.val();
+									$list.html('<div class="px2-loading"></div>');
+									main.project.pxCommand(
+										'/',
+										'px2dthelper.search_sitemap',
+										{
+											'keyword': val
+										},
+										function(page_list){
+											var $ul = $('<ul>')
+											for(var i in page_list){
+												var $li = $('<li>')
+												$li.append( $('<a>')
+													.text(page_list[i].path)
+													.attr({
+														'href': 'javascript:;',
+														'data-path': page_list[i].path
+													})
+													.on('click', function(e){
+														var path = $(this).attr('data-path');
+														$input.val(path);
+													})
+												);
+												$ul.append($li);
+											}
+											$list.html('').append($ul);
 										}
-										$list.html('').append($ul);
+									);
+								});
+
+								px2style.modal(
+									{
+										'title': '他のページから複製',
+										'body': $body,
+										'buttons': [
+											$('<button>')
+												.text('OK')
+												.addClass('px2-btn')
+												.addClass('px2-btn--primary')
+												.on('click', function(){
+													var page_path = $input.val();
+													console.log(page_path);
+
+													main.project.pxCommand(
+														page_path,
+														'px2dthelper.get.all',
+														{},
+														function(pageAllInfo){
+															var pageinfo = pageAllInfo.page_info;
+															// console.log(pageAllInfo);
+															if( !pageinfo ){
+																alert('存在しないページです。');
+																return false;
+															}
+															// console.log($this.attr('data-path'));
+															// console.log(pageinfo.path);
+															main.project.pxCommand(
+																'/',
+																'px2dthelper.copy_content',
+																{
+																	'from': pageinfo.path,
+																	'to': $this.attr('data-path')
+																},
+																function(result){
+																	console.log(result);
+
+																	if( !result[0] ){
+																		alert('コンテンツの複製に失敗しました。'+result[1]);
+																		return;
+																	}
+																	_this.redrawPageList( function(){
+																		px2style.closeModal();
+																	} );
+																}
+															);
+														}
+													);
+
+												}),
+											$('<button>')
+												.text('Cancel')
+												.addClass('px2-btn')
+												.on('click', function(){
+													px2style.closeModal();
+												})
+										]
+									},
+									function(){
+										console.log('done.');
 									}
 								);
-							});
+							})
+						)
+					);
+				}
 
-							px2style.modal(
-								{
-									'title': '他のページから複製',
-									'body': $body,
-									'buttons': [
-										$('<button>')
-											.text('OK')
-											.addClass('px2-btn')
-											.addClass('px2-btn--primary')
-											.on('click', function(){
-												var page_path = $input.val();
-												console.log(page_path);
-
-												main.project.pxCommand(
-													page_path,
-													'px2dthelper.get.all',
-													{},
-													function(pageAllInfo){
-														var pageinfo = pageAllInfo.page_info;
-														// console.log(pageAllInfo);
-														if( !pageinfo ){
-															alert('存在しないページです。');
-															return false;
-														}
-														// console.log($this.attr('data-path'));
-														// console.log(pageinfo.path);
-														main.project.pxCommand(
-															'/',
-															'px2dthelper.copy_content',
-															{
-																'from': pageinfo.path,
-																'to': $this.attr('data-path')
-															},
-															function(result){
-																console.log(result);
-
-																if( !result[0] ){
-																	alert('コンテンツの複製に失敗しました。'+result[1]);
-																	return;
-																}
-																_this.redrawPageList( function(){
-																	px2style.closeModal();
-																} );
-															}
-														);
-													}
-												);
-
-											}),
-										$('<button>')
-											.text('Cancel')
-											.addClass('px2-btn')
-											.on('click', function(){
-												px2style.closeModal();
-											})
-									]
-								},
-								function(){
-									console.log('done.');
-								}
-							);
-						})
-					)
-				);
+				if (navigationInfo.editorType === 'alias') {
+					$cont.find('button.btn--edit').eq(0).attr({'disabled':'disabled'});
+					$cont.find('button.btn--log').eq(0).attr({'disabled':'disabled'});
+					$cont.find('button.btn--preview').eq(0).attr({'disabled':'disabled'});
+				}
 
 				callback();
 			}
@@ -348,6 +363,7 @@ window.cont = new (function(){
 	 * キーワードが指定されていたら、検索結果を表示する。
 	 */
 	function drawPageListSearch(callback){
+		
 		var listMaxCount = 100;
 		it79.fnc({},[
 			function(it1, arg){
@@ -445,11 +461,13 @@ window.cont = new (function(){
 										.text(sitemap[path].title)
 										.attr({
 											'href': 'javascript:;',
-											'data-page-path': path
+											'data-page-path': path,
+											'data-id': sitemap[path].id
 										})
 										.on('click', function(){
 											keyword = '';
 											current_page = $(this).attr('data-page-path');
+											current_page_id = $(this).attr('data-id');
 											_this.redrawPageList();
 											return false;
 											// openEditor( $(this).attr('data-page-path') );
