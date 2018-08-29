@@ -3,6 +3,7 @@ $(window).load(function(){
 	var params = window.main.parseUriParam(window.location.href);
 	// console.log(params);
 
+	var it79 = require('iterate79');
 	var $canvas = $('#canvas');
 	var serverConfig;
 	var px2dtGitUi = new window.px2dtGitUi(window.main);
@@ -25,37 +26,45 @@ $(window).load(function(){
 		return;
 	}
 
-	var pickles2ContentsEditor = new Pickles2ContentsEditor();
-
-	$.ajax({
-		"url": "/apis/applock",
-		"type": 'post',
-		'data': {
-			"method": 'lock',
-			"page_path": params.page_path
-		},
-		"success": function(lockResult){
-			// console.log(lockResult);
-			if( !lockResult.result ){
-				$canvas
-					.html('')
-					.append($('<div class="container" style="margin-top:3em;">')
-						.append('<h1>LOCKED</h1>')
-						.append('<p>このコンテンツは編集中のためロックされています。</p>')
-						.append($('<dl>')
-							.append($('<dt>').text('編集中のユーザー'))
-							.append($('<dd>').text(lockResult.lockInfo.user))
-							.append($('<dt>').text('最終アクセス時刻'))
-							.append($('<dd>').text(new Date(lockResult.lockInfo.time*1000)))
-							.append($('<dt>').text('ロックが自動解除される時刻'))
-							.append($('<dd>').text(new Date((lockResult.lockInfo.time + 60*10)*1000)))
+	it79.fnc({},[
+		function(it1){
+			$(window).on('beforeunload', function(){
+				// chromeでは表示されない
+				return "編集中の変更は記録されませんがよろしいですか？";
+			});
+			$(function(){
+				$('body').append($msgBox);
+			});
+			it1.next();
+		} ,
+		function(it1){
+			lock(function(lockResult){
+				// console.log(lockResult);
+				if( !lockResult.result ){
+					$canvas
+						.html('')
+						.append($('<div class="container" style="margin-top:3em;">')
+							.append('<h1>LOCKED</h1>')
+							.append('<p>このコンテンツは編集中のためロックされています。</p>')
+							.append($('<dl>')
+								.append($('<dt>').text('編集中のユーザー'))
+								.append($('<dd>').text(lockResult.lockInfo.user))
+								.append($('<dt>').text('最終アクセス時刻'))
+								.append($('<dd>').text(new Date(lockResult.lockInfo.time*1000)))
+								.append($('<dt>').text('ロックが自動解除される時刻'))
+								.append($('<dd>').text(new Date((lockResult.lockInfo.time + 60*10)*1000)))
+							)
+							.append('<p>ロックは、編集者が「完了」ボタンを押すか、最終アクセス時刻から 10分後 に自動解除されます。</p>')
 						)
-						.append('<p>ロックは、編集者が「完了」ボタンを押すか、最終アクセス時刻から 10分後 に自動解除されます。</p>')
-					)
-				;
-				return;
-			}
+					;
+					return;
+				}
+				it1.next();
+			});
+		} ,
+		function(it1){
 
+			var pickles2ContentsEditor = new Pickles2ContentsEditor();
 			$.ajax({
 				"url": "/apis/getServerConf",
 				"type": 'get',
@@ -98,23 +107,14 @@ $(window).load(function(){
 										function(ret){
 											switch (ret) {
 												case 'commited':
-													$.ajax({
-														"url": "/apis/applock",
-														"type": 'post',
-														'data': {
-															"method": 'unlock',
-															"page_path": params.page_path
-														},
-														"success": function(lockResult){
-															// console.log(lockResult);
-															if( !lockResult.result ){
-																alert('[ERROR] 編集状態の解除に失敗しました。');
-																return;
-															}
-															
-															$(window).off('beforeunload');
-															window.close();
+													unlock(function(lockResult){
+														// console.log(lockResult);
+														if( !lockResult.result ){
+															alert('[ERROR] 編集状態の解除に失敗しました。');
+															return;
 														}
+														$(window).off('beforeunload');
+														window.close();
 													});
 													break;
 												case 'unchanged':
@@ -158,18 +158,57 @@ $(window).load(function(){
 									});
 								});
 
-								console.info('standby!!');
+								it1.next();
 							}
 						);
 
 					});
 				}
 			});
-
+		} ,
+		function(it1){
+			console.info('standby!!');
+			it1.next();
 		}
-	});
+	]);
 
 
+
+	/**
+	 * 編集を排他ロックする
+	 */
+	function lock(callback){
+		callback = callback || function(){};
+		$.ajax({
+			"url": "/apis/applock",
+			"type": 'post',
+			'data': {
+				"method": 'lock',
+				"page_path": params.page_path
+			},
+			"success": function(lockResult){
+				callback(lockResult);
+			}
+		});
+	}
+
+	/**
+	 * 編集の排他ロックを解除する
+	 */
+	function unlock(callback){
+		callback = callback || function(){};
+		$.ajax({
+			"url": "/apis/applock",
+			"type": 'post',
+			'data': {
+				"method": 'unlock',
+				"page_path": params.page_path
+			},
+			"success": function(lockResult){
+				callback(lockResult);
+			}
+		});
+	}
 
 	/**
 	 * メッセージ
@@ -216,12 +255,4 @@ $(window).load(function(){
 		return this;
 	}
 
-	$(window).on('beforeunload', function(){
-    	// chromeでは表示されない
-    	return "編集中の変更は記録されませんがよろしいですか？";
-	});
-
-	$(function(){
-		$('body').append($msgBox);
-	});
 });
