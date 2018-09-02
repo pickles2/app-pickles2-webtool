@@ -59,6 +59,7 @@ app.use( '/resources/px2style/', express.static( __dirname+'/../node_modules/px2
 app.use( '/resources/cmd-queue/', express.static( __dirname+'/../node_modules/cmd-queue/dist/' ) );
 app.use( '/resources/pickles2-contents-editor/', express.static( __dirname+'/../node_modules/pickles2-contents-editor/dist/' ) );
 app.use( '/resources/broccoli-html-editor/', express.static( __dirname+'/../node_modules/broccoli-html-editor/client/dist/' ) );
+app.use( '/res_caches/', express.static( __dirname+'/../res_caches/' ) );
 
 // ログイン処理系
 app.use( require('./preprocess/userInfo.js')(px2) );

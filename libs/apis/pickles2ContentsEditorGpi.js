@@ -49,6 +49,61 @@ module.exports = function(conf){
 			}); })
 			.then(function(){ return new Promise(function(rlv, rjt){
 
+				// client_resources を返す
+				// このリクエストの場合は、ここで返して終了する。
+				if(req.body.method && req.body.method == 'get_client_resources'){
+					var clientResources = {'css': [], 'js': []};
+
+					if(guiEngine == 'broccoli-html-editor-php'){
+						// PHP版
+						var realpath_rescache = __dirname+'/../../res_caches/px2ce/';
+						if( !utils79.is_dir(realpath_rescache) ){
+							fs.mkdirSync(realpath_rescache);
+						}
+						px2proj.query(
+							req.body.page_path+'?PX=px2dthelper.px2ce.client_resources&dist='+realpath_rescache,
+							{
+								complete: function(rtn, code){
+									try{
+										clientResources = JSON.parse(rtn);
+									}catch(e){
+										console.error('Failed to parse JSON "client_resources".', e);
+									}
+									for(var idx in clientResources.css){ clientResources.css[idx] = '/res_caches/px2ce/'+clientResources.css[idx]; }
+									for(var idx in clientResources.js ){ clientResources.js[idx]  = '/res_caches/px2ce/'+clientResources.js[idx];  }
+									res
+										.status(200)
+										.set('Content-Type', 'text/json')
+										.send( JSON.stringify(clientResources) )
+										.end();
+								}
+							}
+						);
+					}else{
+						// NodeJS版
+						clientResources = {
+							'css': [
+								'/resources/broccoli-html-editor/broccoli.css',
+								'/resources/pickles2-contents-editor/pickles2-contents-editor.css'
+							],
+							'js': [
+								'/resources/broccoli-html-editor/broccoli.js',
+								'/resources/pickles2-contents-editor/pickles2-contents-editor.js'
+							]
+						};
+						res
+							.status(200)
+							.set('Content-Type', 'text/json')
+							.send( JSON.stringify(clientResources) )
+							.end();
+					}
+					return;
+				}
+				rlv();
+
+			}); })
+			.then(function(){ return new Promise(function(rlv, rjt){
+
 				// realpathDataDir を取得する
 				px2proj.get_realpath_homedir(function(_data){
 					realpathDataDir = _data+'_sys/ram/data/';

@@ -64,6 +64,46 @@ $(window).load(function(){
 		} ,
 		function(it1){
 
+			// クライアントリソースをロード
+			$.ajax({
+				"url": "/apis/pickles2ContentsEditorGpi",
+				"type": 'POST',
+				'data': {'page_path':params.page_path, 'method':'get_client_resources'},
+				"success": function(resources){
+					// console.log('-- client resources:', resources);
+					it79.ary(
+						resources.css,
+						function(it2, row, idx){
+							var link = document.createElement('link');
+							link.addEventListener('load', function(){
+								it2.next();
+							});
+							$('head').append(link);
+							link.rel = 'stylesheet';
+							link.href = row;
+						},
+						function(){
+							it79.ary(
+								resources.js,
+								function(it3, row, idx){
+									var script = document.createElement('script');
+									script.addEventListener('load', function(){
+										it3.next();
+									});
+									$('head').append(script);
+									script.src = row;
+								},
+								function(){
+									it1.next();
+								}
+							);
+						}
+					);
+				}
+			});
+		},
+		function(it1){
+
 			var pickles2ContentsEditor = new Pickles2ContentsEditor();
 			$.ajax({
 				"url": "/apis/getServerConf",
